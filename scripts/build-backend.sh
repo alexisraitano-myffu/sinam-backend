@@ -33,8 +33,8 @@ rm -rf dist build synapse-backend.spec
 # télécharge au premier besoin (core_store._download_model, ~130 Mo one-time).
 if ! python -c "import synapse_core" 2>/dev/null; then
     echo "[error] synapse_core absent de la venv. Builder la wheel :" >&2
-    echo "        cd ../synapse-core && maturin build --release -m crates/synapse-core-py/Cargo.toml" >&2
-    echo "        pip install ../synapse-core/target/wheels/synapse_core-*.whl" >&2
+    echo "        cd ../sinam-core && maturin build --release -m crates/synapse-core-py/Cargo.toml" >&2
+    echo "        pip install ../sinam-core/target/wheels/synapse_core-*.whl" >&2
     exit 1
 fi
 
@@ -62,7 +62,7 @@ pyinstaller \
 # Ship the core's prompts as data next to the binary: backend_entry.py mirrors
 # them into SYNAPSE_HOME/prompts at startup (nothing else deploys them on a
 # tester machine, and the shipped brain requires the matching prompt set).
-PROMPTS_SRC="../synapse-core/prompts"
+PROMPTS_SRC="../sinam-core/prompts"
 if [ ! -f "$PROMPTS_SRC/manifest.json" ]; then
     echo "[error] $PROMPTS_SRC introuvable — le bundle a besoin des prompts du repo synapse-core." >&2
     exit 1

@@ -47,7 +47,7 @@ _OWNER = "Alexis"
 # directement — pas la wheel — pour rester utilisable sans toolchain Rust.
 _CORE_CLASSIFIER = Path(
     os.getenv("SYNAPSE_CLASSIFIER_MD",
-              str(_REPO.parent / "synapse-core" / "prompts" / "classifier.md")))
+              str(_REPO.parent / "sinam-core" / "prompts" / "classifier.md")))
 
 
 def _load_prompt(path: Path) -> str:

@@ -20,7 +20,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.golden.golden_lib import GOLDEN_DIR, normalize_db
 
-CORE_REPO_DEFAULT = Path.home() / "Pro AR" / "synapse-core"
+# Le core est le repo frère : resolu depuis ce fichier, pas depuis un chemin
+# personnel en dur (le dossier a deja bouge une fois).
+CORE_REPO_DEFAULT = Path(__file__).resolve().parents[2].parent / "sinam-core"
 MODEL_DIR = Path.home() / ".synapse" / "models" / "paraphrase-multilingual-MiniLM-L12-v2-onnx-Q"
 
 

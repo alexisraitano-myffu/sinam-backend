@@ -2,9 +2,9 @@
 
 **A local-first personal semantic memory system.** Capture raw notes, and an AI cleans, links and structures them into a queryable knowledge graph plus episodic memory, all on your own machines. **No cloud: your data never leaves your devices.**
 
-Synapse is built to run **on any machine you own**. The **brain** — classification, routing, confidence scoring, embeddings, storage, vector search, decay and P2P sync — is a single compiled **Rust core, [`synapse-core`](https://github.com/alexisraitano-myffu/synapse-core)**, written once and shared across every platform. **This repository is the desktop host**: it embeds that core (as a PyO3 wheel, `synapse_core`) inside a cross-platform **Python service** that runs in the background on a **desktop (macOS or Windows)**, exposing the memory to AI agents over **MCP** (Claude Desktop, Claude Code) and to the apps over a small **HTTP API**. A **desktop app** (macOS, Windows) and a **mobile app** (iOS, Android) are the clients that capture and browse over the LAN — the mobile apps embed the very same core via UniFFI. Consolidation runs in a batched, sleep-like "Dream Cycle" using Claude Haiku; embeddings are **fully local** (ONNX, no API call, no PyTorch).
+Synapse is built to run **on any machine you own**. The **brain** — classification, routing, confidence scoring, embeddings, storage, vector search, decay and P2P sync — is a single compiled **Rust core, [`sinam-core`](https://github.com/alexisraitano-myffu/sinam-core)**, written once and shared across every platform. **This repository is the desktop host**: it embeds that core (as a PyO3 wheel, `synapse_core`) inside a cross-platform **Python service** that runs in the background on a **desktop (macOS or Windows)**, exposing the memory to AI agents over **MCP** (Claude Desktop, Claude Code) and to the apps over a small **HTTP API**. A **desktop app** (macOS, Windows) and a **mobile app** (iOS, Android) are the clients that capture and browse over the LAN — the mobile apps embed the very same core via UniFFI. Consolidation runs in a batched, sleep-like "Dream Cycle" using Claude Haiku; embeddings are **fully local** (ONNX, no API call, no PyTorch).
 
-> Philosophy: *capture passively, process actively.* Open source (Apache-2.0). The shared brain lives in **[`synapse-core`](https://github.com/alexisraitano-myffu/synapse-core)** (Rust, Apache-2.0) — one implementation, zero logic divergence between platforms; this repo hosts it on the desktop. The apps live in a separate project and talk to this host only through the documented HTTP API.
+> Philosophy: *capture passively, process actively.* Open source (Apache-2.0). The shared brain lives in **[`sinam-core`](https://github.com/alexisraitano-myffu/sinam-core)** (Rust, Apache-2.0) — one implementation, zero logic divergence between platforms; this repo hosts it on the desktop. The apps live in a separate project and talk to this host only through the documented HTTP API.
 
 ---
 
@@ -78,10 +78,10 @@ pip install -r requirements.txt
 export ANTHROPIC_API_KEY=sk-ant-...  # used only by the Dream Cycle (reasoning), not for embeddings
 ```
 
-The brain ships as the **`synapse_core` wheel**, which is **not on PyPI yet** — build it once from the [`synapse-core`](https://github.com/alexisraitano-myffu/synapse-core) repo and install it into this venv (it must be the *only* SQLite library in the process):
+The brain ships as the **`synapse_core` wheel**, which is **not on PyPI yet** — build it once from the [`sinam-core`](https://github.com/alexisraitano-myffu/sinam-core) repo and install it into this venv (it must be the *only* SQLite library in the process):
 
 ```bash
-git clone https://github.com/alexisraitano-myffu/synapse-core
+git clone https://github.com/alexisraitano-myffu/sinam-core
 cd synapse-core/crates/synapse-core-py && maturin build --release
 pip install target/wheels/synapse_core-*.whl   # then cd back to this repo
 ```
@@ -148,7 +148,7 @@ pytest                               # offline suites run without an API key
 
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md):** the full technical spec, covering deployment topology, the Dream Cycle, the two-timescale model, the "À valider" queue, the explicit graph (facts vs relations), the living map, the sync model, and the tunable levers.
 - **[docs/engine-map.html](docs/engine-map.html):** an interactive, clickable map of the engine (Dream Cycle pipeline, data model, living-map model) with the prompts, tunable thresholds and schema behind each node. Open it in a browser: `open docs/engine-map.html`.
-- **[`synapse-core`](https://github.com/alexisraitano-myffu/synapse-core):** the shared **Rust brain** this host embeds — embeddings, storage, vector search, routing, decay, summaries, LLM orchestration and CRDT sync. Consumed here as the `synapse_core` PyO3 wheel, and by the mobile apps via UniFFI. One implementation, every platform.
+- **[`sinam-core`](https://github.com/alexisraitano-myffu/sinam-core):** the shared **Rust brain** this host embeds — embeddings, storage, vector search, routing, decay, summaries, LLM orchestration and CRDT sync. Consumed here as the `synapse_core` PyO3 wheel, and by the mobile apps via UniFFI. One implementation, every platform.
 
 **Clients.** The desktop and mobile apps (Kotlin Multiplatform / Compose Multiplatform) live in a separate private repository and talk to this engine over the LAN, coding against the generated `openapi.json` here. Keep that file up to date when endpoints change.
 

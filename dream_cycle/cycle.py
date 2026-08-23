@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Synapse Dream Cycle — the HOST ORCHESTRATOR.
+sinam Dream Cycle — the HOST ORCHESTRATOR.
 
 Per inbox entry, Claude classifies the input and routes it:
   - fact      → entity graph (entities / facts / relations), confidence-scored
@@ -52,7 +52,7 @@ def _get_client() -> anthropic.Anthropic:
 # ── Step 1 — Classifier ────────────────────────────────────────────────────────
 
 # ── SYN-111 : le cerveau (classif + routing) vit dans le cœur Rust ───────────
-# Le prompt classifieur est une DONNÉE versionnée dans le repo synapse-core
+# Le prompt classifieur est une DONNÉE versionnée dans le repo sinam-core
 # (prompts/classifier.md), déployée ici et lue à l'exécution par le core.
 PROMPTS_DIR = Path(os.getenv("SYNAPSE_PROMPTS_DIR", Path.home() / ".synapse" / "prompts"))
 
@@ -143,8 +143,8 @@ def _classify_params(entry: dict, conn=None, day_context: str | None = None,
 def _parse_classify_text(text: str, content_len: int, stop_reason: str | None) -> dict:
     """Parse d'une réponse classifieur — implémenté dans le core (garde
     max_tokens → ValueError, fence strip, JSON). Partagé sync + batch."""
-    import synapse_core
-    return json.loads(synapse_core.parse_classify_text(text, content_len, stop_reason))
+    import sinam_core
+    return json.loads(sinam_core.parse_classify_text(text, content_len, stop_reason))
 
 
 def step1_classify(
@@ -257,7 +257,7 @@ def _batch_classify(
             if verbose:
                 print(f"    [batch] {res.custom_id} parse error: {exc}")
 
-    import synapse_core
+    import sinam_core
 
     out: dict = {}
     for e in entries:
@@ -265,7 +265,7 @@ def _batch_classify(
         if "note" in got and "graph" in got:
             # Fusion faite par le core, jamais réécrite ici : deux copies d'une
             # règle de fusion dérivent, et la dérive serait silencieuse.
-            out[e["id"]] = json.loads(synapse_core.merge_classify_halves(
+            out[e["id"]] = json.loads(sinam_core.merge_classify_halves(
                 json.dumps(got["note"]), json.dumps(got["graph"])))
         else:
             out[e["id"]] = None  # caller retries this one synchronously
@@ -284,7 +284,7 @@ def _batch_classify(
 # ── SYN-89 — Entity re-summary ────────────────────────────────────────────────
 
 # SYN-89 : le prompt du re-résumé est de la donnée (prompts/resummary.md,
-# repo synapse-core, déployé dans ~/.synapse/prompts) — lu par le core.
+# repo sinam-core, déployé dans ~/.synapse/prompts) — lu par le core.
 
 
 def step_resummarize(
@@ -562,7 +562,7 @@ def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: boo
 # ── CLI ────────────────────────────────────────────────────────────────────────
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Synapse Dream Cycle")
+    parser = argparse.ArgumentParser(description="sinam Dream Cycle")
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Show what would be done without writing to DB",

@@ -115,7 +115,7 @@ ajoute la mémoire de travail (SYN-93) : le fil des captures récentes, précéd
 du bloc — et pourtant **le bloc déplace la décision prise sur la capture
 courante**.
 
-Découvert le 2026-08-20 en installant Synapse sur le Mac de dev : deux règles
+Découvert le 2026-08-20 en installant sinam sur le Mac de dev : deux règles
 mesurées 100 % stables en appel isolé se comportaient autrement dans le vrai
 cycle, et à chaque fois la note disparaissait — avec une confiance qui montait à
 1,0, donc sans même atteindre « À valider ». Les deux défaillances se cumulent au

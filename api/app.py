@@ -1,5 +1,5 @@
 """
-Synapse HTTP API (FastAPI) — capture, retrieval, validation, sync.
+sinam HTTP API (FastAPI) — capture, retrieval, validation, sync.
 
 Runs on the "brain" Mac. Auth = bearer token (`SYNAPSE_API_TOKEN`); if that env
 var is unset, auth is DISABLED (dev mode) with a warning. Designed for LAN /
@@ -271,7 +271,7 @@ async def lifespan(_app):
             await stop_advertising(azc)
 
 
-app = FastAPI(title="Synapse API", lifespan=lifespan)
+app = FastAPI(title="sinam API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],

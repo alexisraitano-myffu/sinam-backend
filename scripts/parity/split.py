@@ -41,7 +41,7 @@ from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
 # Les deux moitiés du classifieur. Depuis leur adoption (SYN-171, 2026-08-21)
 # elles sont des prompts de PRODUCTION comme les autres : versionnées dans
-# synapse-core, lues à l'exécution par le core. Le harnais lit les mêmes
+# sinam-core, lues à l'exécution par le core. Le harnais lit les mêmes
 # fichiers — il ne teste pas une variante, il teste ce qui tourne.
 SPLIT_DIR = Path(
     os.environ.get("SYNAPSE_SPLIT_PROMPTS_DIR",

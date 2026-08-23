@@ -1,1 +1,1 @@
-"""Synapse HTTP API — the backend surface consumed by the mobile/desktop apps."""
+"""sinam HTTP API — the backend surface consumed by the mobile/desktop apps."""

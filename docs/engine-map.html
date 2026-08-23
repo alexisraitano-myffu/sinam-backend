@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Synapse : Dream Cycle Engine Map</title>
+<title>sinam : Dream Cycle Engine Map</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
 :root {
@@ -136,8 +136,8 @@ aside pre {
 </head>
 <body>
 <header>
-  <h1>Synapse · Engine Map</h1>
-  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot 2026-07-09 (SYN-96 : le moteur décrit ici vit dans le cœur Rust <code>synapse-core</code> — routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs ; comportement inchangé, golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur ; les prompts sont de la donnée dans <code>~/.synapse/prompts/</code>).</span>
+  <h1>sinam · Engine Map</h1>
+  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot 2026-07-09 (SYN-96 : le moteur décrit ici vit dans le cœur Rust <code>sinam-core</code> — routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs ; comportement inchangé, golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur ; les prompts sont de la donnée dans <code>~/.synapse/prompts/</code>).</span>
 </header>
 <nav class="tabs">
   <button data-tab="pipeline" class="active">Pipeline Dream Cycle</button>
@@ -1257,7 +1257,7 @@ similarity_score, status, created_at, resolved_at</pre>` },
     tags: ["store", "LLM"],
     ref: "graph_clusters.py",
     body: `
-      <p>Un label court par communauté (« Musique », « Stack Synapse »), généré par
+      <p>Un label court par communauté (« Musique », « Stack sinam »), généré par
       <span class="var" data-var="CLAUDE_MODEL" data-val="claude-haiku-4-5">Haiku</span> en un seul
       appel batché pour tous les manquants.</p>
     `,

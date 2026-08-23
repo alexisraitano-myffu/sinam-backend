@@ -5,16 +5,16 @@ anthropic>=0.50.0
 mcp>=1.9.0
 
 # Storage substrate (SYN-110): SQLite + sqlite-vec now live inside the Rust
-# core. The `synapse_core` wheel is built from the synapse-core repo
-# (crates/synapse-core-py, `maturin build --release`) and installed by hand —
+# core. The `sinam_core` wheel is built from the sinam-core repo
+# (crates/sinam-core-py, `maturin build --release`) and installed by hand —
 # it is not on PyPI yet. It must be the ONLY SQLite library in the process
 # (a second one, e.g. apsw, cannot see its locks and corrupts the database).
-# synapse_core (local wheel)
+# sinam_core (local wheel)
 
 # Local embeddings + date resolution now run inside the Rust core (the
-# synapse_core wheel). The model files live in ~/.synapse/models/… — use
+# sinam_core wheel). The model files live in ~/.synapse/models/… — use
 # `pip install fastembed` once + tools/gen_reference_vectors.py in the
-# synapse-core repo, or copy them from another install.
+# sinam-core repo, or copy them from another install.
 
 # .env loading
 python-dotenv>=1.0.0

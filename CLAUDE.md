@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Synapse is a local-first personal semantic memory system exposed as an MCP server. It captures raw notes into an inbox, then a single "Dream Cycle" processes them with Claude Haiku into a structured memory (entity graph + episodic notes), searchable via local vector similarity. The primary interface is MCP tools consumed by Claude Desktop or Claude Code.
+sinam is a local-first personal semantic memory system exposed as an MCP server. It captures raw notes into an inbox, then a single "Dream Cycle" processes them with Claude Haiku into a structured memory (entity graph + episodic notes), searchable via local vector similarity. The primary interface is MCP tools consumed by Claude Desktop or Claude Code.
 
 ## Commands
 
@@ -117,9 +117,9 @@ Capture → inbox → Dream Cycle ─┬─ entities/facts/relations  → the en
 
 Routing is **non-exclusive**: one capture can produce entities + atomic_note + project_entries + an intention + a resource at once (`_process_entry`). URL-driven resource fetch runs for any capture, even a pure intention.
 
-`import dream_cycle` resolves to the **package** `dream_cycle/`; `dream_cycle/cycle.py` is the **host orchestrator**, exported as `run_dream_cycle` (also `python -m dream_cycle`). Since SYN-110/111 the pipeline *logic* lives once in the **Rust core** (`synapse-core`) — see "the brain lives in synapse-core" below; `cycle.py` builds the working-memory context, drives the core and persists what it returns.
+`import dream_cycle` resolves to the **package** `dream_cycle/`; `dream_cycle/cycle.py` is the **host orchestrator**, exported as `run_dream_cycle` (also `python -m dream_cycle`). Since SYN-110/111 the pipeline *logic* lives once in the **Rust core** (`sinam-core`) — see "the brain lives in sinam-core" below; `cycle.py` builds the working-memory context, drives the core and persists what it returns.
 
-### The Dream Cycle (`dream_cycle/cycle.py` — host orchestrator over the `synapse-core` Rust brain)
+### The Dream Cycle (`dream_cycle/cycle.py` — host orchestrator over the `sinam-core` Rust brain)
 
 Operates per inbox entry. **There is no capture-level "type" that selects a lane** — each output is
 decided on its own, from the field that carries it (SYN-171, 2026-08-20: the `input_type` field was
@@ -215,7 +215,7 @@ installable via le tag/release **`python-legacy`**.
   Les endpoints ne tiennent plus SQLite pendant l'appel Haiku (synthèse après commit).
 - **T5.4 digest hebdo** → `digest.rs` : `conn.gather_week` (SQL pur, offline),
   `Brain.summarize_digest`, `Brain.write_digest_note` (idempotent par semaine ISO),
-  `synapse_core.next_occurrence` (29 fév → 1 mars).
+  `sinam_core.next_occurrence` (29 fév → 1 mars).
 - **T5.5 resources** → `resources.rs` : extract_urls, extraction HTML sans dépendance,
   fetch ureq, résumé LLM, store idempotent par URL + embed. httpx ne sert plus qu'au
   TestClient ; les tests stubbent en http.server local (vrai chemin réseau).
@@ -230,7 +230,7 @@ installable via le tag/release **`python-legacy`**.
 
 ### Update 2026-07-04 (soir): P2P sync Mac↔Mac (SYN-112 phases 2+3, T3)
 
-- **The core owns a homemade sync engine** (`synapse-core/src/sync.rs`): `sync_log` =
+- **The core owns a homemade sync engine** (`sinam-core/src/sync.rs`): `sync_log` =
   per-(table, pk, column) HLC version map fed by **pure-SQL triggers** on the 18
   replicated tables — every writer is journaled (Python gateway, core, even a
   debugging sqlite3 CLI), no custom function registration. Protocol-v1 JSON
@@ -271,7 +271,7 @@ installable via le tag/release **`python-legacy`**.
   normalizer tokenizes note uuids by natural key. Reference re-frozen: parity 224/224.
 - Backup at switch: `~/.synapse/synapse.db.pre-syn112-uuid-20260704`.
 
-### Update 2026-07-04: the brain lives in synapse-core (SYN-110 + SYN-111, T1/T2 of SYN-96)
+### Update 2026-07-04: the brain lives in sinam-core (SYN-110 + SYN-111, T1/T2 of SYN-96)
 
 - **Storage (SYN-110)**: the Rust core owns the SQLite schema and the ONLY SQLite library
   in the process (see the Database section — adding a second binding corrupts the file).
@@ -282,7 +282,7 @@ installable via le tag/release **`python-legacy`**.
   work list drives the host-side LLM follow-ups (project synthesis SYN-43). `step1_classify`
   goes through the core's HTTP client (key + fuel-proxy resolution stays in
   `anthropic_client.py`); the Batch API path builds params via `Brain.build_classify_params`
-  and parses via the core. **The classifier prompt is DATA**: versioned in the synapse-core
+  and parses via the core. **The classifier prompt is DATA**: versioned in the sinam-core
   repo (`prompts/classifier-note.md` + `classifier-graph.md` since SYN-171; `classifier.md` is the
   superseded single-call fallback), deployed to `~/.synapse/prompts/` (override:
   `SYNAPSE_PROMPTS_DIR`), `{today}` substituted at runtime — edit + restart, no rebuild.
@@ -290,7 +290,7 @@ installable via le tag/release **`python-legacy`**.
   that reads it) is duplicated onto: `~/.synapse/prompts/` here, the **Mac mini prod** (which also
   needs the wheel *and* this repo's Python), the **Android app's assets** (which carries its own
   `.so` — the phone classifies on-device and never asks this backend), iOS, and the bundled backend
-  inside the desktop `.dmg`/Windows build. Editing `synapse-core` ships to **none** of them.
+  inside the desktop `.dmg`/Windows build. Editing `sinam-core` ships to **none** of them.
 - **Embeddings**: `embed_text` uses the core's Embedder (one ~235 MB model per process,
   shared with the core's internal embeds — bit-identical vectors). fastembed and dateparser
   left the Python runtime; model files are data in `~/.synapse/models/…` (`SYNAPSE_MODEL_DIR`).
@@ -312,7 +312,7 @@ installable via le tag/release **`python-legacy`**.
 - **Bidirectional fiche**: `GET /entity/{id}` now also returns `relations_incoming` (edges where the entity is `entity_to`), so "Audric → cousin → Alexis" shows on Alexis's fiche too. The replica computes the same offline (`relationsTo` query).
 - **Serendipity is untouched**: it runs on a separate channel: cosine over `entity_embedding_text` (name/type/aliases/attributes/summary, **never facts or relations**) + note embeddings. The de-dup/gate only affects the explicit graph; implicit proximity (merge-by-embedding 0.85, project-attach, « entités liées ») is unchanged. Pending relations are excluded from summary regen so an unconfirmed guess can't sway the embedding until validated.
 - **Capture language (STT)**: Android speech recognition now follows the **keyboard (IME) language** instead of the phone locale, with a FR/EN/Auto toggle on the capture screen (`VoiceCapture.android.kt`, `CaptureScreen.kt`).
-- **Multilingual (SYN-108, FR/EN-first)**: the brain is now language-neutral. **SYN-119** (in `synapse-core`) rewrote the prompts EN-base with a server-side `language` (ISO 639-1) field emitted by the classifier and stored on `atomic_notes.language`; predicates/types stay EN snake_case (interlingua). **SYN-121** (here) is the anti-regression guardrail: `scripts/lang_harness.py` + `scripts/lang_dataset.json` (FR/EN pairs, terse-weighted — Haiku's fragile spot) prove **0 FR regression** across a prompt change; `test_digest.py` was made language-agnostic (structural `## ` header assert, not a hardcoded FR label). Reflective-note drop it surfaced was **pre-existing** (SYN-123). Adding a language later = one UI translation file, no engine work.
+- **Multilingual (SYN-108, FR/EN-first)**: the brain is now language-neutral. **SYN-119** (in `sinam-core`) rewrote the prompts EN-base with a server-side `language` (ISO 639-1) field emitted by the classifier and stored on `atomic_notes.language`; predicates/types stay EN snake_case (interlingua). **SYN-121** (here) is the anti-regression guardrail: `scripts/lang_harness.py` + `scripts/lang_dataset.json` (FR/EN pairs, terse-weighted — Haiku's fragile spot) prove **0 FR regression** across a prompt change; `test_digest.py` was made language-agnostic (structural `## ` header assert, not a hardcoded FR label). Reflective-note drop it surfaced was **pre-existing** (SYN-123). Adding a language later = one UI translation file, no engine work.
 
 ### MCP tools (`mcp_server/server.py`)
 
@@ -330,7 +330,7 @@ FastAPI app for the mobile/desktop clients (run `python -m api`, port 8000), **~
 
 ### Embedding strategy
 
-**Fully local, no PyTorch, no API call.** Since SYN-111 the embedder runs **inside the Rust core** (`synapse_core.Embedder`, ONNX via fastembed-rs) with `paraphrase-multilingual-MiniLM-L12-v2` (384-dim, ~50 languages incl. French: set via `EMBEDDING_MODEL` in `config.py`). The model files are **data** in `~/.synapse/models/…` (not compiled in, not auto-downloaded), loaded once per process; vectors are bit-identical to the core's own internal embeds. `embeddings.py` is now a thin **shim**: `embed_text(text, client=None)` delegates to the core and returns an L2-normalized serialized vector; the `client` arg is ignored (kept for backward compat with the old API-based signature). Run `python reembed.py` after changing `EMBEDDING_MODEL` to regenerate existing vectors.
+**Fully local, no PyTorch, no API call.** Since SYN-111 the embedder runs **inside the Rust core** (`sinam_core.Embedder`, ONNX via fastembed-rs) with `paraphrase-multilingual-MiniLM-L12-v2` (384-dim, ~50 languages incl. French: set via `EMBEDDING_MODEL` in `config.py`). The model files are **data** in `~/.synapse/models/…` (not compiled in, not auto-downloaded), loaded once per process; vectors are bit-identical to the core's own internal embeds. `embeddings.py` is now a thin **shim**: `embed_text(text, client=None)` delegates to the core and returns an L2-normalized serialized vector; the `client` arg is ignored (kept for backward compat with the old API-based signature). Run `python reembed.py` after changing `EMBEDDING_MODEL` to regenerate existing vectors.
 
 Vectors are normalized so the sqlite-vec `vec0` **L2 distance** stays in [0, 2] and is monotonic with cosine: keeping the `score = 1 - distance/2` mapping valid. With this model, related notes land ~0.9 and unrelated ~1.4 (the visualizer edge threshold is 1.1).
 
@@ -340,7 +340,7 @@ Search is hybrid: vector k-NN via sqlite-vec first (no API key needed: embedding
 
 ### Database
 
-SQLite at `~/.synapse/synapse.db`, owned by the **Rust core** since SYN-110: the `synapse_core` wheel (built from the separate `synapse-core` repo, not on PyPI) bundles the ONLY SQLite library in the process, with sqlite-vec compiled in. Hard rule: never add a second SQLite binding (apsw, stdlib sqlite3) — same-process POSIX locks don't conflict across libraries, transactions interleave and the file gets corrupted (observed). Connection helpers (`get_connection`, `cursor_to_dicts`, `first_row`, `init_db`) live in `db/__init__.py`: `Connection`/`Cursor` keep the old apsw surface (`execute`, fetch, `with conn:` transactions with savepoints) over the core's SQL gateway. **The schema DDL lives in the core** (`crates/synapse-core/src/schema.rs`, same idempotent CREATE/ALTER discipline); `init_db()` just opens the core store (`core_store.get_store()`) and is called at MCP startup and at the top of the Dream Cycle. Vector reads/writes (vec0 KNN over notes, entity/resource embedding columns + similarity scans) go through the core `Storage` API — `entity_search.py` keeps its historical signatures on top. Core vector writes run on the core's own connection: never call them while a Python `with conn:` transaction is open (SQLITE_BUSY); the cycle defers them until after commit.
+SQLite at `~/.synapse/synapse.db`, owned by the **Rust core** since SYN-110: the `sinam_core` wheel (built from the separate `sinam-core` repo, not on PyPI) bundles the ONLY SQLite library in the process, with sqlite-vec compiled in. Hard rule: never add a second SQLite binding (apsw, stdlib sqlite3) — same-process POSIX locks don't conflict across libraries, transactions interleave and the file gets corrupted (observed). Connection helpers (`get_connection`, `cursor_to_dicts`, `first_row`, `init_db`) live in `db/__init__.py`: `Connection`/`Cursor` keep the old apsw surface (`execute`, fetch, `with conn:` transactions with savepoints) over the core's SQL gateway. **The schema DDL lives in the core** (`crates/sinam-core/src/schema.rs`, same idempotent CREATE/ALTER discipline); `init_db()` just opens the core store (`core_store.get_store()`) and is called at MCP startup and at the top of the Dream Cycle. Vector reads/writes (vec0 KNN over notes, entity/resource embedding columns + similarity scans) go through the core `Storage` API — `entity_search.py` keeps its historical signatures on top. Core vector writes run on the core's own connection: never call them while a Python `with conn:` transaction is open (SQLITE_BUSY); the cycle defers them until after commit.
 
 Tables:
 - `inbox`: raw captures; `processed_at` NULL until consumed. **`id` = TEXT uuid** (SYN-112): equals the client-generated `client_id` when provided, so `POST /capture` idempotency rides on the pk (the `client_id` UNIQUE index remains for the transition). `device_id`, `captured_at`, `status`

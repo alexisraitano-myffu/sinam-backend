@@ -1,5 +1,5 @@
 """
-Shared pytest fixtures for Synapse.
+Shared pytest fixtures for sinam.
 
 `isolated_db` points every DB helper at a fresh temp SQLite file so tests never
 touch the real ~/.synapse database and never leak state between tests.

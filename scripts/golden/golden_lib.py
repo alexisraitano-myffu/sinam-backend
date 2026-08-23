@@ -1,7 +1,7 @@
 """
 Golden-parity helpers (SYN-111 / T2).
 
-Normalizes a Synapse database into a comparable structure so two routing
+Normalizes a sinam database into a comparable structure so two routing
 implementations (current Python vs Rust core) can be diffed on a frozen
 corpus. Everything nondeterministic is canonicalized:
 
@@ -42,10 +42,10 @@ def _round(x):
 
 
 def normalize_db(db_path) -> dict:
-    """Load a Synapse SQLite file and return the normalized routing state."""
-    import synapse_core
+    """Load a sinam SQLite file and return the normalized routing state."""
+    import sinam_core
 
-    conn = synapse_core.connect(str(db_path))
+    conn = sinam_core.connect(str(db_path))
 
     def rows(sql):
         cols, data = conn.execute(sql)

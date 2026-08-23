@@ -77,16 +77,16 @@ THEMES = {
         ("Pâtes fraîches", "concept"), ("Four", "concept"), ("Thermomix", "concept"),
         ("Pain au levain", "concept"), ("Huile d'olive", "concept"),
     ],
-    "Synapse": [
-        ("Synapse", "project"), ("Kotlin", "concept"), ("Compose", "concept"),
+    "sinam": [
+        ("sinam", "project"), ("Kotlin", "concept"), ("Compose", "concept"),
         ("FastAPI", "concept"), ("SQLite", "concept"), ("Dream Cycle", "concept"),
-        ("Backend Synapse", "project"), ("App mobile", "project"), ("mDNS", "concept"),
+        ("Backend sinam", "project"), ("App mobile", "project"), ("mDNS", "concept"),
     ],
 }
 
 # explicit cross-theme bridges (serendipity edges)
 BRIDGES = [
-    ("Embeddings", "Backend Synapse", "utilisé_par"),
+    ("Embeddings", "Backend sinam", "utilisé_par"),
     ("Claude", "Dream Cycle", "alimente"),
     ("Anthropic", "Claude", "édite"),
     ("Marie", "Maman", "amie_de"),

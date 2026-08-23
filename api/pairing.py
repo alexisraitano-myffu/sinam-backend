@@ -3,7 +3,7 @@
 The member (a device already in the space, holding the data + token + optional
 key) shows a QR and, after the user approves, hands a joining device the
 secrets it needs to join the mesh. The cryptography lives in the Rust core
-(`synapse_core.PairingSession` / `pairing_*`, see `synapse-core/src/pairing.rs`):
+(`sinam_core.PairingSession` / `pairing_*`, see `sinam-core/src/pairing.rs`):
 this module is only the in-memory session state + the transport.
 
 Security model. The joiner endpoints (`/pair/request`, `/pair/result`) are
@@ -26,7 +26,7 @@ import threading
 import time
 import uuid
 
-from synapse_core import (
+from sinam_core import (
     CodePairing,
     PairingSession,
     pairing_code_confirm_verify,

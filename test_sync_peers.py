@@ -104,10 +104,10 @@ class _Resp:
 @pytest.fixture
 def peer(tmp_path_factory):
     """A second real core database standing in for the other Mac."""
-    import synapse_core
+    import sinam_core
     peer_dir = tmp_path_factory.mktemp("peer-home")
-    store = synapse_core.Storage(str(peer_dir / "synapse.db"))
-    gate = synapse_core.connect(str(peer_dir / "synapse.db"))
+    store = sinam_core.Storage(str(peer_dir / "synapse.db"))
+    gate = sinam_core.connect(str(peer_dir / "synapse.db"))
     return store, gate
 
 
@@ -407,7 +407,7 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     and the key. No token needed on the joiner endpoints."""
     import base64
     import json
-    from synapse_core import pairing_accept, pairing_offer_addrs, pairing_open
+    from sinam_core import pairing_accept, pairing_offer_addrs, pairing_open
 
     from api.sync_peers import claim_owner, ensure_space
     from core_store import get_store
@@ -454,7 +454,7 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
 def test_pairing_denied_and_key_optout(client, monkeypatch):
     import base64
     import json
-    from synapse_core import pairing_accept, pairing_open
+    from sinam_core import pairing_accept, pairing_open
 
     from api.sync_peers import claim_owner, ensure_space
     from core_store import get_store

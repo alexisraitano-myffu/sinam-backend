@@ -1,7 +1,7 @@
 """
 Database access, backed by the Rust core (SYN-110).
 
-The core (`synapse_core`) owns BOTH the schema and the only SQLite library in
+The core (`sinam_core`) owns BOTH the schema and the only SQLite library in
 the process. That single-library rule is not a style choice: two SQLite
 builds in one process (e.g. apsw + the core's bundled SQLite) do not see each
 other's POSIX locks — same-process advisory locks don't conflict — so their
@@ -21,7 +21,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import synapse_core
+import sinam_core
 
 from config import DB_PATH, EMBEDDING_DIM  # noqa: F401 — EMBEDDING_DIM re-exported
 
@@ -75,7 +75,7 @@ class Connection:
     """
 
     def __init__(self, db_path):
-        self._conn = synapse_core.connect(str(db_path))
+        self._conn = sinam_core.connect(str(db_path))
         self._txn_depth = 0
 
     def execute(self, sql: str, params=()) -> Cursor:
@@ -171,7 +171,7 @@ def first_row(cursor: Cursor) -> dict | None:
 def init_db() -> None:
     """Create/migrate the schema, now owned by the Rust core (SYN-110).
 
-    The DDL lives in synapse-core (`crates/synapse-core/src/schema.rs`), the
+    The DDL lives in sinam-core (`crates/sinam-core/src/schema.rs`), the
     exact port of the idempotent CREATE/ALTER sequence that used to live here.
     Opening the core store runs it; this wrapper keeps the historical call
     sites (MCP startup, Dream Cycle, tests) unchanged. Do NOT add DDL here —

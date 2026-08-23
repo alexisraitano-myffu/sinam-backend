@@ -135,9 +135,9 @@ def test_ephemeral_with_entities_still_captures_them(isolated_db, monkeypatch):
 
 def test_project_with_matching_entry_stays_project(isolated_db):
     _route({
-        "resolved_entities": [_entity("Synapse", type_="project")],
+        "resolved_entities": [_entity("sinam", type_="project")],
         "relations": [],
-        "project_entries": [{"project_canonical": "Synapse", "content": "...", "is_new": True}],
+        "project_entries": [{"project_canonical": "sinam", "content": "...", "is_new": True}],
     })
-    ents = _rows("SELECT type FROM entities WHERE canonical_name='Synapse'")
+    ents = _rows("SELECT type FROM entities WHERE canonical_name='sinam'")
     assert ents[0]["type"] == "project"

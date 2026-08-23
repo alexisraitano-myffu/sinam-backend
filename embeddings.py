@@ -1,7 +1,7 @@
 """
 Shared embedding logic used by both the Dream Cycle and the MCP server.
 
-Since SYN-111 the model runs inside the Rust core (`synapse_core.Embedder`,
+Since SYN-111 the model runs inside the Rust core (`sinam_core.Embedder`,
 ONNX runtime, fully offline): one model in memory for the whole process, and
 the vectors are bit-identical to the core's own internal embeds (merge
 fallback, note vectorization). The model files are DATA in

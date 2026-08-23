@@ -1,4 +1,4 @@
-"""Run the Synapse API: `python -m api` (uvicorn on 0.0.0.0:8000)."""
+"""Run the sinam API: `python -m api` (uvicorn on 0.0.0.0:8000)."""
 
 import os
 

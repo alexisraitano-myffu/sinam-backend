@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from core_store import get_store
 from db import get_connection, init_db
 
-app = FastAPI(title="Synapse Visualizer")
+app = FastAPI(title="sinam Visualizer")
 
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

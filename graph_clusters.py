@@ -3,7 +3,7 @@ SYN-70 — cluster labels (Haiku) + hulls for the living map.
 
 Each community on the map is a named, shaded region. Two pieces:
 
-- **Label**: a short human name ("Musique", "Stack Synapse") from Haiku, fed the
+- **Label**: a short human name ("Musique", "Stack sinam") from Haiku, fed the
   cluster's top entities. Cached in `cluster_labels` keyed by a stable signature
   of those *defining* entities (not the volatile community index) — so a label is
   reused as long as its characteristic entities do, and a single batched call

@@ -2,7 +2,7 @@
 
 **Dernière mise à jour : 20 août 2026**
 
-> **sinam s'appelait Synapse.** Le produit a été renommé le 20 août 2026 pour des
+> **sinam s'appelait sinam.** Le produit a été renommé le 20 août 2026 pour des
 > raisons juridiques. Il s'agit de la même application, éditée par la même
 > personne : rien de ce que dit ce document n'a changé avec le nom. Certains
 > identifiants techniques gardent l'ancien nom — l'identifiant d'installation
@@ -153,6 +153,6 @@ Toute évolution de cette politique sera publiée à cette adresse, avec une dat
 mise à jour. Un changement qui élargirait ce qui sort de tes appareils sera
 annoncé dans l'application.
 
-**20 août 2026** — le produit est renommé de Synapse en sinam. Aucun changement
+**20 août 2026** — le produit est renommé de sinam en sinam. Aucun changement
 dans ce qui est traité, ce qui sort des appareils, ni vers qui : seul le nom
 change.

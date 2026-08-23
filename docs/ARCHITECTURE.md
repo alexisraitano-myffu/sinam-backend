@@ -1,4 +1,4 @@
-# Synapse : Spec technique actuelle (prod)
+# sinam : Spec technique actuelle (prod)
 
 > Architecture réelle du système : ce qui tourne aujourd'hui. Les pistes restantes sont listées en §12, §13.
 
@@ -69,7 +69,7 @@ flowchart TD
     Entities --> Store
 ```
 
-Code : le moteur vit dans le **cœur Rust partagé `synapse-core`** (§2ter) ; [dream_cycle/cycle.py](../dream_cycle/cycle.py) est l'orchestrateur hôte (boucle, Batch API, day context, clé). Déclenché par la consolidation batchée (§2bis), `python -m dream_cycle`, ou le tool MCP `run_dream_cycle`.
+Code : le moteur vit dans le **cœur Rust partagé `sinam-core`** (§2ter) ; [dream_cycle/cycle.py](../dream_cycle/cycle.py) est l'orchestrateur hôte (boucle, Batch API, day context, clé). Déclenché par la consolidation batchée (§2bis), `python -m dream_cycle`, ou le tool MCP `run_dream_cycle`.
 
 **Résilience par entrée** : chaque entrée est traitée isolément. Une `anthropic.APIError` (clé absente/invalide, réseau) **avorte le run entier** et laisse les entrées en file pour un retry ; une erreur de contenu sur une entrée la marque `status='failed'` (raison dans `inbox.error`, exposée sur `/feed`) et le run continue.
 
@@ -88,9 +88,9 @@ Comme la consolidation du sommeil : la capture **bufferise** pendant la « journ
 
 ---
 
-## 2ter. Le cœur Rust partagé : `synapse-core` (SYN-96)
+## 2ter. Le cœur Rust partagé : `sinam-core` (SYN-96)
 
-Depuis l'epic SYN-96 (T1→T5), **le cerveau est compilé une seule fois** (repo public `synapse-core`, Apache-2.0) et consommé partout : ce backend via une wheel PyO3 (`synapse_core`), les apps mobiles via UniFFI — zéro divergence de logique entre plateformes, l'iPhone/Android route les captures **on-device** avec exactement ce moteur.
+Depuis l'epic SYN-96 (T1→T5), **le cerveau est compilé une seule fois** (repo public `sinam-core`, Apache-2.0) et consommé partout : ce backend via une wheel PyO3 (`sinam_core`), les apps mobiles via UniFFI — zéro divergence de logique entre plateformes, l'iPhone/Android route les captures **on-device** avec exactement ce moteur.
 
 Répartition :
 
@@ -335,7 +335,7 @@ Décisions verrouillées :
 
 ## 14. État d'implémentation & pistes restantes
 
-**Implémenté** : **cœur Rust partagé** `synapse-core` (SYN-96 T1→T5 : schéma + embeddings + classif + routing + decay + resummary/synthèse + digest + ressources, prompts en data, parité golden 224/224 ; desktop via wheel PyO3, mobile on-device via UniFFI) · **sync P2P multi-Mac** (SYN-112 : HLC + LWW par colonne, pull mesh, owner-lock) · Dream Cycle unifié (routing **non-exclusif**) · **two-timescale** working memory + consolidation batchée + Batch API (SYN-93) · création d'entités sur mention + garde-fou · **file « À valider »** unifiée (tâches, relations, attache-projet, types, fusions) · **faits vs relations** de-dup + gating + fiche bidirectionnelle · **owner/« moi »** + **PROJET-vs-TÂCHE** · embeddings locaux · `search_memory` notes + entités + ressources · carte vivante (Louvain + ForceAtlas2 + zones) · API HTTP **57 endpoints** + modèle de sync · **provenance inverse** (SYN-92) · **reprocess** d'une capture · **digest hebdo** (SYN-23, lundi 08h + self-heal) · **entités liées offline** (SYN-91) · client Anthropic + fuel proxy (SYN-105) · résilience par entrée · tests hors-ligne (verts).
+**Implémenté** : **cœur Rust partagé** `sinam-core` (SYN-96 T1→T5 : schéma + embeddings + classif + routing + decay + resummary/synthèse + digest + ressources, prompts en data, parité golden 224/224 ; desktop via wheel PyO3, mobile on-device via UniFFI) · **sync P2P multi-Mac** (SYN-112 : HLC + LWW par colonne, pull mesh, owner-lock) · Dream Cycle unifié (routing **non-exclusif**) · **two-timescale** working memory + consolidation batchée + Batch API (SYN-93) · création d'entités sur mention + garde-fou · **file « À valider »** unifiée (tâches, relations, attache-projet, types, fusions) · **faits vs relations** de-dup + gating + fiche bidirectionnelle · **owner/« moi »** + **PROJET-vs-TÂCHE** · embeddings locaux · `search_memory` notes + entités + ressources · carte vivante (Louvain + ForceAtlas2 + zones) · API HTTP **57 endpoints** + modèle de sync · **provenance inverse** (SYN-92) · **reprocess** d'une capture · **digest hebdo** (SYN-23, lundi 08h + self-heal) · **entités liées offline** (SYN-91) · client Anthropic + fuel proxy (SYN-105) · résilience par entrée · tests hors-ligne (verts).
 
 **Pistes restantes** :
 

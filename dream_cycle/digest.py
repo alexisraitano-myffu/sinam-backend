@@ -32,7 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import synapse_core
+import sinam_core
 
 from config import CLAUDE_MODEL
 from core_store import get_brain
@@ -60,7 +60,7 @@ def gather_week(conn, *, now: datetime | None = None, days: int = 7) -> dict:
 def _next_occurrence(event_date: str, recurring: bool, today: date) -> date | None:
     """Resolve an event's next concrete date (core logic; this shim keeps the
     historical date-object signature for the tests)."""
-    iso = synapse_core.next_occurrence(
+    iso = sinam_core.next_occurrence(
         event_date or "", bool(recurring), today.strftime("%Y-%m-%d"))
     return date.fromisoformat(iso) if iso else None
 
@@ -77,7 +77,7 @@ def has_content(week: dict) -> bool:
 # ── 2. Render to markdown (Haiku via the core) ────────────────────────────────────
 
 # SYN-23 : le prompt du digest est de la donnée (prompts/digest.md, repo
-# synapse-core, déployé dans ~/.synapse/prompts) — lu par le core.
+# sinam-core, déployé dans ~/.synapse/prompts) — lu par le core.
 
 def summarize_digest(week: dict, *, client=None) -> str:
     """Render the gathered week into French markdown via Haiku (core HTTP

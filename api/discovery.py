@@ -4,7 +4,7 @@ server without having to type an IP, and (SYN-112 T3) sibling Macs find each
 other for P2P sync. Publishes a `_synapse._tcp.local.` service from the
 FastAPI lifespan; mobile clients (NsdManager on Android, NetServiceBrowser on
 iOS) discover it and offer it as a one-tap pick in Settings. The browser
-keeps a live registry of OTHER Synapse instances (filtered by the sync
+keeps a live registry of OTHER sinam instances (filtered by the sync
 device_id we advertise) that the peer-sync loop pulls from.
 """
 
@@ -61,7 +61,7 @@ async def start_advertising(port: int | None = None) -> AsyncZeroconf | None:
         props["device_id"] = dev
     info = AsyncServiceInfo(
         type_=SERVICE_TYPE,
-        name=f"Synapse on {hostname}.{SERVICE_TYPE}",
+        name=f"sinam on {hostname}.{SERVICE_TYPE}",
         addresses=[socket.inet_aton(ip)],
         port=port,
         properties=props,
@@ -122,7 +122,7 @@ def _on_service_state_change(zeroconf, service_type, name, state_change) -> None
 
 
 async def start_browsing(azc: AsyncZeroconf | None) -> AsyncServiceBrowser | None:
-    """Watch the LAN for sibling Synapse instances (peer-sync candidates)."""
+    """Watch the LAN for sibling sinam instances (peer-sync candidates)."""
     if azc is None:
         return None
     try:

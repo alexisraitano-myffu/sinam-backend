@@ -963,7 +963,7 @@ def _b64(b: bytes) -> str:
 
 def test_code_pairing_full_flow(client):
     import base64
-    from synapse_core import CodePairing, pairing_code_confirm_mac, pairing_open
+    from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_open
 
     _fresh_pairing_state()
     code = client.post("/pair/offer-code").json()["code"]
@@ -1000,7 +1000,7 @@ def test_code_pairing_full_flow(client):
 
 def test_code_pairing_three_misses_kill_the_code(client):
     import base64
-    from synapse_core import CodePairing, pairing_code_confirm_mac
+    from sinam_core import CodePairing, pairing_code_confirm_mac
 
     _fresh_pairing_state()
     code = client.post("/pair/offer-code").json()["code"]

@@ -42,7 +42,7 @@ _SNAP_DIR = _REPO / "scripts" / "lang_snapshots"
 _TODAY = "2026-07-13"  # figé : rend la résolution des dates relatives reproductible
 _OWNER = "Alexis"
 
-# Prompt-as-data (SYN-111) : le classifieur est un .md versionné dans synapse-core,
+# Prompt-as-data (SYN-111) : le classifieur est un .md versionné dans sinam-core,
 # lu à l'exécution par le core (substitution de {today}). Le harnais teste CE fichier
 # directement — pas la wheel — pour rester utilisable sans toolchain Rust.
 _CORE_CLASSIFIER = Path(
@@ -312,7 +312,7 @@ def main() -> None:
     r.add_argument("--lang", choices=["fr", "en", "both"], default="both")
     r.add_argument("--label", required=True, help="nom du snapshot (ex: fr-before)")
     r.add_argument("--prompt", default=None,
-                   help="chemin du classifier.md à tester (défaut: synapse-core/prompts/classifier.md)")
+                   help="chemin du classifier.md à tester (défaut: sinam-core/prompts/classifier.md)")
     r.set_defaults(func=cmd_run)
     c = sub.add_parser("compare", help="diffe deux snapshots")
     c.add_argument("before")

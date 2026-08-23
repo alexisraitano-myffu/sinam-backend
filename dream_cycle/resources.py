@@ -16,14 +16,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import synapse_core
+import sinam_core
 
 from core_store import get_brain
 
 
 def extract_urls(text: str) -> list[str]:
     """All http(s) URLs in a capture, de-duplicated, order-preserving."""
-    return list(synapse_core.extract_urls(text or ""))
+    return list(sinam_core.extract_urls(text or ""))
 
 
 class _TextExtractor:
@@ -37,7 +37,7 @@ class _TextExtractor:
         self._html.append(html)
 
     def _page(self) -> dict:
-        return json.loads(synapse_core.extract_page("".join(self._html)))
+        return json.loads(sinam_core.extract_page("".join(self._html)))
 
     @property
     def title(self) -> str:
@@ -51,7 +51,7 @@ class _TextExtractor:
 def fetch_and_extract(url: str, *, timeout: float = 10.0) -> dict | None:
     """GET the URL and return {title, text}. None on any network/parse failure
     (the caller treats a fetch miss as non-fatal)."""
-    raw = synapse_core.fetch_and_extract(url, timeout)
+    raw = sinam_core.fetch_and_extract(url, timeout)
     return json.loads(raw) if raw else None
 
 

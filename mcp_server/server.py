@@ -80,7 +80,7 @@ def _search_resources(query_vec: bytes, limit: int, conn) -> list[dict]:
 # ── MCP Server ────────────────────────────────────────────────────────────────
 
 mcp = FastMCP(
-    "Synapse",
+    "sinam",
     instructions="Your personal semantic memory — store, search and recall knowledge.",
 )
 
@@ -88,7 +88,7 @@ mcp = FastMCP(
 @mcp.tool()
 def add_to_inbox(content: str, source: str = "manual") -> str:
     """
-    Add a raw piece of information to the Synapse inbox.
+    Add a raw piece of information to the sinam inbox.
 
     The Dream Cycle will later clean, deduplicate and vectorise this entry.
     Use this for quick captures: thoughts, meeting snippets, web clippings.
@@ -263,7 +263,7 @@ def get_entity(name: str) -> str:
     Search an entity by canonical name or alias.
 
     Returns the entity's facts (predicates + values + confidence) and
-    outgoing relations. Useful to inspect what Synapse knows about a person,
+    outgoing relations. Useful to inspect what sinam knows about a person,
     place, or concept.
 
     Args:

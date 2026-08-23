@@ -4,7 +4,7 @@ Shared semantic search over the entity graph (SYN-60).
 Entity embeddings live as raw float32 BLOBs in `entities.embedding`. Entity ids
 are UUID strings, so they can't share the int-rowid `vec0` table used for
 `atomic_notes`; similarity is an exact linear scan (sub-millisecond at personal
-scale). Since SYN-110 the scan runs inside the Rust core (`synapse_core`,
+scale). Since SYN-110 the scan runs inside the Rust core (`sinam_core`,
 `Storage.search_entities` / `search_resources`) with the exact same candidate
 filters and scoring; this module keeps the historical signatures so every
 caller — MCP `search_memory`, merge V2 (SYN-61), semantic suggestions (SYN-62)

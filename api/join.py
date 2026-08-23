@@ -20,7 +20,7 @@ import time
 
 import requests
 
-from synapse_core import CodePairing, pairing_code_confirm_mac, pairing_open
+from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_open
 
 from db import get_connection
 

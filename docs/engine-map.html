@@ -137,7 +137,7 @@ aside pre {
 <body>
 <header>
   <h1>sinam · Engine Map</h1>
-  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot 2026-07-09 (SYN-96 : le moteur décrit ici vit dans le cœur Rust <code>sinam-core</code> — routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs ; comportement inchangé, golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur ; les prompts sont de la donnée dans <code>~/.synapse/prompts/</code>).</span>
+  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot <b>2026-08-23</b> (SYN-96 : le moteur décrit ici vit dans le cœur Rust <code>sinam-core</code> : routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs ; comportement golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur. Les prompts sont de la donnée, jeu <b>v17</b>, déployés dans <code>~/.synapse/prompts/</code> et recopiés sur chaque surface. <b>Depuis SYN-171 le Step 1 est en deux appels</b> : <code>classifier-note.md</code> + <code>classifier-graph.md</code>).</span>
 </header>
 <nav class="tabs">
   <button data-tab="pipeline" class="active">Pipeline Dream Cycle</button>
@@ -157,7 +157,7 @@ flowchart TD
 
   subgraph CYCLE["Dream Cycle (par capture)"]
     direction TB
-    step1["Lecture & classification IA<br/><span style='font-size:11px;opacity:.7'>Step 1 · Claude Haiku 4.5</span>"]:::llm
+    step1["Lecture & classification IA<br/><span style='font-size:11px;opacity:.7'>Step 1 · 2 appels Haiku 4.5 · fusion dans le core</span>"]:::llm
     step1 --> step2["Résolution d'entités<br/><span style='font-size:11px;opacity:.7'>Step 2 · match nom + alias</span>"]:::compute
     step1 -. "exit ephémère" .-> intentions["Intentions courtes<br/><span style='font-size:11px;opacity:.7'>TTL : pas de mémoire long-terme</span>"]:::store
 
@@ -279,12 +279,24 @@ flowchart LR
     m_cluster_labels["cluster_labels<br/>label Haiku cache"]:::carte
   end
 
+  subgraph WEB["Ressources web SYN-21"]
+    m_resources["resources<br/>URL fetchee + resume + embedding"]:::note
+  end
+
+  subgraph MULTI["Multi-appareils et exploitation"]
+    m_space["space + devices<br/>SYN-127 singleton replique"]:::source
+    m_sync["sync_log + sync_owner<br/>SYN-112 HLC, LWW par colonne"]:::source
+    m_usage["llm_usage<br/>SYN-160 une ligne par appel"]:::source
+    m_events["validation_events + cycle_runs<br/>journal append-only"]:::source
+  end
+
   m_inbox -- "1:N provenance" --> m_entities
   m_inbox -- "1:N provenance" --> m_facts
   m_inbox -- "1:N provenance" --> m_relations
   m_inbox -- "1:N provenance" --> m_atomic_notes
   m_inbox -- "1:N" --> m_project_entries
   m_inbox -. "si ephemeral" .-> m_intentions
+  m_inbox -. "si URL detectee" .-> m_resources
 
   m_entities -- "1:N owns" --> m_facts
   m_entities -- "from + to" --> m_relations
@@ -481,7 +493,10 @@ const DETAILS = {
         à l'aveugle. Le bloc <b>ne produit rien</b> : seule la capture courante génère des sorties.` },
       { h: "Batch API vs synchrone", body: `La passe planifiée classifie tout le lot via la Message
         Batches API (<span class="var no-val" data-var="_batch_classify (submit → poll → results)">_batch_classify</span>,
-        -50 % sur la classification), même prompt que la voie synchrone (<code>_classify_params</code>). Best-effort :
+        -50 % sur la classification), mêmes prompts que la voie synchrone (<code>_classify_params(entry, conn, day_context, half)</code>).
+        Depuis SYN-171 elle soumet <b>deux requêtes par capture</b> : <code>e{id}#note</code> et <code>e{id}#graph</code>.
+        Une capture à qui il manque une moitié <b>n'est pas à moitié classée</b> : elle repart en synchrone, parce
+        qu'écrire un demi-résultat perdrait tout le graphe en silence. Best-effort :
         tout échec submit/poll retombe en classify synchrone. <code>SYNAPSE_CYCLE_DEBOUNCE_SECONDS</code> est
         désormais <em>legacy/inutilisé</em>.` },
       { h: "Trigger manuel", body: `Appeler <code>POST /dream-cycle/run</code> bypass la planification (override on-demand) mais respecte le verrou.` },
@@ -490,19 +505,64 @@ const DETAILS = {
   step1: {
     title: "Lecture & classification IA",
     tags: ["LLM"],
-    ref: "core llm.rs::classify · prompts/classifier.md (orchestré par dream_cycle/cycle.py)",
+    ref: "core llm.rs::classify + merge_halves · prompts/classifier-note.md + classifier-graph.md (orchestré par dream_cycle/cycle.py)",
     body: `
-      <p>Un appel à Claude par capture qui retourne un JSON structuré : quelles entités sont
-      mentionnées, quels faits, quelles relations, est-ce une réflexion, est-ce un compte-rendu
-      projet, est-ce une intention courte. Les règles du prompt sont mises en cache pour les
-      captures suivantes (~5× moins de tokens facturés).</p>
+      <p><b>Deux appels à Claude par capture</b> depuis SYN-171 (2026-08-21), fusionnés dans le core.
+      Ensemble ils rendent un seul JSON structuré : quelles entités sont mentionnées, quels faits,
+      quelles relations, est-ce une réflexion, une tâche, un événement, un vécu, un compte-rendu
+      projet, une intention courte.</p>
+      <p>Le prompt unique faisait porter à une seule sortie <b>deux décisions qui se concurrencent</b> :
+      router la capture, et extraire le graphe. L'invariant « la note n'est jamais absorbée par les
+      faits » devait être martelé à quatre endroits, et sautait dès qu'on compactait le prompt.
+      Découpé, il devient <b>structurel</b> : l'appel graphe n'a pas de champ <code>atomic_note</code>,
+      il ne peut pas le mettre à <code>null</code>.</p>
     `,
     sections: [
+      { h: "Les deux moitiés (SYN-171)", body: `
+        <table class="fn-table">
+          <tr><th>Moitié</th><th>Décide</th><th>Champs</th></tr>
+          <tr><td class="technical"><span class="var no-val" data-var="prompts/classifier-note.md">note</span></td>
+              <td class="functional">le routage et la prose</td>
+              <td>atomic_note · atomic_note_kind · atomic_note_owner · event_date · event_recurring · is_ephemeral · classification_confidence</td></tr>
+          <tr><td class="technical"><span class="var no-val" data-var="prompts/classifier-graph.md">graphe</span></td>
+              <td class="functional">ce que la capture apprend du monde</td>
+              <td>entities · facts · relations · project_entries</td></tr>
+        </table>
+        <p>La fusion vit <b>dans le core</b> (<span class="var no-val" data-var="llm::merge_halves">merge_halves</span>),
+        jamais côté hôte : deux copies d'une règle de fusion dérivent, et la dérive serait muette
+        (chaque moitié possède ses propres clés, une mauvaise fusion perd des champs sans lever).
+        <b>Une moitié ne reçoit que ce qu'elle peut écrire</b> : le vocab de types actif et le contexte
+        projets ne vont qu'à la moitié graphe. <code>classifier.md</code> reste comme repli documenté
+        et référence de taille, le core ne le lit plus.</p>
+        <p><b>Mesuré</b> sur les 61 cas du harnais (Haiku, t=0) : routage <b>identique 61/61</b> face à la
+        baseline de l'appel unique, 40 notes des deux côtés, aucun kind invalide.</p>` },
+      { h: "⚠ Deux effets de bord du découpage", body: `
+        <p><b>1. La moitié graphe sur-extrait</b> si rien ne l'en empêche. Libérée de la concurrence avec
+        la note, elle est passée de 19 à 43 faits, dont « pain », « true » et un fait sur une négation.
+        D'où la règle de sobriété en tête de <code>classifier-graph.md</code> : la liberté accordée porte
+        sur la <b>suppression</b>, pas sur le <b>volume</b>, et <code>"facts": []</code> est la bonne
+        réponse par défaut.</p>
+        <p><b>2. Le cache de prompt ne prend plus.</b> Haiku ne met en cache un préfixe système
+        qu'<b>au-dessus de 4096 tokens</b> : l'appel unique (~5000) était caché, les deux moitiés
+        (~2900 et ~2400) ne le sont plus. C'est une <b>falaise, pas une pente</b> : grossir une moitié
+        au-delà du seuil coûte <b>moins</b> cher que la laisser juste en dessous. À l'échelle réelle
+        (~100 captures/mois) l'écart mesuré est d'environ 0,20 $/mois.</p>` },
+      { h: "⚠ Un prompt ne se livre pas tout seul", body: `Un prompt est de la <b>donnée recopiée sur
+        chaque surface</b> : <code>~/.synapse/prompts/</code> sur chaque machine hôte, les <b>assets</b>
+        de l'app Android et iOS (qui embarquent leur propre cœur), et le <b>backend bundlé</b> du .dmg /
+        de l'installeur Windows. Éditer le repo <code>sinam-core</code> ne le livre <b>nulle part</b>.
+        Version du jeu : <span class="var no-val" data-var="prompts/manifest.json">v17</span>.` },
       { h: "Modèle utilisé", body: `<span class="var" data-var="CLAUDE_MODEL" data-val="claude-haiku-4-5-20251001">Claude Haiku 4.5</span>
-        · longueur de sortie max <span class="var no-val" data-var="max_tokens=4096 (SYN-78)">4096 tokens</span>` },
+        · longueur de sortie max <span class="var no-val" data-var="max_tokens=4096 (SYN-78)">4096 tokens</span>
+        · le cœur est <b>provider-agnostique</b> (SYN-150/155 : Anthropic, OpenAI-compatible, ou un backend
+        on-device fourni en callback), la réponse étant toujours renormalisée à la forme Anthropic
+        · chaque appel écrit sa consommation (<span class="var no-val" data-var="core usage.rs (SYN-160)">usage.rs</span>)` },
       { h: "Sorties possibles (toutes coexistent)", body: `
         <ul>
-          <li><b>Réflexion libre</b> : pensée à mémoriser <span class="var no-val" data-var="atomic_note (string|null)">·</span></li>
+          <li><b>Réflexion libre</b> : pensée à mémoriser <span class="var no-val" data-var="atomic_note (string|null) · kind=note">·</span></li>
+          <li><b>Tâche</b> ou <b>événement daté</b> <span class="var no-val" data-var="kind=task|event · event_date · event_recurring">·</span></li>
+          <li><b>Épisode vécu</b> (SYN-171) : ce qui a eu lieu, gardé mais décroissant plus vite qu'une note <span class="var no-val" data-var="kind=episode">·</span></li>
+          <li><b>À qui appartient l'action</b> (SYN-182) : NULL = l'auteur, sinon le nom de la personne <span class="var no-val" data-var="atomic_note_owner">·</span></li>
           <li><b>Rattachement projet</b> : un ou plusieurs <span class="var no-val" data-var="project_entries[] (SYN-57)">·</span></li>
           <li><b>Entités + faits</b> : graphe de connaissance <span class="var no-val" data-var="entities[] + facts[] par entité">·</span></li>
           <li><b>Relations entre entités</b> <span class="var no-val" data-var="relations[]">·</span></li>
@@ -541,7 +601,19 @@ const DETAILS = {
       { h: "Confiance de routage (« À valider »)", body: `Le classifier émet
         <span class="var no-val" data-var="classification_confidence (0 à 1)">classification_confidence</span> :
         1.0 = sans ambiguïté, < 0.6 = il hésite. En cas de doute « durable vs éphémère » il choisit
-        <code>task</code> et baisse la confiance plutôt que de jeter → la tâche part en « À valider » (voir Tri).` },
+        <code>task</code> et baisse la confiance plutôt que de jeter → la tâche part en « À valider » (voir Tri).
+        Depuis SYN-182 la porte couvre aussi l'<b>épisode</b>, et le motif du doute voyage avec la ligne
+        (<span class="var no-val" data-var="atomic_notes.review_reason">review_reason</span>) : sans lui, la file
+        mélangerait « je ne suis pas sûr de la date » et « je ne suis pas sûr que ça mérite d'exister ».` },
+      { h: "Une table de décision, plus une prose de règles (SYN-171)", body: `La moitié note est écrite
+        comme une <b>porte</b> (ce qui ne mérite aucune note) suivie de <b>lignes ordonnées</b>, et non
+        plus comme des paragraphes de règles qui se contredisaient. Trois arbitrages produit y sont
+        inscrits : un équipement durable implique un choix et un prix, donc une vraie tâche (la micro-course
+        à 48 h ne couvre que le consommable) ; un <b>ressenti n'est pas un accomplissement</b>, sinon
+        « une course qui fait du bien » devenait un épisode ; et « corvée » était le mauvais mot pour une
+        séance de sport, remplacé par l'activité routinière solitaire. Aucune règle de <b>récurrence</b>
+        n'est écrite en prose : le routage l'impose structurellement, jamais une répétition annuelle
+        décidée par un modèle.` },
     ],
   },
   intentions: {
@@ -1093,19 +1165,29 @@ summary_md, entry_count, trigger, kind, created_at</pre>` },
 entities_mentioned JSON (liste de canonical_name),
 memory_strength, last_reactivated_at (SYN-19),
 kind, event_date, event_recurring, archived_at (SYN-85),
-review_status (2026-06-29), provenance_capture_id, created_at, updated_at</pre>` },
-      { h: "« À valider » (review_status, 2026-06-29)", body: `Une tâche/événement dont le classifier
-        n'est pas sûr (<code>classification_confidence</code> &lt;
-        <span class="var" data-var="SYNAPSE_REVIEW_CONFIDENCE_THRESHOLD" data-val="0.7">0.7</span>) est écrite
-        <code>review_status='pending'</code> (défaut <code>'confirmed'</code>) au lieu d'être jetée.
+review_status (2026-06-29), review_reason (SYN-182), owner (SYN-182),
+language (SYN-119), provenance_capture_id, created_at, updated_at</pre>` },
+      { h: "« À valider » (review_status, 2026-06-29 · étendu SYN-182)", body: `Une tâche, un événement
+        ou un <b>épisode</b> dont le classifier n'est pas sûr (<code>classification_confidence</code> &lt;
+        <span class="var" data-var="SYNAPSE_REVIEW_CONFIDENCE_THRESHOLD" data-val="0.7">0.7</span>) est écrit
+        <code>review_status='pending'</code> (défaut <code>'confirmed'</code>) au lieu d'être jeté.
         Les pending sont <b>cachées de toutes les lectures</b> (/atomic-notes, /graph, digest) et ne
         remontent que via <code>GET /atomic-notes?review_status=pending</code> ;
-        <code>POST /atomic-note/{id}/confirm</code> promeut, reject = <code>/archive</code>.` },
+        <code>POST /atomic-note/{id}/confirm</code> promeut, reject = <code>/archive</code>.
+        <p><b>Le motif voyage avec la ligne</b> (<code>review_reason</code>) : la file portait un seul sens
+        (« je ne suis pas sûr de la date »), l'étendre à l'épisode lui en ajoute un second (« je ne suis
+        pas sûr que ça mérite d'exister »), et deux sens sans motif rendraient la file inutilisable.
+        Une <b>récurrence annuelle</b> posée hors d'un événement sûr passe par la même file : jamais de
+        répétition décidée par un modèle. Mesuré sur 27 baselines, la porte élargie n'ajoute
+        <b>aucune ligne</b> aux prompts actuels : la décision est correcte et pour l'instant inerte,
+        parce que le prompt ne demande de douter que sur deux frontières.</p>` },
       { h: "Natures de note (SYN-85 / SYN-23)", body: `
         <ul>
           <li><span class="var no-val" data-var="kind='note'">réflexion</span> : pensée libre (défaut).</li>
           <li><span class="var no-val" data-var="kind='task'">tâche</span> : chose à <b>faire</b>, retrouvable ; peut porter une <span class="var no-val" data-var="event_date sur kind=task (SYN-23)">échéance</span> sans devenir un événement.</li>
           <li><span class="var no-val" data-var="kind='event'">événement</span> : occurrence qui <b>se produit</b> à une date (<span class="var no-val" data-var="event_date absolue + event_recurring">date absolue, récurrence annuelle</span>).</li>
+          <li><span class="var no-val" data-var="kind='episode' (SYN-171)">épisode</span> : un <b>vécu</b> qui affirme que quelque chose a eu lieu (« j'ai déjeuné avec Manon »). Ni pensée durable, ni tâche : <b>gardé mais décroissant plus vite</b> qu'une note, jamais supprimé. Un <b>ressenti n'est pas un accomplissement</b>. Depuis SYN-182 il <span class="var no-val" data-var="dated = event|task|episode">garde sa date</span> : « notre rencontre était le 18 avril » perdait son <code>event_date</code> à l'insertion, détruisant l'anniversaire avant qu'aucune règle de récurrence n'ait pu jouer.</li>
+          <li><span class="var no-val" data-var="atomic_notes.owner (SYN-182)">à qui c'est</span> : <code>owner</code> NULL = l'auteur, sinon le nom de la personne dont l'action est rapportée. Depuis SYN-85 le prompt promettait qu'une action rapportée n'atterrit « jamais comme celle de l'auteur » : rien ne portait cette promesse, elle était <b>inexprimable</b> tant que le stockage ne savait pas la représenter. Le digest filtre dessus.</li>
           <li><span class="var no-val" data-var="kind='digest' (SYN-23)">digest</span> : synthèse hebdo générée par un job à part (<span class="var no-val" data-var="core digest.rs (shim dream_cycle/digest.py) · LaunchAgent lundi 08h + auto-heal _ensure_weekly_digest">cron hebdo</span> : rétro semaine + « à venir », rendu <span class="var no-val" data-var="Haiku · règle intemporelle (dates absolues)">Haiku intemporel</span>, idempotent par semaine ISO ; <span class="var no-val" data-var="POST /digest/run · GET /digest/latest">endpoints</span>). Exclu de la carte (sinon hairball).</li>
         </ul>
         <span class="var no-val" data-var="archived_at (POST /atomic-note/{id}/archive|unarchive)">« rendre obsolète »</span> masque sans détruire (réversible).

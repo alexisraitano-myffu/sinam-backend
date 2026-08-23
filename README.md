@@ -26,7 +26,7 @@ sinam is built to run **on any machine you own**. The **brain** — classificati
 ```
 Capture -> inbox --(batched "sleep" consolidation)--> Dream Cycle
     |-- fact      -> entities / facts / relations           (semantic memory)
-    |-- episodic  -> atomic_notes (note | task | event | digest)  (episodic memory)
+    |-- episodic  -> atomic_notes (note | task | event | episode | digest)  (episodic memory)
     |-- ephemeral -> intentions (48h TTL)
     |-- any URL   -> fetch + summarize -> resources (searchable)
                                 |
@@ -35,11 +35,17 @@ Capture -> inbox --(batched "sleep" consolidation)--> Dream Cycle
 
 Routing is **non-exclusive**: one capture can produce entities, an atomic note, a project entry, an intention and a resource at once.
 
-The pipeline logic — classify, resolve, score, route, behavioral-validate, vectorize, then a decay pass — lives **once in the Rust core** (`sinam-core`); `dream_cycle/cycle.py` is the thin host orchestrator that drives the core and persists what it returns. Each entry is processed in isolation (a content error fails only that entry; an API error aborts the run and re-queues everything).
+The pipeline logic (classify, resolve, score, route, behavioral-validate, vectorize, then a decay pass) lives **once in the Rust core** (`sinam-core`); `dream_cycle/cycle.py` is the thin host orchestrator that drives the core and persists what it returns. Classification itself is **two independent LLM calls per capture** since SYN-171, merged inside the core (see below). Each entry is processed in isolation (a content error fails only that entry; an API error aborts the run and re-queues everything).
 
 ## Core ideas
 
 - **Two timescales, like sleep consolidation (SYN-93).** Captures buffer during the "day"; consolidation runs in a batched "sleep" pass, either twice daily (`SYNAPSE_CONSOLIDATION_HOURS`, default midnight and noon) or when a size valve trips (`SYNAPSE_CONSOLIDATION_MAX_QUEUED`, default 30). A **working-memory** context (a read-only transcript of the batch plus the last 24h) lets the classifier resolve coreference ("he", "that project", "yesterday") *across* captures. The scheduled pass uses the **Message Batches API** for roughly half the cost, and a startup/wake catch-up recovers a slot missed while the machine slept.
+
+- **The prompts are data, and the classifier is two calls (SYN-171).** Prompts are not compiled in and not hardcoded here: they are versioned files in the [`sinam-core`](https://github.com/alexisraitano-myffu/sinam-core) repo, deployed to `~/.synapse/prompts/` (override `SYNAPSE_PROMPTS_DIR`), read at runtime. Edit and restart, no rebuild. Classification is split in two: `classifier-note.md` decides the routing and writes the prose (note kind, owner, dates, confidence), `classifier-graph.md` extracts the graph (entities, facts, relations, projects). The halves are deliberately independent, so the graph call *cannot* absorb the note: it has no `atomic_note` field. The **core** merges them (`merge_halves`), never the host, and the Batch API path submits two requests per capture (`e{id}#note`, `e{id}#graph`); a capture missing a half is not half-written, it is retried in full. Measured on the 61-case harness: routing identical 61/61 versus the single call. Cost caveat: Haiku caches a system prefix only above 4096 tokens, and both halves sit below it.
+
+- **One brain, many languages (SYN-119).** The prompts are EN-base: the skeleton is English, the output follows the capture's language and is never translated. Only the interlingua stays English (note kinds, entity types, predicates, categories). The classifier emits an ISO 639-1 `language` field, so detection needs no extra call and no extra dependency. Entity summaries, which cannot infer a language from English predicates and proper nouns, take a deterministic majority vote over the notes.
+
+- **What each call costs is recorded (SYN-160).** The core writes one row per LLM call, keeping the four token buckets apart because they are priced differently, and never aggregating at write time. The rows replicate like any other table, so a two-device space sums real spending without double counting.
 
 - **Entities on mention, facts on confidence.** An **entity** is created the moment it is mentioned (if it clears `MIN_ENTITY_PERSISTENCE` or appears in a relation). Its **facts** are confidence-scored from an evidence base (explicit 0.92, hedged 0.65, implicit 0.40, plus bonuses) and are then either consolidated (above 0.85), queued for validation (0.5 to 0.85), or sent to a review queue. Each fact carries a thematic **category** so clients can group long lists.
 
@@ -47,7 +53,7 @@ The pipeline logic — classify, resolve, score, route, behavioral-validate, vec
 
 - **A relation is the canonical form of a fact about two entities.** "Audric is Alexis's cousin" yields a single traversable relation (visible on *both* fiches via `relations` and `relations_incoming`), not a duplicated fact, with a defensive de-dup in routing. Relations are confidence-gated like tasks. Serendipity (embedding proximity) runs on a separate channel and is untouched by this.
 
-- **Notes have kinds.** Free reflections, retrievable **tasks** (deliberately no due-date or checkbox: memory decay forgets them, a one-tap archive dismisses them, and a task *may* carry an optional `event_date`), dated **events** (absolute dates, yearly recurrence), and weekly **digests**.
+- **Notes have kinds.** Free reflections, retrievable **tasks** (deliberately no due-date or checkbox: memory decay forgets them, a one-tap archive dismisses them, and a task *may* carry an optional `event_date`), dated **events** (absolute dates, yearly recurrence), lived **episodes** (SYN-171: something that actually happened, kept but fading faster than a note, and allowed to carry its own date so a "we first met on 18 April" survives insertion), and weekly **digests**. A note also records **who** it belongs to (`owner`, NULL meaning the author), so a reported action never lands in your own task list.
 
 - **Graceful forgetting (SYN-19/68).** `memory_strength = exp(-Δdays/τ)` (τ default 30d) is recomputed for both notes and entities; a new mention is a strong reactivation, a search hit a light one.
 
@@ -115,7 +121,7 @@ python -m dream_cycle.digest         # --dry-run to preview
 
 ## HTTP API
 
-Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **57 endpoints**; the frozen contract is [`openapi.json`](openapi.json). Highlights:
+Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **68 endpoints**; the frozen contract is [`openapi.json`](openapi.json). Highlights:
 
 - **Capture / inbox:** `POST /capture` (idempotent on a client UUID), `GET /feed` (includes the per-entry failure reason), `POST /inbox/{id}/requeue`, `POST /inbox/{id}/reprocess` (replay one capture through the cycle after a prompt fix; keeps entities).
 - **Graph / living map:** `GET /graph` with opt-in layers (atomic-note nodes, Louvain clusters, ForceAtlas2 positions, labelled regions, anti-hairball filters).
@@ -133,9 +139,9 @@ Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **57 endpoints**;
 
 ## Configuration
 
-`config.py`: `SYNAPSE_HOME` (DB location, default `~/.synapse`), `EMBEDDING_MODEL` (local), `CLAUDE_MODEL` (Dream Cycle reasoning, Haiku). The cycle also reads `SYNAPSE_API_TOKEN`, `SYNAPSE_API_PORT`, `SYNAPSE_AUTO_CYCLE`, `SYNAPSE_CONSOLIDATION_HOURS` (`"0,12"`), `SYNAPSE_CONSOLIDATION_MAX_QUEUED` (30), `SYNAPSE_REVIEW_CONFIDENCE_THRESHOLD` (0.7), `SYNAPSE_DECAY_TAU_DAYS` (30), `SYNAPSE_MERGE_EMBEDDING_THRESHOLD` (0.85).
+`config.py`: `SYNAPSE_HOME` (DB location, default `~/.synapse`), `EMBEDDING_MODEL` (local), `CLAUDE_MODEL` (Dream Cycle reasoning, Haiku). The cycle also reads `SYNAPSE_PROMPTS_DIR` (where the deployed prompts live, default `~/.synapse/prompts`), `SYNAPSE_API_TOKEN`, `SYNAPSE_API_PORT`, `SYNAPSE_AUTO_CYCLE`, `SYNAPSE_CONSOLIDATION_HOURS` (`"0,12"`), `SYNAPSE_CONSOLIDATION_MAX_QUEUED` (30), `SYNAPSE_REVIEW_CONFIDENCE_THRESHOLD` (0.7), `SYNAPSE_DECAY_TAU_DAYS` (30), `SYNAPSE_MERGE_EMBEDDING_THRESHOLD` (0.85).
 
-**Anthropic client and fuel proxy.** `anthropic_client.py` is the single place that builds the client. A normal `sk-ant-…` key calls Anthropic directly. A beta **fuel token** (`syn-fuel-…`) routes through a Cloudflare Worker proxy so closed-beta testers can borrow the maintainer's credits without holding a key; the real key lives only on the Worker. Override the proxy with `SYNAPSE_FUEL_BASE_URL` (empty to disable). The whole cycle runs on Haiku.
+**Anthropic client and fuel proxy.** `anthropic_client.py` is the single place that builds the client. A normal `sk-ant-…` key calls Anthropic directly. A beta **fuel token** (`syn-fuel-…`) routes through a Cloudflare Worker proxy so closed-beta testers can borrow the maintainer's credits without holding a key; the real key lives only on the Worker. Override the proxy with `SYNAPSE_FUEL_BASE_URL` (empty to disable). The whole cycle runs on Haiku on this host. The core itself is provider-agnostic (SYN-150/155): it also speaks the OpenAI-compatible wire dialect, and accepts an on-device backend passed in as a callback, always normalizing the reply back to one Anthropic-shaped response.
 
 ## Tests
 

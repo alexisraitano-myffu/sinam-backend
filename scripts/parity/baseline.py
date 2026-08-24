@@ -21,7 +21,7 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
-from scripts.parity import context, providers  # noqa: E402
+from scripts.parity import context, providers, score  # noqa: E402
 from scripts.parity.corpus import (  # noqa: E402
     ADVERSARIAL_CASES, ATOMICITY_CASES, GATE_CASES, HARD_CASES,
 )
@@ -44,6 +44,33 @@ SETS = {
 DIFFED = ("has_note", "kind", "ephemeral", "facts", "relations", "projects")
 
 
+def _frontiere(case: dict, ecart: str) -> str:
+    """Rattacher un écart à la frontière qu'il concerne.
+
+    On lit le NOM DE L'AXE en tête de l'écart plutôt que d'annoter chaque cas à
+    la main : une étiquette recopiée à côté d'une assertion finit toujours par la
+    contredire, et c'est alors elle qu'on croit.
+    """
+    for axe, frontiere in score.AXES.items():
+        if ecart.startswith(axe) or ecart.startswith(f"{axe} attendu"):
+            return frontiere
+    if ecart.startswith("atomicité"):
+        return score.AXES["facts_min"]
+    if ecart.startswith("relation"):
+        return score.AXES["rel"]
+    if ecart.startswith("entrée projet"):
+        return score.AXES["proj"]
+    if ecart.startswith("entité"):
+        return score.AXES["entity_expected"]
+    if ecart.startswith("valeur inventée"):
+        return score.AXES["forbidden_value"]
+    if ecart.startswith("prédicat interdit"):
+        return score.AXES["forbidden_predicate"]
+    if "À valider" in ecart:
+        return score.AXES["needs_review"]
+    return "autre"
+
+
 def cmd_run(args) -> int:
     system = context.classifier_system(Path(args.prompt) if args.prompt else None)
     fp = context.fingerprint(system)
@@ -57,21 +84,47 @@ def cmd_run(args) -> int:
     out: dict = {"model": args.model, "fingerprint": fp, "label": args.label,
                  "schema_constrained": bool(schema),
                  "temperature": args.temperature, "cases": {}}
+    ecarts = 0
+    par_frontiere: dict[str, list[str]] = {}
+    joues = 0
     for set_name in sets:
         for case in SETS[set_name]:
+            joues += 1
             reply = providers.call(args.model, system, case["text"],
                                    context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
                                    args.temperature)
             parsed = context.parse_classify(reply.text, reply.stop_reason)
             rec = path_of(parsed)
+            gaps = score.gaps(case, parsed)
             rec.update(set=set_name, text=case["text"], latency_s=reply.latency_s,
                        confidence=(parsed or {}).get("classification_confidence"),
-                       prompt_tokens=reply.prompt_tokens)
+                       prompt_tokens=reply.prompt_tokens, gaps=gaps,
+                       axes=score.axes_of(case), parsed=parsed)
             out["cases"][case["id"]] = rec
-            mark = "·" if rec.get("parsed") else "✗"
-            print(f"  {mark} {case['id']:22} "
-                  f"note={str(rec.get('has_note')):5} kind={str(rec.get('kind')):6} "
-                  f"f={rec.get('facts')} r={rec.get('relations')}", flush=True)
+            if gaps:
+                ecarts += 1
+                for axe in gaps:
+                    par_frontiere.setdefault(_frontiere(case, axe), []).append(case["id"])
+            # À 500 cas, une ligne par cas rend la sortie illisible et noie les
+            # trois qui comptent. `--tout` restaure l'ancien comportement quand on
+            # veut voir passer le corpus entier.
+            if gaps or args.tout or not rec.get("parsed"):
+                mark = "✗" if not rec.get("parsed") else ("•" if gaps else "·")
+                detail = f"  ({'; '.join(gaps)})" if gaps else ""
+                print(f"  {mark} {case['id']:22} "
+                      f"note={str(rec.get('has_note')):5} kind={str(rec.get('kind')):6} "
+                      f"f={rec.get('facts')} r={rec.get('relations')}{detail}", flush=True)
+
+    print(f"\n{joues - ecarts}/{joues} cas conformes à l'étiquette validée.")
+    if par_frontiere:
+        print("\nÉcarts par frontière (voir scripts/parity/frontieres.md) :")
+        for frontiere, ids in sorted(par_frontiere.items(),
+                                     key=lambda kv: -len(kv[1])):
+            liste = ", ".join(sorted(set(ids))[:6])
+            reste = f" (+{len(set(ids)) - 6})" if len(set(ids)) > 6 else ""
+            print(f"  {frontiere:12} {len(ids):3}  {liste}{reste}")
+    out["ecarts"] = ecarts
+    out["par_frontiere"] = {k: sorted(set(v)) for k, v in par_frontiere.items()}
 
     # Combien de la fenêtre le prompt a mangé. Le gate vérifie déjà qu'il ENTRE
     # (`prompt_tokens < num_ctx`) — mais entrer ne suffit pas : il faut aussi
@@ -144,6 +197,8 @@ def main() -> int:
     r.add_argument("--schema", action="store_true")
     r.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)
     r.add_argument("--temperature", type=float, default=0.0)
+    r.add_argument("--tout", action="store_true",
+                   help="afficher les cas conformes aussi (défaut : seulement les écarts)")
     r.set_defaults(func=cmd_run)
 
     d = sub.add_parser("diff", help="comparer deux baselines")

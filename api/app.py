@@ -1748,6 +1748,127 @@ def merge_proposal_reject(proposal_id: str):
         conn.close()
 
 
+# ── Predicate merge proposals (SYN-190) ───────────────────────────────────────
+
+@app.get("/predicate-proposals", dependencies=[Depends(require_auth)])
+def predicate_proposals_list(status: str = "pending"):
+    """Les rapprochements de prédicats en attente d'arbitrage (SYN-190).
+
+    Un prédicat vu pour la première fois est comparé à ceux déjà en usage ; un
+    quasi-doublon devient une proposition. Renvoie de quoi trancher sans requête
+    de suivi : combien de faits chaque nom porte, et sur combien d'entités
+    distinctes, parce que c'est le second chiffre qui dit lequel est du
+    vocabulaire et lequel est une phrase déguisée en nom.
+    """
+    if status not in {"pending", "accepted", "rejected"}:
+        raise HTTPException(status_code=400, detail="invalid status filter")
+    conn = get_connection()
+    try:
+        rows = cursor_to_dicts(conn.execute(
+            "SELECT id, kind, candidate_predicate, existing_predicate, "
+            "       similarity_score, similarity_reason, evidence_capture_id, "
+            "       status, created_at, resolved_at, resolved_predicate "
+            "FROM predicate_merge_proposals WHERE status = ? "
+            "ORDER BY created_at DESC",
+            (status,),
+        ))
+        for r in rows:
+            table = "facts" if r["kind"] == "fact" else "relations"
+            col = "entity_id" if r["kind"] == "fact" else "entity_from"
+            for cote in ("candidate", "existing"):
+                stat = first_row(conn.execute(
+                    f"SELECT COUNT(*) n, COUNT(DISTINCT {col}) ents FROM {table} "
+                    f"WHERE predicate = ?",
+                    (r[f"{cote}_predicate"],),
+                )) or {}
+                r[f"{cote}_usage"] = stat.get("n", 0)
+                r[f"{cote}_entities"] = stat.get("ents", 0)
+            # Accepter fera-t-il périmer des faits ? `insert_fact` applique le
+            # last-writes-wins de SYN-37 aux familles mono-valuées : ramener un
+            # synonyme vers `works_at` REPARE le supersede, et c'est le but, mais
+            # ça se voit dans la fiche. Le client doit pouvoir prévenir.
+            r["target_is_family_head"] = r["existing_predicate"] in _SINGLE_VALUED_HEADS
+        return {"proposals": rows, "count": len(rows)}
+    finally:
+        conn.close()
+
+
+# Têtes de `SINGLE_VALUED_FAMILIES` (core `routing.rs`). Recopiées ici pour un
+# seul usage d'AFFICHAGE : prévenir que l'acceptation va périmer un fait. Le
+# comportement, lui, reste décidé par le core et par lui seul.
+_SINGLE_VALUED_HEADS = {"works_at", "lives_in", "has_birthday", "phone", "email",
+                        "age", "job_title"}
+
+
+@app.post("/predicate-proposals/{proposal_id}/accept", dependencies=[Depends(require_auth)])
+def predicate_proposal_accept(proposal_id: str):
+    """Renommer le prédicat candidat vers l'existant, partout où il est écrit.
+
+    Aucune suppression : seul le NOM change, les faits et leurs valeurs restent.
+    Le résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits,
+    SYN-89) — sans ça la fiche continuerait d'afficher une phrase construite sur
+    l'ancien nom et plus rien ne la régénérerait.
+    """
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, kind, candidate_predicate, existing_predicate, status "
+            "FROM predicate_merge_proposals WHERE id = ?",
+            (proposal_id,),
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+
+        table = "facts" if p["kind"] == "fact" else "relations"
+        col = "entity_id" if p["kind"] == "fact" else "entity_from"
+        with conn:
+            conn.execute(
+                f"UPDATE entities SET summary_stale = 1 WHERE id IN "
+                f"(SELECT {col} FROM {table} WHERE predicate = ?)",
+                (p["candidate_predicate"],),
+            )
+            cur = conn.execute(
+                f"UPDATE {table} SET predicate = ? WHERE predicate = ?",
+                (p["existing_predicate"], p["candidate_predicate"]),
+            )
+            touched = getattr(cur, "rowcount", None)
+            conn.execute(
+                "UPDATE predicate_merge_proposals SET status = 'accepted', "
+                "resolved_at = CURRENT_TIMESTAMP, resolved_predicate = ? WHERE id = ?",
+                (p["existing_predicate"], proposal_id),
+            )
+        return {"status": "accepted", "proposal_id": proposal_id,
+                "predicate": p["existing_predicate"], "rows": touched}
+    finally:
+        conn.close()
+
+
+@app.post("/predicate-proposals/{proposal_id}/reject", dependencies=[Depends(require_auth)])
+def predicate_proposal_reject(proposal_id: str):
+    """Refuser : les deux noms restent distincts et la paire n'est plus reproposée."""
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, status FROM predicate_merge_proposals WHERE id = ?",
+            (proposal_id,),
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+        with conn:
+            conn.execute(
+                "UPDATE predicate_merge_proposals SET status = 'rejected', "
+                "resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (proposal_id,),
+            )
+        return {"status": "rejected", "proposal_id": proposal_id}
+    finally:
+        conn.close()
+
+
 # ── Entity-type proposals (SYN-58) ────────────────────────────────────────────
 
 @app.get("/entity-type-proposals", dependencies=[Depends(require_auth)])

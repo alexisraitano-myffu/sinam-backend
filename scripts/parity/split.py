@@ -81,10 +81,33 @@ GRAPH_SCHEMA = _subschema(_GRAPH_FIELDS)
 
 def _system(prompt_file: str) -> list[str]:
     """Prompt de la moitié + l'échafaudage, dans l'ordre où le core l'assemble.
-    L'échafaudage est le MÊME pour les deux appels : c'est ce qui rend le surcoût
-    d'entrée additif et non multiplicatif (mesuré : ~+10 %, pas ×2)."""
+
+    ⚠ Corrigé le 2026-08-24 (trouvé en instruisant SYN-190). Cette fonction
+    envoyait le bloc des types aux DEUX moitiés et le bloc projets à AUCUNE, alors
+    que le core (`Brain::build_classify_params`) réserve types et projets à la
+    moitié GRAPHE et n'envoie l'auteur aux deux. C'est la divergence exacte que le
+    harnais existe pour éviter : trois blocs sur quatre étaient mal adressés.
+
+    Conséquence assumée : les empreintes des baselines `*-split` d'avant cette
+    date ne coïncident plus avec celles d'après, donc elles ne se comparent plus.
+    C'est le comportement voulu — une empreinte qui bouge dit qu'on a changé
+    l'énoncé, et on l'a bel et bien changé.
+
+    Le corollaire mesuré en août (« l'échafaudage est le même pour les deux
+    appels, donc le surcoût est additif, ~+10 % ») portait sur cette assemblée
+    fausse : à remesurer.
+    """
     prompt = context.load_prompt(_half_path(prompt_file))
-    return [prompt, context.static_types_block(), context.static_owner_block()]
+    blocks = [prompt]
+    # Une moitié ne lit que ce qu'elle peut écrire : `entities[].type`,
+    # `facts[].predicate` et `project_entries[]` n'existent que côté graphe.
+    if prompt_file == "graph.md":
+        blocks += [context.static_types_block(), context.static_projects_block()]
+    # L'auteur compte pour les deux : la moitié note en a besoin pour distinguer
+    # une action rapportée de celle de l'auteur (SYN-182), la graphe pour résoudre
+    # « je »/« mon » sur la bonne entité.
+    blocks.append(context.static_owner_block())
+    return blocks
 
 
 def classify_split(model: str, text: str, schema: bool, temperature: float) -> tuple[dict | None, dict]:

@@ -85,10 +85,17 @@ Le code de sortie vaut 1 en cas de NO-GO : utilisable en CI.
   de répondre : on regarde `stop_reason`, pas la seule présence de texte.
 * **Un `diff` non nul ne prouve rien tant qu'on n'a pas mesuré le plancher.**
   Deux passes du MÊME prompt à température 0 divergent encore : 2 cas sur 58 au
-  20/08/2026 sur Haiku, uniquement sur les compteurs `facts`/`relations`, jamais
-  sur une branche de routage. Avant de lire un écart de comptage comme un effet
-  du prompt, rejouer la baseline contre elle-même. Un basculement de branche,
-  lui, n'est jamais du bruit.
+  20/08/2026 sur Haiku, uniquement sur les compteurs `facts`/`relations`. Avant
+  de lire un écart de comptage comme un effet du prompt, rejouer la baseline
+  contre elle-même.
+  ⚠ **Et un basculement de branche non plus n'est pas une preuve.** Cette ligne
+  a affirmé le contraire jusqu'au 25/08/2026, et c'est faux : trois passes du
+  même prompt sur les mêmes cas ce jour-là donnent `ez-wedding-anniversary-fr`
+  en `kind=note` sans date ni récurrence à la première, puis en `kind=event`
+  daté et récurrent aux deux suivantes. Trois axes de routage basculent
+  ensemble, sans qu'une ligne du prompt ait bougé. Une régression apparue sur
+  UNE passe se rejoue avant d'être crue, et `--cas id1,id2` rend ce contrôle
+  quasi gratuit.
 * **Une règle en prose a des effets de second ordre.** Le 20/08, trois écritures
   successives de la même règle ont chacune cassé une règle voisine — la note
   d'atomicité, puis la déduction, puis la tâche encore due absorbée par

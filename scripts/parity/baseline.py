@@ -81,6 +81,11 @@ def cmd_run(args) -> int:
                          "moitiés se lisent dans sinam-core, là où le core les lit.")
     schema = CLASSIFY_SCHEMA if args.schema else None
     sets = args.sets.split(",") if args.sets else list(SETS)
+    vises = {c.strip() for c in args.cas.split(",") if c.strip()} if args.cas else None
+    if vises:
+        connus = {k["id"] for s_ in SETS.values() for k in s_}
+        if vises - connus:
+            raise SystemExit(f"cas inconnu(s) : {', '.join(sorted(vises - connus))}")
     print(f"modèle   : {args.model}")
 
     if args.appel_unique:
@@ -96,7 +101,11 @@ def cmd_run(args) -> int:
         fp = f"{fp_note}+{fp_graph}"
         print(f"appel 1  : {sum(len(b) for b in note)} car · empreinte {fp_note}")
         print(f"appel 2  : {sum(len(b) for b in graphe)} car · empreinte {fp_graph}")
-    print(f"corpus   : {', '.join(sets)}\n")
+    if vises:
+        print(f"corpus   : {len(vises)} cas nommés")
+    else:
+        print(f"corpus   : {', '.join(sets)}")
+    print()
 
     out: dict = {"model": args.model, "fingerprint": fp, "label": args.label,
                  "schema_constrained": bool(schema), "split": not args.appel_unique,
@@ -107,6 +116,8 @@ def cmd_run(args) -> int:
     demi = 0
     for set_name in sets:
         for case in SETS[set_name]:
+            if vises is not None and case["id"] not in vises:
+                continue
             joues += 1
             if args.appel_unique:
                 reply = providers.call(args.model, system, case["text"],
@@ -232,6 +243,9 @@ def main() -> int:
                         "en production le 2026-08-21. Sert à relire une baseline "
                         "d'avant cette date, pas à mesurer aujourd'hui.")
     r.add_argument("--sets", help=f"sous-ensembles séparés par des virgules ({', '.join(SETS)})")
+    r.add_argument("--cas", help="ne jouer que ces cas, par identifiant, séparés par des "
+                                 "virgules. Pour bissecter une régression sans repayer les "
+                                 "familles entières : six cas coûtent six cas.")
     r.add_argument("--schema", action="store_true")
     r.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)
     r.add_argument("--temperature", type=float, default=0.0)

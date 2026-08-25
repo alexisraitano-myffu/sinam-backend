@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from datetime import date as _date
 import sys
 from pathlib import Path
 
@@ -50,9 +51,26 @@ _CORE_CLASSIFIER = Path(
               str(_REPO.parent / "sinam-core" / "prompts" / "classifier.md")))
 
 
+def _today_with_weekday(today: str) -> str:
+    """`2026-07-13` → `2026-07-13 (a Monday)` — miroir de `llm.rs::today_with_weekday`.
+
+    Le modèle recevait la date seule et devait en déduire le jour de la semaine
+    avant de résoudre « mardi ». Mesuré le 2026-08-25 : il tombait une semaine
+    trop loin. Une date illisible retombe sur elle-même, parce qu'un contexte qui
+    annonce un faux jour est pire qu'un contexte qui n'en annonce aucun.
+    """
+    try:
+        d = _date.fromisoformat(today)
+    except ValueError:
+        return today
+    jours = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    return f"{today} (a {jours[d.weekday()]})"
+
+
 def _load_prompt(path: Path) -> str:
     """Charge un prompt .md et substitue {today} — miroir de ce que fait le core."""
-    return path.read_text(encoding="utf-8").rstrip("\n").replace("{today}", _TODAY)
+    return (path.read_text(encoding="utf-8").rstrip("\n")
+            .replace("{today}", _today_with_weekday(_TODAY)))
 
 
 def _parse_classify_text(text: str, content_len: int, stop_reason: str | None) -> dict:

@@ -1869,6 +1869,143 @@ def predicate_proposal_reject(proposal_id: str):
         conn.close()
 
 
+# ── Negation proposals (SYN-189) ──────────────────────────────────────────────
+
+@app.get("/negation-proposals", dependencies=[Depends(require_auth)])
+def negation_proposals_list(status: str = "pending"):
+    """Les négations que le core n'a pas su appliquer seul (SYN-189).
+
+    Une négation dont la cible est certaine est appliquée à la capture : le fait
+    est périmé, et `POST /fact/{id}/restore` l'annule. N'arrivent ici que les
+    trois cas où viser serait deviner, et le motif dit lequel :
+
+    * `valeur_differente` — la capture nie une valeur, la mémoire en porte une
+      autre sous le même prédicat. Les deux se contredisent sur ce qui était
+      vrai ; trancher sans regarder serait pire que ne rien faire.
+    * `approximatif` — aucun prédicat exact, mais un nom voisin. C'est le résidu
+      que laisse la gouvernance des prédicats (SYN-190) sur les noms libres.
+    * `introuvable` — rien ne correspond sur une entité qui porte pourtant des
+      faits, ce qui signale en général une dérive de nommage.
+
+    Les faits candidats sont résolus ici, pas laissés en ids : une file qui
+    demande d'arbitrer sans montrer sur quoi n'est pas arbitrable. Quand il n'y
+    a aucun candidat (`introuvable`), ce sont les faits vivants de l'entité qui
+    sont renvoyés — c'est précisément là que se cache celui qui était visé.
+    """
+    if status not in {"pending", "accepted", "rejected"}:
+        raise HTTPException(status_code=400, detail="invalid status filter")
+    conn = get_connection()
+    try:
+        rows = cursor_to_dicts(conn.execute(
+            "SELECT p.id, p.entity_id, e.canonical_name AS entity_name, p.predicate, "
+            "       p.value, p.reason, p.candidate_fact_ids, p.evidence_capture_id, "
+            "       p.status, p.created_at, p.resolved_at, p.resolved_fact_id "
+            "FROM fact_negation_proposals p "
+            "LEFT JOIN entities e ON e.id = p.entity_id "
+            "WHERE p.status = ? ORDER BY p.created_at DESC",
+            (status,),
+        ))
+        for r in rows:
+            try:
+                ids = json.loads(r.pop("candidate_fact_ids") or "[]")
+            except (ValueError, TypeError):
+                ids = []
+            r["candidates"] = cursor_to_dicts(conn.execute(
+                "SELECT id, predicate, value, confidence, created_at FROM facts "
+                f"WHERE id IN ({','.join('?' * len(ids))})", ids,
+            )) if ids else []
+            # Le repli qui rend `introuvable` actionnable.
+            r["entity_facts"] = cursor_to_dicts(conn.execute(
+                "SELECT id, predicate, value FROM facts WHERE entity_id = ? "
+                "AND obsoleted_at IS NULL AND archived_at IS NULL "
+                "ORDER BY predicate LIMIT 50",
+                (r["entity_id"],),
+            ))
+            cap = first_row(conn.execute(
+                "SELECT content FROM inbox WHERE id = ?", (r["evidence_capture_id"],)
+            )) or {}
+            r["evidence_excerpt"] = (cap.get("content") or "")[:280]
+        return {"proposals": rows, "count": len(rows)}
+    finally:
+        conn.close()
+
+
+@app.post("/negation-proposals/{proposal_id}/accept", dependencies=[Depends(require_auth)])
+def negation_proposal_accept(proposal_id: str, fact_id: str):
+    """Périmer le fait désigné, et clore la proposition.
+
+    `fact_id` est OBLIGATOIRE : accepter une négation, c'est choisir laquelle
+    des lectures possibles était la bonne, et c'est justement ce que le core a
+    refusé de deviner. Le fait doit appartenir à l'entité de la proposition,
+    faute de quoi accepter une question sur Pierre pourrait périmer un fait de
+    Marie.
+
+    Rien n'est supprimé. `obsoleted_at` est posé, `obsoleted_by` reste NULL —
+    aucun fait n'a remplacé celui-ci, il a cessé — et `POST /fact/{id}/restore`
+    le rappelle. Le résumé de l'entité est marqué obsolète, étant dérivé des
+    faits vivants (SYN-89).
+    """
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, entity_id, status FROM fact_negation_proposals WHERE id = ?",
+            (proposal_id,),
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+        f = first_row(conn.execute(
+            "SELECT id, entity_id, obsoleted_at FROM facts WHERE id = ?", (fact_id,)
+        ))
+        if not f:
+            raise HTTPException(status_code=404, detail="fact not found")
+        if f["entity_id"] != p["entity_id"]:
+            raise HTTPException(status_code=400,
+                                detail="fact belongs to another entity")
+        if f["obsoleted_at"]:
+            raise HTTPException(status_code=400, detail="fact already obsolete")
+        with conn:
+            conn.execute(
+                "UPDATE facts SET obsoleted_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (fact_id,),
+            )
+            conn.execute(
+                "UPDATE entities SET summary_stale = 1 WHERE id = ?", (p["entity_id"],)
+            )
+            conn.execute(
+                "UPDATE fact_negation_proposals SET status = 'accepted', "
+                "resolved_at = CURRENT_TIMESTAMP, resolved_fact_id = ? WHERE id = ?",
+                (fact_id, proposal_id),
+            )
+        return {"status": "accepted", "proposal_id": proposal_id, "fact_id": fact_id}
+    finally:
+        conn.close()
+
+
+@app.post("/negation-proposals/{proposal_id}/reject", dependencies=[Depends(require_auth)])
+def negation_proposal_reject(proposal_id: str):
+    """Refuser : rien ne cesse d'être vrai, et la question n'est plus reposée."""
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, status FROM fact_negation_proposals WHERE id = ?", (proposal_id,)
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+        with conn:
+            conn.execute(
+                "UPDATE fact_negation_proposals SET status = 'rejected', "
+                "resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (proposal_id,),
+            )
+        return {"status": "rejected", "proposal_id": proposal_id}
+    finally:
+        conn.close()
+
+
 # ── Entity-type proposals (SYN-58) ────────────────────────────────────────────
 
 @app.get("/entity-type-proposals", dependencies=[Depends(require_auth)])

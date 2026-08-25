@@ -121,7 +121,7 @@ python -m dream_cycle.digest         # --dry-run to preview
 
 ## HTTP API
 
-Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **68 endpoints**; the frozen contract is [`openapi.json`](openapi.json). Highlights:
+Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **79 endpoints**; the frozen contract is [`openapi.json`](openapi.json). Highlights:
 
 - **Capture / inbox:** `POST /capture` (idempotent on a client UUID), `GET /feed` (includes the per-entry failure reason), `POST /inbox/{id}/requeue`, `POST /inbox/{id}/reprocess` (replay one capture through the cycle after a prompt fix; keeps entities).
 - **Graph / living map:** `GET /graph` with opt-in layers (atomic-note nodes, Louvain clusters, ForceAtlas2 positions, labelled regions, anti-hairball filters).

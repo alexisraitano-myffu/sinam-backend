@@ -64,7 +64,8 @@ def _half_path(prompt_file: str) -> Path:
 _NOTE_FIELDS = ("language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
                 "event_date",
                 "event_recurring", "is_ephemeral", "classification_confidence", "summary")
-_GRAPH_FIELDS = ("language", "entities", "relations", "project_entries")
+_GRAPH_FIELDS = ("language", "entities", "relations", "project_entries",
+                 "obsoleted_facts")
 
 
 def _subschema(fields: tuple[str, ...]) -> dict:

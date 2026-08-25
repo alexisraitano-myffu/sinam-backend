@@ -10,6 +10,8 @@ d'autre. Les étages l'appellent, l'outil de revue aussi.
 Six axes ouverts ici que la carte des frontières (`frontieres.md`) réclamait, et
 sans lesquels les cas correspondants seraient inertes :
 
+    obsoletes             la capture retire-t-elle bien le fait qu'elle nie
+    no_obsolete           et ne retire-t-elle RIEN quand elle ne nie rien
     needs_review          la confiance atteint-elle la file « À valider »
     event_date            le relatif a-t-il été résolu en absolu
     language              la langue détectée est-elle la bonne
@@ -50,6 +52,8 @@ AXES = {
     "no_entity": "P-PERS",
     "forbidden_value": "P-DEDUC",
     "forbidden_predicate": "P-BDAY",
+    "obsoletes": "NEG-b",
+    "no_obsolete": "NEG-c",
     "drop_guard": "perte",
 }
 
@@ -232,6 +236,31 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
                            f"{f.get('value')!r}")
                 break
 
+    # NEG-b / NEG-c — la négation d'un fait. Le premier axe vérifie qu'elle est
+    # EXPRIMÉE, le second qu'elle ne l'est pas à tort. Les deux comptent autant :
+    # une négation manquée laisse un faux durable sur la fiche, une négation de
+    # trop retire une vérité, et personne ne remarque qu'un fait a disparu.
+    if case.get("obsoletes"):
+        want = case["obsoletes"]
+        want_pred, _, want_val = want.partition("=")
+        got = _obsoleted(parsed)
+        hit = [
+            o for o in got
+            if str(o.get("predicate", "")).strip().lower() == want_pred.strip().lower()
+            and (not want_val
+                 or str(o.get("value") or "").strip().lower() == want_val.strip().lower())
+        ]
+        if not hit:
+            vu = ", ".join(
+                f"{o.get('predicate')}={o.get('value')!r}" for o in got) or "rien"
+            out.append(f"négation '{want}' absente (obsoleted_facts : {vu})")
+
+    if case.get("no_obsolete"):
+        got = _obsoleted(parsed)
+        if got:
+            vu = ", ".join(f"{o.get('predicate')}={o.get('value')!r}" for o in got)
+            out.append(f"négation de trop : {vu}")
+
     if case.get("forbidden_predicate"):
         needle = case["forbidden_predicate"].lower()
         for f in _all_facts(parsed):
@@ -241,6 +270,10 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
                 break
 
     return out
+
+
+def _obsoleted(parsed: dict) -> list[dict]:
+    return [o for o in (parsed.get("obsoleted_facts") or []) if isinstance(o, dict)]
 
 
 def axes_of(case: dict) -> list[str]:

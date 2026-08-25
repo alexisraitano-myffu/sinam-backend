@@ -90,6 +90,18 @@ _PROJECT_ENTRY = {
     "required": ["project_canonical", "content", "is_new"],
 }
 
+# SYN-189 — ce que la capture dit avoir CESSÉ d'être vrai. `value` est nullable
+# à dessein : nul veut dire « toute l'affirmation », pas « valeur oubliée ».
+_OBSOLETED_FACT = {
+    "type": "object",
+    "properties": {
+        "entity_canonical": {"type": "string"},
+        "predicate": {"type": "string"},
+        "value": {"type": ["string", "null"]},
+    },
+    "required": ["entity_canonical", "predicate", "value"],
+}
+
 # Les deux énumérations que le prompt déclare fermées. Ce sont elles qui portent
 # tout l'intérêt du décodage contraint : le reste du schéma n'est là que pour que
 # la contrainte reste cohérente avec la forme attendue.
@@ -114,6 +126,7 @@ CLASSIFY_SCHEMA = {
         "project_entries": {"type": "array", "items": _PROJECT_ENTRY},
         "entities": {"type": "array", "items": _ENTITY},
         "relations": {"type": "array", "items": _RELATION},
+        "obsoleted_facts": {"type": "array", "items": _OBSOLETED_FACT},
         "summary": {"type": ["string", "null"]},
     },
     # ⚠️ TOUS les champs déclarés sont requis, et ce n'est pas du zèle.
@@ -127,6 +140,11 @@ CLASSIFY_SCHEMA = {
         "language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
         "event_date", "event_recurring", "is_ephemeral",
         "classification_confidence", "project_entries", "entities", "relations",
+        # Requis comme les autres, et pour la même raison mesurée : un champ
+        # facultatif est un champ que le modèle cesse d'émettre. Le tableau vide
+        # est ici la réponse NORMALE, il faut donc qu'il soit écrit, sans quoi
+        # « rien à périmer » et « le modèle a oublié le champ » se confondent.
+        "obsoleted_facts",
         "summary",
     ],
 }

@@ -164,13 +164,21 @@ parasite coûte le plus cher : il crée une fiche.
 `x-negation` couvre l'action annulée et c'est tout. C'est une famille, pas une
 frontière.
 
+SYN-189 a ouvert `obsoleted_facts` dans la moitié graphe, et avec lui les deux
+axes `obsoletes` et `no_obsolete` de `score.py`. NEG-b et NEG-c sont donc
+écrivables. Les deux se valent en importance et doivent être écrits ENSEMBLE :
+une négation manquée laisse un faux durable sur la fiche, une négation de trop
+retire une vérité, et personne ne remarque qu'un fait a disparu.
+
 | # | Frontière | Verdict |
 |---|---|---|
 | NEG-a | action annulée ⇒ la décision se garde, la tâche non | couvert, 1 cas |
-| NEG-b | négation d'un FAIT (« Pierre ne travaille plus chez Acme ») | **inexprimable** : aucun champ du schéma ne le dit. Bloqué par SYN-189 |
-| NEG-c | négation d'existence (« Marie n'a pas de chat ») | trou complet |
-| NEG-d | événement annulé (par opposition à la tâche annulée) | trou complet |
-| NEG-e | correction d'une capture antérieure (« en fait c'était mercredi ») | trou complet, et dépend du fil : mode scénario |
+| NEG-b | négation d'un FAIT (« Pierre ne travaille plus chez Acme ») | **débloqué** (SYN-189) : asserter `obsoletes="works_at=Acme"`. Trou complet, écrivable dès maintenant |
+| NEG-c | négation d'existence (« Marie n'a pas de chat ») | **débloqué** : asserter `no_obsolete=True` ET aucun fait. Une absence énoncée pour la première fois ne nie rien |
+| NEG-b′ | un REMPLACEMENT n'est pas une négation (« il a quitté Acme pour Globex ») | **débloqué**, et c'est le piège du lot : la bonne réponse est un fait ordinaire avec la nouvelle valeur et `no_obsolete=True`, le supersede faisant le reste |
+| NEG-b″ | négation nuancée (« je crois qu'il a quitté Acme ») | **débloqué** : `no_obsolete=True`. Retirer une connaissance sur un peut-être est pire que la garder |
+| NEG-d | événement annulé (par opposition à la tâche annulée) | trou complet, TOUJOURS bloqué : annuler un événement demande de retrouver la note qui le porte, donc un rappel, pas un champ de sortie |
+| NEG-e | correction d'une capture antérieure (« en fait c'était mercredi ») | trou complet, toujours bloqué : même rappel, plus le fil de mémoire de travail (mode scénario) |
 
 ### PEREMPTION, ce qui remplace ce qui était vrai
 
@@ -280,7 +288,8 @@ Les 48 captures existantes ne bougent pas et ne servent jamais à entraîner.
 
 | Famille | Bloquée par |
 |---|---|
-| NEG-b, négation d'un fait | SYN-189 |
+| NEG-d, événement annulé | SYN-189 phase 2 : demande de retrouver la note antérieure, donc un mécanisme de rappel, pas un champ |
+| NEG-e, correction d'une capture antérieure | idem, plus le fil de mémoire de travail (mode scénario) |
 | PER-b, PER-c, renommage | SYN-188 |
 | Assertion d'un prédicat nommé, `category` | SYN-190 |
 | EMO, capture émotionnelle | SYN-191 |

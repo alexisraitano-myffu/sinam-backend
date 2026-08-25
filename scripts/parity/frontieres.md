@@ -298,8 +298,30 @@ la date résolue, la langue et la négation.
 | `graphe.jsonl` | 9 | P-BDAY (les trois formulations), P-DEDUC (déduire oui, inventer non), P-PERS (les deux bouts de l'échelle), P-FR |
 | `confiance.jsonl` | 4 | X-CONF dans les deux sens : le doute dû, et le doute de trop qui noie la file |
 
-La couverture passe de 10 axes exercés à 16. Le corpus compte 110 cas pour 93
-textes distincts, contre 66 pour 49.
+### Deuxième lot, le même jour
+
+31 cas de plus, cette fois sur les trous que la carte nommait sans qu'aucun cas
+ne les touche.
+
+| Fichier | Cas | Ce qui s'ouvre |
+|---|---|---|
+| `porte.jsonl` | 7 | G-PROGRESS et G-STATUS, deux trous complets ; plus les miroirs manquants de G-ATTR, G-HABIT et G-SVO |
+| `taches.jsonl` | 9 | R1c (deux mots suffisent), R1g (la corvée ménagère), R1h (deux objets durables de plus), R1j (l'engagement sans nom, et au nom opaque), R1e (deux personnes nommées) |
+| `episodes.jsonl` | 4 | R3b (un lieu, personne d'autre), R3d (l'exemple du prompt), R2c (le miroir dur), R2f |
+| `projets.jsonl` | 3 | R0b (la note fondatrice), R0d, et le miroir de R0a |
+| `facile.jsonl` | 8 | La tranche ordinaire, sans laquelle la confiance se calibre sur un corpus fait uniquement d'arêtes |
+
+**État après les deux lots** : 141 cas pour 124 textes distincts, contre 66 pour
+49. La couverture passe de 10 axes exercés à 16.
+
+Deux écarts assumés, à combler dans le palier suivant :
+
+* **L'anglais est à ~19 % des textes**, l'espagnol à ~4 %, l'allemand à un seul
+  cas. La cible est 30 % d'anglais. Il manque aussi tout le dicté, le tronqué et
+  le mal orthographié.
+* **`r0d-two-projects` ne mesure que la moitié de sa règle.** L'axe `proj`
+  vérifie qu'au moins une entrée projet existe, jamais leur nombre. Compter les
+  entrées est un axe à ouvrir dans `score.py`.
 
 **Toutes les dates de ces cas se déduisent du contexte figé** : lundi
 2026-07-13. Un cas dont la résolution dépendrait du jour où on le joue ne

@@ -132,16 +132,30 @@ def test_classify_params_shape_with_working_memory(isolated_db):
     assert any("ACTIVE ENTITY TYPES" in b.get("text", "") for b in graph["system"])
     assert not any("ACTIVE ENTITY TYPES" in b.get("text", "") for b in note["system"])
 
-    # Et les deux moitiés réunies coûtent MOINS d'entrée que l'appel unique
-    # d'avant : elles ne dupliquent que l'échafaudage, jamais les règles. Si un
-    # jour ça s'inverse, c'est que le découpage a recommencé à se répéter — et
-    # c'est précisément ce qu'il existe pour éviter.
+    # Ce que le découpage promet : les deux moitiés ne se RÉPÈTENT pas. Chacune
+    # ne porte que les règles des champs qu'elle écrit, et ce qu'elles partagent
+    # se compte sur les doigts d'une main (langue, en-tête JSON, dates).
+    #
+    # ⚠ Ceci mesurait autrefois « les deux moitiés pèsent moins que l'appel
+    # unique d'avant ». Cassé le 2026-08-25 en déployant la v21 : les moitiés
+    # ont grossi de 53 lignes (négation, renommage) que `classifier.md`, figé
+    # depuis le 21 août, n'a jamais reçues. Comparer à lui revenait à comparer
+    # deux contenus différents, donc à sanctionner l'ajout d'une règle. Ce qu'on
+    # veut interdire n'a jamais été la taille, c'est la DUPLICATION.
+    #
+    # Ce test lit les prompts DÉPLOYÉS (`SYNAPSE_HOME/prompts`), pas ceux du
+    # dépôt : il échoue donc sur une machine dont le déploiement a pris du
+    # retard, et c'est voulu — c'est le seul endroit qui le dit.
     from config import BASE_DIR
     prompts = BASE_DIR / "prompts"
-    moities = sum(len((prompts / f).read_text(encoding="utf-8"))
-                  for f in ("classifier-note.md", "classifier-graph.md"))
-    unique = len((prompts / "classifier.md").read_text(encoding="utf-8"))
-    assert moities < unique, f"{moities} o de moitiés contre {unique} o d'appel unique"
+    fond = []
+    for f in ("classifier-note.md", "classifier-graph.md"):
+        texte = (prompts / f).read_text(encoding="utf-8")
+        fond.append({l.strip() for l in texte.splitlines() if len(l.strip()) > 25})
+    communes = fond[0] & fond[1]
+    assert len(communes) <= 10, (
+        f"{len(communes)} lignes de fond présentes dans les DEUX moitiés : le "
+        f"découpage a recommencé à se répéter. " + " · ".join(sorted(communes)[:5]))
 
 
 def test_parse_classify_text_strips_fence_and_guards_truncation():

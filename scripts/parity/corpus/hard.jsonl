@@ -1,29 +1,29 @@
-{"id": "t1", "text": "Répondre à l'e-mail de Vincent", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t2", "text": "Déclarer mes revenus à l'URSSAF", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t3", "text": "Parler à Vincent de l'appartement", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t4", "text": "Envoyer la facture à efcsn", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t5", "text": "Reply to Léna's email about the contract", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t6", "text": "Appeler le dentiste avant le 20", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
-{"id": "t7", "text": "Je dois préparer la démo pour Vivatech", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère."}
+{"id": "t1", "text": "Répondre à l'e-mail de Vincent", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
+{"id": "t2", "text": "Déclarer mes revenus à l'URSSAF", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
+{"id": "t3", "text": "Parler à Vincent de l'appartement", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
+{"id": "t4", "text": "Envoyer la facture à efcsn", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
+{"id": "t5", "text": "Reply to Léna's email about the contract", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
+{"id": "t6", "text": "Appeler le dentiste avant le 20", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "arbitrage": "oui d'accord mais daté en absolu"}
+{"id": "t7", "text": "Je dois préparer la démo pour Vivatech", "note": true, "kind": "task", "drop_guard": true, "why": "Action adressée ou engagement : ne doit jamais être droppée en éphémère.", "valide": "2026-08-25"}
 {"id": "e1", "text": "Salon Vivatech le 24", "note": true, "kind": "event", "drop_guard": true, "why": "Syntagme nominal sans verbe : doit quand même produire une note event.", "valide": "2026-08-25"}
-{"id": "e2", "text": "Rendez-vous dentiste mardi", "note": true, "kind": "event", "drop_guard": true, "why": "Syntagme nominal sans verbe : doit quand même produire une note event."}
-{"id": "e3", "text": "Dentist appointment next Tuesday", "note": true, "kind": "event", "drop_guard": true, "why": "Syntagme nominal sans verbe : doit quand même produire une note event."}
+{"id": "e2", "text": "Rendez-vous dentiste mardi", "note": true, "kind": "event", "drop_guard": true, "why": "Syntagme nominal sans verbe : doit quand même produire une note event.", "valide": "2026-08-25"}
+{"id": "e3", "text": "Dentist appointment next Tuesday", "note": true, "kind": "event", "drop_guard": true, "why": "Syntagme nominal sans verbe : doit quand même produire une note event.", "valide": "2026-08-25"}
 {"id": "e4", "text": "L'anniversaire de Léa est le 16 juin", "note": true, "kind": "event", "needs_review": true, "drop_guard": true, "why": "Raté par TOUS les modèles mesurés depuis juillet 2026, Haiku compris : le prompt lui-même ne tranche pas entre « anniversaire = note event récurrente » et « anniversaire = fait daté ». Gardé pour l'observer, exclu du décompte d'échec tant que le prompt reste ambigu. Arbitré par Alexis le 2026-08-25 : pour moi trop ambigus pour tranché -> on demande a l'utilisateur, est un evenement ou est ce la date d'anniversaire de léa ?", "valide": "2026-08-25"}
-{"id": "p1", "text": "Acheter du pain", "note": false, "ephemeral": true, "why": "Ni destinataire, ni date, ni enjeu : intention seule."}
-{"id": "p2", "text": "Acheter un harnais", "note": true, "kind": "task", "ephemeral": false, "why": "Même arbitrage que g-type-ephemeral (2026-08-21) : équipement durable = tâche."}
-{"id": "p3", "text": "Comprar pan", "note": false, "ephemeral": true, "why": "Le même cas en espagnol : la règle ne doit pas dépendre de la langue."}
-{"id": "n1", "text": "Je pense qu'on devrait arrêter de faire des réunions le lundi", "note": true, "kind": "note", "ephemeral": false, "why": "Pensée durable : kind note, JAMAIS éphémère."}
+{"id": "p1", "text": "Acheter du pain", "note": false, "ephemeral": true, "why": "Ni destinataire, ni date, ni enjeu : intention seule.", "valide": "2026-08-25"}
+{"id": "p2", "text": "Acheter un harnais", "note": true, "kind": "task", "ephemeral": false, "why": "Même arbitrage que g-type-ephemeral (2026-08-21) : équipement durable = tâche.", "valide": "2026-08-25"}
+{"id": "p3", "text": "Comprar pan", "note": false, "ephemeral": true, "why": "Le même cas en espagnol : la règle ne doit pas dépendre de la langue.", "valide": "2026-08-25"}
+{"id": "n1", "text": "Je pense qu'on devrait arrêter de faire des réunions le lundi", "note": true, "kind": "note", "ephemeral": false, "why": "Pensée durable : kind note, JAMAIS éphémère.", "valide": "2026-08-25"}
 {"id": "n2", "text": "C'est marrant comme les gens surestiment le court terme et sous-estiment le long terme", "note": true, "kind": "note", "ephemeral": false, "why": "Pensée durable : kind note, JAMAIS éphémère.", "valide": "2026-08-25"}
-{"id": "n3", "text": "I realized I focus too much on tools instead of outcomes", "note": true, "kind": "note", "ephemeral": false, "why": "Pensée durable : kind note, JAMAIS éphémère."}
-{"id": "j1", "text": "J'ai un projet d'escalade pour faire un 7a", "proj": "existing", "why": "Projet contre tâche."}
-{"id": "j2", "text": "Nouveau projet : rénovation de l'appartement", "proj": "new", "why": "Projet contre tâche."}
-{"id": "j3", "text": "Je veux apprendre le japonais", "proj": "new", "why": "Projet contre tâche."}
-{"id": "r1", "text": "Audric est le cousin d'Alexis", "note": false, "rel": "cousin", "why": "L'objet est une entité nommée : la relation seule, jamais un fait qui la répète."}
-{"id": "r2", "text": "Pierre travaille chez Acme", "note": false, "rel": "work", "why": "L'objet est une entité nommée : la relation seule, jamais un fait qui la répète."}
-{"id": "f1", "text": "Marie a un chat qui s'appelle Gipsy", "note": false, "why": "Fait sur autrui : pas de note."}
-{"id": "f2", "text": "Ma mère a un nouveau chat", "note": false, "why": "Fait sur autrui : pas de note."}
-{"id": "h1", "text": "Pierre déménage probablement à Lyon", "note": false, "why": "Formulation prudente : evidence_strength doit valoir hedged."}
-{"id": "h2", "text": "Léa a sans doute adopté un chien", "note": false, "why": "Formulation prudente : evidence_strength doit valoir hedged."}
+{"id": "n3", "text": "I realized I focus too much on tools instead of outcomes", "note": true, "kind": "note", "ephemeral": false, "why": "Pensée durable : kind note, JAMAIS éphémère.", "valide": "2026-08-25"}
+{"id": "j1", "text": "J'ai un projet d'escalade pour faire un 7a", "proj": "existing", "why": "Projet contre tâche.", "valide": "2026-08-25"}
+{"id": "j2", "text": "Nouveau projet : rénovation de l'appartement", "proj": "new", "why": "Projet contre tâche.", "valide": "2026-08-25"}
+{"id": "j3", "text": "Je veux apprendre le japonais", "proj": "new", "why": "Projet contre tâche.", "valide": "2026-08-25"}
+{"id": "r1", "text": "Audric est le cousin d'Alexis", "note": false, "rel": "cousin", "why": "L'objet est une entité nommée : la relation seule, jamais un fait qui la répète.", "valide": "2026-08-25"}
+{"id": "r2", "text": "Pierre travaille chez Acme", "note": false, "rel": "work", "why": "L'objet est une entité nommée : la relation seule, jamais un fait qui la répète.", "valide": "2026-08-25"}
+{"id": "f1", "text": "Marie a un chat qui s'appelle Gipsy", "note": false, "why": "Fait sur autrui : pas de note.", "arbitrage": "demander a valider a l'utilisateur si on doit ajouter une entité ou un fait"}
+{"id": "f2", "text": "Ma mère a un nouveau chat", "note": false, "why": "Fait sur autrui : pas de note.", "arbitrage": "ok"}
+{"id": "h1", "text": "Pierre déménage probablement à Lyon", "note": false, "why": "Formulation prudente : evidence_strength doit valoir hedged.", "valide": "2026-08-25"}
+{"id": "h2", "text": "Léa a sans doute adopté un chien", "note": false, "why": "Formulation prudente : evidence_strength doit valoir hedged.", "valide": "2026-08-25"}
 {"id": "u1", "text": "https://example.com/article super intéressant sur la mémoire", "ephemeral": false, "why": "Le commentaire de l'auteur doit survivre ; où il vit reste à trancher (SYN-182). ⚠ INSTABLE depuis le retrait d'input_type (20/08) : is_ephemeral oscille (~2 fois sur 3 à true) sur une capture de lien. Conséquence réelle mais mineure — une intention à 48 h de trop, jamais une perte. Asserté ici pour que la dérive reste comptée, et volontairement PAS dans le gate, où un cas instable rendrait l'étage 1 capricieux. `ephemeral=False` tient toujours : un lien ne porte aucun verbe d'action.", "valide": "2026-08-25"}
-{"id": "ep1", "text": "J'ai été escalader avec Alexis aujourd'hui et j'ai réussi mon 6b+", "note": true, "kind": "episode", "proj": "existing", "why": "Frontière épisode, arbitrée le 20/08 : ce n'est pas « vécu ou pas », c'est « y a-t-il quelque chose à y revenir ». Une personne, un lieu, un accomplissement, une première fois — sinon rien. Ici les trois premiers."}
-{"id": "ep2", "text": "Went for a run this morning, felt good", "note": false, "why": "L'autre côté de la même frontière : rien où revenir. Jumeau de g-type-episodic."}
+{"id": "ep1", "text": "J'ai été escalader avec Alexis aujourd'hui et j'ai réussi mon 6b+", "note": true, "kind": "episode", "proj": "existing", "why": "Frontière épisode, arbitrée le 20/08 : ce n'est pas « vécu ou pas », c'est « y a-t-il quelque chose à y revenir ». Une personne, un lieu, un accomplissement, une première fois — sinon rien. Ici les trois premiers.", "valide": "2026-08-25"}
+{"id": "ep2", "text": "Went for a run this morning, felt good", "note": false, "why": "L'autre côté de la même frontière : rien où revenir. Jumeau de g-type-episodic.", "valide": "2026-08-25"}

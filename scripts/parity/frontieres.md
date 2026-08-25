@@ -284,6 +284,36 @@ contre 12 % aujourd'hui. Y inclure du dicté, du tronqué, du mal orthographié.
 
 Les 48 captures existantes ne bougent pas et ne servent jamais à entraîner.
 
+### Premier lot écrit, le 2026-08-25
+
+44 cas ajoutés, en visant l'inverse de ce que le corpus avait : il comptait 75
+assertions de routage pour 3 sur les relations, 1 sur la confiance, et zéro sur
+la date résolue, la langue et la négation.
+
+| Fichier | Cas | Frontières ouvertes |
+|---|---|---|
+| `neg.jsonl` | 13 | NEG-b, NEG-c, plus les deux pièges de la famille : le remplacement et la négation nuancée |
+| `dates.jsonl` | 11 | R2d dans les deux sens, y compris les deux miroirs « doit rester vide » |
+| `langue.jsonl` | 7 | X-LANG, fr/en/es/de, et les deux cas où un prénom ou un anglicisme fait basculer la détection à tort |
+| `graphe.jsonl` | 9 | P-BDAY (les trois formulations), P-DEDUC (déduire oui, inventer non), P-PERS (les deux bouts de l'échelle), P-FR |
+| `confiance.jsonl` | 4 | X-CONF dans les deux sens : le doute dû, et le doute de trop qui noie la file |
+
+La couverture passe de 10 axes exercés à 16. Le corpus compte 110 cas pour 93
+textes distincts, contre 66 pour 49.
+
+**Toutes les dates de ces cas se déduisent du contexte figé** : lundi
+2026-07-13. Un cas dont la résolution dépendrait du jour où on le joue ne
+mesurerait rien. « lundi » a d'ailleurs été écarté à dessein — le contexte étant
+figé un lundi, le prompt ne dit pas si c'est aujourd'hui ou dans huit jours.
+
+**À trancher, trouvé en écrivant ce lot** : `e4` (« L'anniversaire de Léa est le
+16 juin ») est marqué ambigu depuis juillet, au motif que « le prompt ne tranche
+pas entre anniversaire-événement et anniversaire-fait ». Le prompt tranche
+désormais, explicitement, dans son bloc BIRTHDAYS : une date d'anniversaire nue
+donne la note event, récurrente, sous 0,6 de confiance. Le marquage `ambigu` est
+donc périmé, et il exclut ce cas du décompte d'échec sans raison. À passer en
+revue.
+
 ### Ce qui attend un arbitrage
 
 | Famille | Bloquée par |

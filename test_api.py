@@ -160,6 +160,46 @@ def test_graph_map_adds_notes_and_clusters(client):
     assert all(n["community_id"] is not None for n in g["nodes"])
 
 
+def test_community_numbering_is_canonical():
+    """The numbering must be a pure function of the partition: largest community
+    first, ties broken by the smallest member id. Whatever order Louvain hands
+    them back in, the colours come out the same."""
+    from api.app import canonical_community_ids
+    partition = [{"b", "d"}, {"a", "c", "e"}, {"f"}]
+    expected = canonical_community_ids(partition)
+    assert expected == {"a": 0, "c": 0, "e": 0, "b": 1, "d": 1, "f": 2}
+    for shuffled in ([{"f"}, {"b", "d"}, {"a", "c", "e"}],
+                     [{"a", "c", "e"}, {"f"}, {"b", "d"}]):
+        assert canonical_community_ids(shuffled) == expected
+
+
+def test_community_numbering_breaks_size_ties_by_smallest_id():
+    from api.app import canonical_community_ids
+    assert canonical_community_ids([{"z", "y"}, {"a", "b"}]) == {
+        "a": 0, "b": 0, "z": 1, "y": 1}
+
+
+def test_community_ids_ignore_node_order(client):
+    """Same graph, nodes handed over in a different order: same colouring. This
+    is what used to break at every backend restart, when the node set was
+    iterated in hash order."""
+    from api.app import _assign_communities
+    edges = [{"from": "a", "to": "b"}, {"from": "b", "to": "c"},
+             {"from": "d", "to": "e"}, {"from": "x", "to": "y"},
+             {"from": "y", "to": "z"}, {"from": "z", "to": "x"}]
+    ids = ["a", "b", "c", "d", "e", "x", "y", "z"]
+
+    def colour(order):
+        nodes = [{"id": i} for i in order]
+        _assign_communities(nodes, edges)
+        return {n["id"]: n["community_id"] for n in nodes}
+
+    reference = colour(ids)
+    assert colour(list(reversed(ids))) == reference
+    assert colour(sorted(ids, key=lambda i: (i != "z", i))) == reference
+    assert max(reference.values()) >= 1  # the graph really is split
+
+
 def test_graph_layout_is_stable_and_incremental(client):
     """SYN-69 — positions persist (same map on reopen), and adding a node does
     not move the nodes already placed."""

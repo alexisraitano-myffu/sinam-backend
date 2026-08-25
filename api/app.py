@@ -953,11 +953,30 @@ def _anthropic_client_factory():
     return get_client_or_none()
 
 
+def canonical_community_ids(communities) -> dict:
+    """Number a partition canonically: largest community first, ties broken by
+    the smallest member id. Returns {node_id: community_id}.
+
+    Louvain finds the same partition every time, but numbers it in whatever order
+    it happened to build it — so the map changed colours for no reason. The
+    numbering has to be a pure function of the partition itself, never of the
+    order it was produced in. The core applies the exact same rule, so both
+    sources of the map agree on which community is 0.
+    """
+    ordered = sorted(communities, key=lambda c: (-len(c), min(c)))
+    return {nid: i for i, comm in enumerate(ordered) for nid in comm}
+
+
 def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
     """Tag every node dict with a `community_id` via Louvain community detection
     (SYN-66/68). Best-effort: if networkx is unavailable the nodes keep
-    community_id=None rather than failing the request. Deterministic (fixed seed)
-    so the same graph yields the same colouring across calls."""
+    community_id=None rather than failing the request.
+
+    Deterministic on two counts: nodes go in sorted by id (a set would hand
+    networkx a different order at every process start, since Python randomises
+    string hashing), and the resulting partition is renumbered canonically. The
+    seed alone was never enough.
+    """
     if not nodes:
         return
     try:
@@ -966,7 +985,7 @@ def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
         return
     ids = {n["id"] for n in nodes}
     g = nx.Graph()
-    g.add_nodes_from(ids)
+    g.add_nodes_from(sorted(ids))
     for e in edges:
         a, b = e.get("from"), e.get("to")
         if a in ids and b in ids and a != b:
@@ -979,7 +998,7 @@ def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
         communities = nx.community.louvain_communities(g, weight="weight", seed=42)
     except Exception:
         return  # never let clustering break the endpoint
-    cid = {nid: i for i, comm in enumerate(communities) for nid in comm}
+    cid = canonical_community_ids(communities)
     for n in nodes:
         n["community_id"] = cid.get(n["id"])
 

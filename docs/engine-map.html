@@ -1375,6 +1375,7 @@ const GRAPH_DETAILS = {
       → chaque nœud reçoit un <span class="var no-val" data-var="community_id">identifiant de communauté</span> qui donne sa couleur.</p>`,
     sections: [
       { h: "Choix", body: `Louvain pur-Python (<span class="var no-val" data-var="networkx>=3.2">networkx</span>) : package sans binaire C dans le .dmg. Leiden/igraph en upgrade futur.` },
+      { h: "Numérotation canonique", body: `Les nœuds entrent <b>triés par id</b> et la partition est renumérotée par <b>taille décroissante</b> (égalité départagée par le plus petit id membre). Sans ça, la partition restait la même mais changeait de numéros à chaque redémarrage du backend, donc la carte changeait de couleurs pour rien. La graine seule n'y suffisait pas.` },
     ],
   },
   filter: {

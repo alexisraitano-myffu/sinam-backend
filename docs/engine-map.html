@@ -1371,10 +1371,10 @@ const GRAPH_DETAILS = {
     title: "Détection de communautés",
     tags: ["compute"],
     ref: "api/app.py · _assign_communities",
-    body: `<p>Regroupe les nœuds par <span class="var no-val" data-var="networkx.community.louvain_communities (seed=42)">Louvain</span>
+    body: `<p>Regroupe les nœuds par <span class="var no-val" data-var="graph_communities.louvain_communities (résolution 1.0)">Louvain</span>
       → chaque nœud reçoit un <span class="var no-val" data-var="community_id">identifiant de communauté</span> qui donne sa couleur.</p>`,
     sections: [
-      { h: "Choix", body: `Louvain pur-Python (<span class="var no-val" data-var="networkx>=3.2">networkx</span>) : package sans binaire C dans le .dmg. Leiden/igraph en upgrade futur.` },
+      { h: "Choix", body: `Louvain écrit à la main, pur-Python, et <b>le même algorithme que le core Rust</b> (<span class="var no-val" data-var="snapshot.rs::assign_communities">snapshot.rs</span>) : la carte servie en HTTP et la carte reconstruite hors ligne montrent les mêmes zones. Le Louvain de networkx a été abandonné parce qu'il mélange l'ordre des nœuds avec une graine : reproductible dans un process Python, impossible à reproduire ailleurs. Sa graine 42 tirait en plus une mauvaise partition (0,3854 sur le graphe de référence, contre 0,4188 ici). Leiden/igraph en upgrade futur.` },
       { h: "Numérotation canonique", body: `Les nœuds entrent <b>triés par id</b> et la partition est renumérotée par <b>taille décroissante</b> (égalité départagée par le plus petit id membre). Sans ça, la partition restait la même mais changeait de numéros à chaque redémarrage du backend, donc la carte changeait de couleurs pour rien. La graine seule n'y suffisait pas.` },
     ],
   },

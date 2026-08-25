@@ -969,33 +969,22 @@ def canonical_community_ids(communities) -> dict:
 
 def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
     """Tag every node dict with a `community_id` via Louvain community detection
-    (SYN-66/68). Best-effort: if networkx is unavailable the nodes keep
-    community_id=None rather than failing the request.
+    (SYN-66/68). Best-effort: any failure leaves community_id=None rather than
+    breaking the request.
 
-    Deterministic on two counts: nodes go in sorted by id (a set would hand
-    networkx a different order at every process start, since Python randomises
-    string hashing), and the resulting partition is renumbered canonically. The
-    seed alone was never enough.
+    Deterministic on two counts, neither of which is a seed: the Louvain in
+    `graph_communities` visits nodes in sorted-id order, and the partition it
+    returns is renumbered canonically. The Rust core runs the same algorithm, so
+    a map served over HTTP and the same map rebuilt offline agree node for node.
     """
     if not nodes:
         return
-    try:
-        import networkx as nx
-    except ImportError:
-        return
     ids = {n["id"] for n in nodes}
-    g = nx.Graph()
-    g.add_nodes_from(sorted(ids))
-    for e in edges:
-        a, b = e.get("from"), e.get("to")
-        if a in ids and b in ids and a != b:
-            w = float(e.get("confidence") or 1.0)
-            if g.has_edge(a, b):
-                g[a][b]["weight"] += w
-            else:
-                g.add_edge(a, b, weight=w)
+    weighted = [(e.get("from"), e.get("to"), float(e.get("confidence") or 1.0))
+                for e in edges]
     try:
-        communities = nx.community.louvain_communities(g, weight="weight", seed=42)
+        from graph_communities import louvain_communities
+        communities = louvain_communities(ids, weighted)
     except Exception:
         return  # never let clustering break the endpoint
     cid = canonical_community_ids(communities)

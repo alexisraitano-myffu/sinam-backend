@@ -179,6 +179,33 @@ def test_community_numbering_breaks_size_ties_by_smallest_id():
         "a": 0, "b": 0, "z": 1, "y": 1}
 
 
+def test_louvain_matches_the_core_on_the_karate_club():
+    """The reference benchmark for community detection, pinned to the exact
+    partition the Rust core produces (`snapshot.rs::louvain_agrees_with_the_backend`
+    asserts the same vector). If this ever drifts, the map served over HTTP and
+    the map rebuilt offline no longer show the same zones."""
+    import networkx as nx
+    from api.app import canonical_community_ids
+    from graph_communities import louvain_communities
+
+    karate = nx.karate_club_graph()
+    ids = [f"n{i:02d}" for i in karate.nodes()]
+    edges = [(f"n{a:02d}", f"n{b:02d}", 1.0) for a, b in karate.edges()]
+
+    communities = louvain_communities(ids, edges)
+    cid = canonical_community_ids(communities)
+    assert [cid[i] for i in sorted(ids)] == [
+        0, 0, 0, 0, 3, 3, 3, 0, 1, 0, 3, 0, 0, 0, 1, 1, 3,
+        0, 1, 0, 1, 0, 1, 2, 2, 2, 1, 2, 2, 1, 1, 2, 1, 1]
+
+    # And it is a good partition, not merely a reproducible one: networkx's own
+    # Louvain draws between 0.395 and 0.420 on this graph depending on the seed.
+    h = nx.Graph()
+    h.add_nodes_from(ids)
+    h.add_edges_from((a, b) for a, b, _ in edges)
+    assert nx.community.modularity(h, communities) > 0.41
+
+
 def test_community_ids_ignore_node_order(client):
     """Same graph, nodes handed over in a different order: same colouring. This
     is what used to break at every backend restart, when the node set was

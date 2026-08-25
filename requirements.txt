@@ -35,7 +35,9 @@ zeroconf>=0.131.0
 # `pip install -r requirements.txt` could not start the API.
 requests>=2.31.0
 
-# Graph clustering for the living map (SYN-66/68). Pure-Python (Louvain via
-# networkx.community) — packages cleanly into the PyInstaller .dmg, unlike the
-# C-extension stack (igraph/leidenalg). Swap to Leiden later if quality needs it.
+# TESTS ONLY since the living map moved into the core. The map's clustering and
+# layout used to run here (networkx Louvain + ForceAtlas2); both now live in
+# `sinam-core` and the endpoint serves what the core computes. What is left is
+# the karate club graph, the reference benchmark our Louvain is pinned against
+# in test_api.py. The runtime, and the .dmg, no longer need it.
 networkx>=3.2

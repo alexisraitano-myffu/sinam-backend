@@ -260,31 +260,32 @@ def test_semantic_edges_group_entities_without_a_relation(client):
     assert zone["Guitare"] != zone["Piano"]
 
 
-def test_graph_layout_is_stable_and_incremental(client):
-    """SYN-69 — positions persist (same map on reopen), and adding a node does
-    not move the nodes already placed."""
+def test_graph_layout_is_deterministic_and_free_to_move(client):
+    """Positions are no longer persisted (that was SYN-69's `node_positions`).
+    The solver is deterministic instead: the same graph always draws the same
+    map. Adding an entity is allowed to move the others, by decision — a memory
+    that grows redraws itself."""
     _seed_graph()
     first = client.get("/graph", params={"layout": "true"}).json()
-    pos1 = {n["id"]: (n["x"], n["y"]) for n in first["nodes"]}
     assert all("x" in n and "y" in n for n in first["nodes"])
+    pos1 = {n["id"]: (n["x"], n["y"]) for n in first["nodes"]}
 
-    # reopen → identical positions (read from node_positions, no re-layout)
-    second = client.get("/graph", params={"layout": "true"}).json()
-    pos2 = {n["id"]: (n["x"], n["y"]) for n in second["nodes"]}
-    assert pos2 == pos1
+    again = {n["id"]: (n["x"], n["y"])
+             for n in client.get("/graph", params={"layout": "true"}).json()["nodes"]}
+    assert again == pos1                              # same graph, same map
 
-    # add a new entity, reopen → existing positions untouched, newcomer placed
     conn = _conn()
     try:
         with conn:
-            conn.execute("INSERT INTO entities (id, type, canonical_name, mention_count) "
-                         "VALUES ('e3','person','Karim',1)")
+            conn.execute("INSERT INTO entities (id, type, canonical_name) "
+                         "VALUES ('e3','person','Zoe')")
+            conn.execute("INSERT INTO relations (id, entity_from, predicate, entity_to, confidence) "
+                         "VALUES ('r2','e1','ami_de','e3',0.8)")
     finally:
         conn.close()
-    third = client.get("/graph", params={"layout": "true"}).json()
-    pos3 = {n["id"]: (n["x"], n["y"]) for n in third["nodes"]}
-    assert pos3["e1"] == pos1["e1"] and pos3["e2"] == pos1["e2"]  # not disturbed
-    assert "e3" in pos3  # newcomer got a position
+    grown = client.get("/graph", params={"layout": "true"}).json()
+    assert len(grown["nodes"]) == 3
+    assert all("x" in n and "y" in n for n in grown["nodes"])
 
 
 def test_graph_anti_hairball_filters(client):

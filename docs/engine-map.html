@@ -275,7 +275,7 @@ flowchart LR
   end
 
   subgraph CARTE["Carte vivante : projection SYN-66"]
-    m_node_positions["node_positions<br/>x, y · ForceAtlas2"]:::carte
+    m_node_positions["node_positions<br/>table morte"]:::carte
     m_cluster_labels["cluster_labels<br/>label Haiku cache"]:::carte
   end
 
@@ -387,7 +387,7 @@ flowchart LR
   g_assemble["Assemblage du graphe<br/><span style='font-size:11px;opacity:.7'>entités + notes · relations + mentions</span>"]:::io
   g_cluster["Détection de communautés<br/><span style='font-size:11px;opacity:.7'>Louvain · couleur de zone</span>"]:::compute
   g_filter["Filtres anti-hairball<br/><span style='font-size:11px;opacity:.7'>borne ce qui est montré</span>"]:::compute
-  g_layout["Disposition spatiale<br/><span style='font-size:11px;opacity:.7'>ForceAtlas2 · positions persistées</span>"]:::compute
+  g_layout["Disposition spatiale<br/><span style='font-size:11px;opacity:.7'>core · déterministe, non persistée</span>"]:::compute
   g_labels["Zones nommées<br/><span style='font-size:11px;opacity:.7'>label IA caché + contour</span>"]:::llm
   g_out["Réponse carte<br/><span style='font-size:11px;opacity:.7'>GET /graph</span>"]:::io
 
@@ -415,8 +415,8 @@ flowchart LR
         depuis le graphe existant (<span class="var no-val" data-var="entities">entités</span> +
         <span class="var no-val" data-var="atomic_notes">notes</span> +
         <span class="var no-val" data-var="relations">relations</span>). Aucune nouvelle source de vérité :
-        juste deux caches (<span class="var no-val" data-var="node_positions">positions</span>,
-        <span class="var no-val" data-var="cluster_labels">labels</span>). Un recalcul complet ne perd rien.
+        un seul cache (<span class="var no-val" data-var="cluster_labels">les labels de zone</span>, un appel LLM).
+        Un recalcul complet ne perd rien.
       </p>
     </div>
     <div class="section">
@@ -1319,19 +1319,19 @@ similarity_score, status, created_at, resolved_at</pre>` },
     ],
   },
   node_positions: {
-    title: "node_positions : positions de la carte (SYN-69)",
+    title: "node_positions : table morte",
     tags: ["store"],
-    ref: "graph_layout.py",
+    ref: "plus aucun code ne la lit",
     body: `
-      <p>Position <code>x, y</code> de chaque nœud de la carte (id = uuid d'entité ou
-      <code>n:&lt;rowid&gt;</code> pour une note). Relue telle quelle → la carte ne « saute » pas
-      entre deux ouvertures.</p>
+      <p>Elle gardait le <code>x, y</code> de chaque nœud pour que la carte ne « saute » pas
+      entre deux ouvertures. <b>Plus rien ne l'écrit ni ne la lit.</b> Les positions ne sont
+      plus persistées : le solveur du core est déterministe, donc le même graphe redonne la
+      même carte, et une carte a le droit de bouger quand la mémoire grandit.</p>
     `,
     sections: [
-      { h: "Colonnes clés", body: `<pre>node_id (PK), x, y, updated_at</pre>` },
-      { h: "Incrémental", body: `Calculée par <span class="var no-val" data-var="forceatlas2_layout (seed=42)">ForceAtlas2</span> ;
-        un nouveau nœud est posé près du barycentre de son cluster sans bouger les autres. Recalcul complet
-        sur <span class="var" data-var="relayout" data-val="true">demande</span>.` },
+      { h: "Colonnes", body: `<pre>node_id (PK), x, y, updated_at</pre>` },
+      { h: "À supprimer", body: `La table reste en base le temps que le nouveau chemin soit
+        validé en usage. Sa suppression est le seul geste irréversible du lot, elle attend.` },
     ],
   },
   cluster_labels: {
@@ -1395,18 +1395,27 @@ const GRAPH_DETAILS = {
   layout: {
     title: "Disposition spatiale",
     tags: ["compute"],
-    ref: "graph_layout.py · SYN-69 / ForceLayout.kt · SYN-64",
-    body: `<p><b>Le mobile calcule désormais le layout lui-même</b> (SYN-64) : <span class="var no-val" data-var="ForceLayout.kt · portage vis-network forceAtlas2Based">forceAtlas2Based client</span>,
-      une fois puis <b>figé</b> → zoom = pur affine (zéro gigue), <b>offline</b>. Le backend
-      <span class="var no-val" data-var="forceatlas2_layout → node_positions">ForceAtlas2 → node_positions</span> reste calculé/persisté (contrat /graph) mais devient <em>advisory</em> pour la carte mobile.</p>`,
+    ref: "snapshot.rs::place_nodes (core)",
+    body: `<p><b>Le core calcule la disposition, une fois pour tout le monde</b> : portage du solveur
+      <span class="var no-val" data-var="vis-network forceAtlas2Based">forceAtlas2Based</span> de vis-network,
+      celui qui dessine les graphes de graphify. Le backend le sert dans <code>/graph</code>, l'app le lit
+      au lieu de le recalculer, et hors ligne c'est le même code. <b>Positions non persistées</b> : le
+      solveur est déterministe, <span class="var" data-var="relayout" data-val="ignoré">relayout</span> n'a
+      plus d'objet et le bouton « Réorganiser » a disparu.</p>`,
     sections: [
-      { h: "Forces (calées en playground)", body: `<span class="var no-val" data-var="gravitationalConstant=-60">répulsion</span> ·
+      { h: "Forces", body: `<span class="var no-val" data-var="gravitationalConstant=-60">répulsion</span> ·
         <span class="var no-val" data-var="centralGravity=0.005">gravité centrale</span> ·
-        <span class="var no-val" data-var="springLength=120 ×1.5">longueur d'arête</span> ·
-        <span class="var no-val" data-var="springConstant=0.01">raideur</span> ·
+        <span class="var no-val" data-var="springLength=180">longueur d'arête</span> ·
+        <span class="var" data-var="SPRING_CONSTANT" data-val="0.090">raideur</span> ·
         <span class="var no-val" data-var="damping=0.4">amortissement</span> ·
-        <span class="var no-val" data-var="avoidOverlap=0.8">anti-chevauchement</span>.` },
-      { h: "Cohésion (backend, advisory)", body: `Les arêtes intra-cluster tirent plus fort (<span class="var" data-var="_INTRA_COMMUNITY_PULL" data-val="3×">×3</span>) → les communautés se regroupent spatialement.` },
+        <span class="var no-val" data-var="avoidOverlap=0.8">anti-chevauchement</span> ·
+        <span class="var no-val" data-var="800">itérations</span>. Le degré d'un nœud joue la masse,
+        comme chez vis : il multiplie la répulsion et la gravité.` },
+      { h: "La raideur, tout le sujet", body: `Elle valait <b>0,010</b> contre 0,08 chez graphify. Des ressorts
+        huit fois trop faibles contre une répulsion inchangée étalent tout le monde à distance égale : plus de
+        contraste de densité, donc plus de zones lisibles. Mesuré sur la mémoire réelle (80 nœuds, 7 zones),
+        la silhouette des zones passe de <b>0,189 à 0,347</b>. À 1200 nœuds, de −0,320 (zones entièrement
+        mélangées) à 0,107.` },
       { h: "Ressorts sémantiques (SYN-64)", body: `Des <b>ressorts souples kNN sur embeddings</b> (<span class="var" data-var="SYNAPSE_SEMANTIC_K" data-val="4">top-4</span> cosinus ≥ <span class="var" data-var="SYNAPSE_SEMANTIC_MIN_SCORE" data-val="0.62">0.62</span>, poids <span class="var" data-var="SYNAPSE_SEMANTIC_WEIGHT" data-val="0.45">0.45×score</span>) rapprochent les entités proches sémantiquement, sans relation explicite. Ils nourrissent <b>la disposition ET les communautés</b>, et le core en calcule les mêmes (<span class="var no-val" data-var="snapshot.rs::semantic_edges">snapshot.rs</span>). <b>Jamais renvoyés</b> au client, jamais comptés dans le degré. <span class="var" data-var="semantic_layout" data-val="true">semantic_layout=false</span> pour couper.` },
       { h: "Pourquoi 0,62", body: `Le seuil était à 0,80, très au-dessus des données : la médiane du meilleur voisin vaut 0,626, donc la production ne fabriquait que <b>2 arêtes</b>. Mesuré sur la mémoire réelle (63 entités, 37 relations) : 0,80 → 39 arêtes et 40 % d'orphelins ; <b>0,62 → 67 arêtes, 29 % d'orphelins, 6 zones au lieu de 5</b> ; 0,55 → 122 arêtes mais la modularité s'effondre (0,669) car les arêtes relient n'importe quoi. Bande étroite, pas un réglage libre.` },
     ],

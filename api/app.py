@@ -1050,10 +1050,10 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
       note's entities_mentioned).
     - `cluster=true` runs community detection and tags every node with a
       `community_id` (entities and notes share the colouring).
-    - `layout=true` attaches persisted `x`/`y` map positions (ForceAtlas2);
-      missing nodes are placed incrementally near their cluster. `relayout=true`
-      forces a full recompute of the whole map. layout implies clustering (the
-      community id drives incremental placement).
+    - `layout=true` attaches `x`/`y` map positions (ForceAtlas2Based, computed by
+      the core). Positions are NOT persisted: the solver is deterministic, so the
+      same graph draws the same map, and the map is free to move as the memory
+      grows. `relayout=true` is accepted and ignored — every call recomputes.
 
     Anti-hairball filters (SYN-71), composable — the UI tightens them by default
     and reveals more on demand:
@@ -1067,10 +1067,32 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
 
     `clusters=true` (SYN-70) adds a top-level `clusters: [{community_id, label,
     size, hull}]` — a short Haiku label per community (cached) and a convex hull
-    around its node positions. Implies clustering + layout."""
+    around its node positions. Implies clustering + layout.
+
+    **The living map is served by the core**, not assembled here: one
+    implementation of the projection, so the map answered over HTTP and the map
+    an app rebuilds offline from the same database are the same map. The Python
+    path below still serves everything else — the ego view, the entity list, and
+    the anti-hairball filters, which have no core equivalent."""
     import json
     conn = get_connection()
     try:
+        if ((cluster or clusters or layout) and not entity
+                and not include_archived and node_types == "both"
+                and memory_strength_min is None and since is None
+                and top_pct_per_cluster is None and include_isolated
+                and max_nodes >= 1000):
+            g = conn.read_graph(include_notes, semantic_layout)
+            result = {"nodes": g["nodes"], "edges": g["edges"]}
+            if clusters:
+                # The core labels a zone with its most salient entity name, a
+                # stand-in for an offline replica. Here we have the API key.
+                from graph_clusters import build_clusters
+                result["clusters"] = build_clusters(
+                    conn, g["nodes"], client_factory=_anthropic_client_factory,
+                    model=CLAUDE_MODEL)
+            return result
+
         nodes = []
         # SYN-39: hide soft-merged rows; their data already lives on the canonical one.
         # SYN-58: hide non-active rows (pending type-validation / archived).
@@ -1180,15 +1202,6 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
             keep = {n["id"] for n in sorted(nodes, key=_node_score, reverse=True)[:max_nodes]}
             nodes, edges = _prune(nodes, edges, keep)
         _set_degree(nodes, edges)  # final degree after structural pruning
-
-        if layout or clusters:  # clusters need positions for their hulls
-            from graph_layout import ensure_positions
-            positions = ensure_positions(conn, nodes, edges, full=relayout,
-                                         soft_edges=soft_edges)
-            for n in nodes:
-                xy = positions.get(n["id"])
-                if xy:
-                    n["x"], n["y"] = xy["x"], xy["y"]
 
         result = {"nodes": nodes, "edges": edges}
         if clusters:

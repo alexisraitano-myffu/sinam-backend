@@ -85,6 +85,14 @@ class Connection:
     def last_insert_rowid(self) -> int:
         return self._conn.last_insert_rowid()
 
+    def read_graph(self, include_notes: bool = True, semantic: bool = True) -> dict:
+        """The living map, computed by the core: nodes, edges, zones, positions.
+        The backend used to assemble its own projection here; two implementations
+        meant two different maps depending on which one answered."""
+        import json
+
+        return json.loads(self._conn.read_graph(include_notes, semantic))
+
     def insert_fact(self, *, entity_id, predicate, value, confidence,
                     source_inbox_id=None, persistence_value=3,
                     provenance_capture_id=None, category=None) -> str:

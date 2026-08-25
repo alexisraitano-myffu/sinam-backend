@@ -141,7 +141,13 @@ def classify_split(model: str, text: str, schema: bool, temperature: float) -> t
     # Le graphe ne peut pas écraser la note : il n'a aucune clé en commun avec elle
     # hormis `language`, et la moitié note fait autorité dessus (elle a lu le texte
     # pour l'écrire dedans).
-    for k in ("entities", "relations", "project_entries"):
+    # ⚠ Cette liste doit rester celle du core (`llm.rs::merge_halves`), à
+    # l'identique. Trouvé le 2026-08-25 : `obsoleted_facts` y manquait, donc la
+    # moitié graphe le produisait et le harnais le jetait. Les cinq cas NEG-b
+    # sortaient « négation absente » alors que la production, elle, la voyait.
+    # Un harnais qui perd un champ ne mesure pas une régression, il en invente
+    # une, et c'est pire : on corrige alors ce qui marchait.
+    for k in ("entities", "relations", "project_entries", "obsoleted_facts"):
         merged[k] = (graph or {}).get(k) or []
     merged.setdefault("language", (graph or {}).get("language"))
     return merged, diag

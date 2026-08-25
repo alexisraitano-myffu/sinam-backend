@@ -1819,7 +1819,10 @@ def predicate_proposals_list(status: str = "pending"):
             # synonyme vers `works_at` REPARE le supersede, et c'est le but, mais
             # ça se voit dans la fiche. Le client doit pouvoir prévenir.
             r["target_is_family_head"] = r["existing_predicate"] in _SINGLE_VALUED_HEADS
-        return {"proposals": rows, "count": len(rows)}
+        # Liste nue, comme les quatre files antérieures. Une file qui répondrait
+        # dans une enveloppe différente obligerait le client à se souvenir
+        # LAQUELLE, et c'est exactement le genre de détail qu'on oublie.
+        return rows
     finally:
         conn.close()
 
@@ -1940,7 +1943,10 @@ def rename_proposals_list(status: str = "pending"):
                 "SELECT content FROM inbox WHERE id = ?", (r["evidence_capture_id"],)
             )) or {}
             r["evidence_excerpt"] = (cap.get("content") or "")[:280]
-        return {"proposals": rows, "count": len(rows)}
+        # Liste nue, comme les quatre files antérieures. Une file qui répondrait
+        # dans une enveloppe différente obligerait le client à se souvenir
+        # LAQUELLE, et c'est exactement le genre de détail qu'on oublie.
+        return rows
     finally:
         conn.close()
 
@@ -2071,7 +2077,10 @@ def negation_proposals_list(status: str = "pending"):
                 "SELECT content FROM inbox WHERE id = ?", (r["evidence_capture_id"],)
             )) or {}
             r["evidence_excerpt"] = (cap.get("content") or "")[:280]
-        return {"proposals": rows, "count": len(rows)}
+        # Liste nue, comme les quatre files antérieures. Une file qui répondrait
+        # dans une enveloppe différente obligerait le client à se souvenir
+        # LAQUELLE, et c'est exactement le genre de détail qu'on oublie.
+        return rows
     finally:
         conn.close()
 

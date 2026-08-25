@@ -51,6 +51,8 @@ _ENTITY = {
         "type": {"type": "string"},
         "type_proposal": _TYPE_PROPOSAL,
         "aliases": {"type": "array", "items": {"type": "string"}},
+        # SYN-188 — nullable, et null est la réponse quasi toujours correcte.
+        "renamed_to": {"type": ["string", "null"]},
         "summary": {"type": ["string", "null"]},
         "attributes": {"type": "object"},
         "facts": {"type": "array", "items": _FACT},
@@ -63,7 +65,7 @@ _ENTITY = {
     # laissé sans type est ressorti en objet `{"value": …}`, et `type_proposal`
     # rempli là où le type était déjà actif. Une exigence partielle ne mesure pas
     # le modèle : elle mesure ce qu'on l'a autorisé à ne pas faire.
-    "required": ["canonical_name", "type", "type_proposal", "aliases",
+    "required": ["canonical_name", "type", "type_proposal", "aliases", "renamed_to",
                  "summary", "attributes", "facts"],
 }
 

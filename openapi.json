@@ -2804,6 +2804,169 @@
         }
       }
     },
+    "/rename-proposals": {
+      "get": {
+        "summary": "Rename Proposals List",
+        "description": "Les renommages déclarés en capture, en attente de confirmation (SYN-188).\n\nLe nom canonique titre la fiche, sort dans le digest et remonte en recherche :\nc'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le\npropose, une personne l'applique — même porte que pour un type d'entité neuf.\n\nLa liste rend de quoi trancher sans requête de suivi : le poids de l'entité\n(faits, relations) et l'extrait de la capture qui a déclaré le renommage.",
+        "operationId": "rename_proposals_list_rename_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rename-proposals/{proposal_id}/accept": {
+      "post": {
+        "summary": "Rename Proposal Accept",
+        "description": "Appliquer le renommage : l'ancien nom canonique devient un alias.\n\nMême écriture que `PATCH /entity` (SYN-82), pour qu'il n'existe qu'un seul\nchemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,\nle nouveau nom étant retiré de la liste au passage.",
+        "operationId": "rename_proposal_accept_rename_proposals__proposal_id__accept_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rename-proposals/{proposal_id}/reject": {
+      "post": {
+        "summary": "Rename Proposal Reject",
+        "description": "Refuser : l'entité garde son nom, et le renommage n'est plus reproposé.",
+        "operationId": "rename_proposal_reject_rename_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/negation-proposals": {
       "get": {
         "summary": "Negation Proposals List",

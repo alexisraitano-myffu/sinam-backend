@@ -185,8 +185,8 @@ retire une vérité, et personne ne remarque qu'un fait a disparu.
 | # | Frontière | Verdict |
 |---|---|---|
 | PER-a | une capture qui périme un fait antérieur doit émettre le NOUVEAU fait, sur les 7 familles mono-valuées de `routing.rs:45` | trou complet, écrivable dès maintenant |
-| PER-b | renommage d'entité déclaré en capture | **non branché**, bloqué par SYN-188 |
-| PER-c | un état transitoire ne doit pas devenir un fait durable (`planned_new_name`) | trou complet, bloqué par SYN-188 |
+| PER-b | renommage d'entité déclaré en capture | **débloqué** (SYN-188) : asserter `renamed_to="Sinam"`, et `no_rename=True` pour les deux confusions voisines — la simple mention du nom, et le surnom, qui est un alias |
+| PER-c | un état transitoire ne doit pas devenir un fait durable (`planned_new_name`) | **débloqué** : asserter `forbidden_predicate="planned"`. Le prompt interdit désormais tout prédicat qui encode une intention, `planned_*`, `future_*`, `upcoming_*`, `will_*` |
 
 La moitié qui relève du core ne peut pas être testée ici : le harnais fige le
 contexte exprès, donc il n'a aucun état antérieur.
@@ -329,8 +329,20 @@ ne les touche.
 | `projets.jsonl` | 3 | R0b (la note fondatrice), R0d, et le miroir de R0a |
 | `facile.jsonl` | 8 | La tranche ordinaire, sans laquelle la confiance se calibre sur un corpus fait uniquement d'arêtes |
 
-**État après les deux lots** : 141 cas pour 124 textes distincts, contre 66 pour
-49. La couverture passe de 10 axes exercés à 16.
+### Troisième lot : ce que les arbitrages ont débloqué
+
+`emotion.jsonl` (8 cas, SYN-191) et `renommage.jsonl` (6 cas, SYN-188). Ces deux
+familles n'étaient pas des trous d'écriture mais des trous de DÉCISION : rien
+n'y était étiquetable tant que le prompt ne tranchait pas.
+
+**État** : 155 cas pour 138 textes distincts, contre 66 pour 49 ce matin, et
+16 axes de scoring exercés contre 10.
+
+Lire la couverture par FRONTIÈRE plutôt que par axe : deux axes,
+`forbidden_value` et `forbidden_predicate`, sont génériques (« ceci ne doit pas
+naître ») et servent aujourd'hui quatre familles à la fois. Les compter par axe
+gonflait une frontière avec les cas des autres, ce que le rapport faisait
+jusqu'au 25/08.
 
 Deux écarts assumés, à combler dans le palier suivant :
 
@@ -360,7 +372,6 @@ revue.
 |---|---|
 | NEG-d, événement annulé | SYN-189 phase 2 : demande de retrouver la note antérieure, donc un mécanisme de rappel, pas un champ |
 | NEG-e, correction d'une capture antérieure | idem, plus le fil de mémoire de travail (mode scénario) |
-| PER-b, PER-c, renommage | SYN-188 |
 | Assertion d'un prédicat nommé, `category` | SYN-190 |
 | G-LINK, lien commenté | SYN-186 |
 

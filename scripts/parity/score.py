@@ -10,6 +10,8 @@ d'autre. Les étages l'appellent, l'outil de revue aussi.
 Six axes ouverts ici que la carte des frontières (`frontieres.md`) réclamait, et
 sans lesquels les cas correspondants seraient inertes :
 
+    renamed_to            le renommage déclaré est-il proposé
+    no_rename             et n'est-il pas proposé quand rien ne le déclare
     obsoletes             la capture retire-t-elle bien le fait qu'elle nie
     no_obsolete           et ne retire-t-elle RIEN quand elle ne nie rien
     needs_review          la confiance atteint-elle la file « À valider »
@@ -50,10 +52,15 @@ AXES = {
     "facts_min": "X-ONE",
     "entity_expected": "P-PERS",
     "no_entity": "P-PERS",
-    "forbidden_value": "P-DEDUC",
-    "forbidden_predicate": "P-BDAY",
+    # Ces deux-là sont GÉNÉRIQUES : ils disent « ceci ne doit pas naître », et
+    # servent aujourd'hui à P-DEDUC, P-BDAY, EMO et PER-c. Les rattacher à une
+    # frontière particulière gonflait son décompte avec les cas des autres.
+    "forbidden_value": "interdit",
+    "forbidden_predicate": "interdit",
     "obsoletes": "NEG-b",
     "no_obsolete": "NEG-c",
+    "renamed_to": "PER-b",
+    "no_rename": "PER-b",
     "drop_guard": "perte",
 }
 
@@ -235,6 +242,25 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
                 out.append(f"valeur inventée : {f.get('predicate')}="
                            f"{f.get('value')!r}")
                 break
+
+    # PER-b — le renommage déclaré en capture. Le nom canonique titre la fiche
+    # et sort dans le digest : le manquer laisse la mémoire afficher un nom que
+    # l'utilisateur a lui-même corrigé, le proposer à tort lui pose une question
+    # sur l'identité d'une entité alors que rien ne l'a demandé.
+    if case.get("renamed_to"):
+        want = case["renamed_to"].strip().lower()
+        vus = [str(e.get("renamed_to") or "").strip().lower()
+               for e in (parsed.get("entities") or []) if isinstance(e, dict)]
+        if want not in vus:
+            out.append(f"renommage vers '{case['renamed_to']}' absent "
+                       f"(vu : {[v for v in vus if v] or 'aucun'})")
+
+    if case.get("no_rename"):
+        vus = [(e.get("canonical_name"), e.get("renamed_to"))
+               for e in (parsed.get("entities") or [])
+               if isinstance(e, dict) and str(e.get("renamed_to") or "").strip()]
+        if vus:
+            out.append(f"renommage de trop : {vus}")
 
     # NEG-b / NEG-c — la négation d'un fait. Le premier axe vérifie qu'elle est
     # EXPRIMÉE, le second qu'elle ne l'est pas à tort. Les deux comptent autant :

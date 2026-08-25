@@ -40,6 +40,7 @@ ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "kind", "ephemeral",
          "owner", "recurring", "event_date", "language", "needs_review",
          "drop_guard", "rel", "proj", "facts_min", "entity_expected", "no_entity",
          "forbidden_value", "forbidden_predicate", "obsoletes", "no_obsolete",
+         "renamed_to", "no_rename",
          "frontiere", "why", "ambigu", "valide"]
 
 G, J, R, B, N = "\033[32m", "\033[33m", "\033[31m", "\033[1m", "\033[0m"

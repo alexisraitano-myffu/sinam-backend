@@ -1869,6 +1869,121 @@ def predicate_proposal_reject(proposal_id: str):
         conn.close()
 
 
+# ── Rename proposals (SYN-188) ────────────────────────────────────────────────
+
+@app.get("/rename-proposals", dependencies=[Depends(require_auth)])
+def rename_proposals_list(status: str = "pending"):
+    """Les renommages déclarés en capture, en attente de confirmation (SYN-188).
+
+    Le nom canonique titre la fiche, sort dans le digest et remonte en recherche :
+    c'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le
+    propose, une personne l'applique — même porte que pour un type d'entité neuf.
+
+    La liste rend de quoi trancher sans requête de suivi : le poids de l'entité
+    (faits, relations) et l'extrait de la capture qui a déclaré le renommage.
+    """
+    if status not in {"pending", "accepted", "rejected"}:
+        raise HTTPException(status_code=400, detail="invalid status filter")
+    conn = get_connection()
+    try:
+        rows = cursor_to_dicts(conn.execute(
+            "SELECT p.id, p.entity_id, p.current_name, p.proposed_name, "
+            "       p.evidence_capture_id, p.status, p.created_at, p.resolved_at, "
+            "       e.type AS entity_type, e.aliases "
+            "FROM entity_rename_proposals p "
+            "LEFT JOIN entities e ON e.id = p.entity_id "
+            "WHERE p.status = ? ORDER BY p.created_at DESC",
+            (status,),
+        ))
+        for r in rows:
+            poids = first_row(conn.execute(
+                "SELECT (SELECT COUNT(*) FROM facts WHERE entity_id = ?1 "
+                "        AND obsoleted_at IS NULL AND archived_at IS NULL) AS facts, "
+                "       (SELECT COUNT(*) FROM relations WHERE entity_from = ?1 "
+                "        OR entity_to = ?1) AS relations",
+                (r["entity_id"],),
+            )) or {}
+            r["facts_count"] = poids.get("facts", 0)
+            r["relations_count"] = poids.get("relations", 0)
+            cap = first_row(conn.execute(
+                "SELECT content FROM inbox WHERE id = ?", (r["evidence_capture_id"],)
+            )) or {}
+            r["evidence_excerpt"] = (cap.get("content") or "")[:280]
+        return {"proposals": rows, "count": len(rows)}
+    finally:
+        conn.close()
+
+
+@app.post("/rename-proposals/{proposal_id}/accept", dependencies=[Depends(require_auth)])
+def rename_proposal_accept(proposal_id: str):
+    """Appliquer le renommage : l'ancien nom canonique devient un alias.
+
+    Même écriture que `PATCH /entity` (SYN-82), pour qu'il n'existe qu'un seul
+    chemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,
+    le nouveau nom étant retiré de la liste au passage.
+    """
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, entity_id, proposed_name, status FROM entity_rename_proposals "
+            "WHERE id = ?", (proposal_id,),
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+        e = first_row(conn.execute(
+            "SELECT id, canonical_name, aliases FROM entities WHERE id = ?", (p["entity_id"],)
+        ))
+        if not e:
+            raise HTTPException(status_code=404, detail="entity not found")
+        nouveau = p["proposed_name"].strip()
+        with conn:
+            if nouveau and nouveau.lower() != (e["canonical_name"] or "").lower():
+                try:
+                    aliases = json.loads(e["aliases"] or "[]")
+                except (ValueError, TypeError):
+                    aliases = []
+                if e["canonical_name"] and e["canonical_name"] not in aliases:
+                    aliases.append(e["canonical_name"])
+                aliases = [a for a in aliases if a.lower() != nouveau.lower()]
+                conn.execute(
+                    "UPDATE entities SET canonical_name = ?, aliases = ?, summary_stale = 1 "
+                    "WHERE id = ?",
+                    (nouveau, json.dumps(aliases, ensure_ascii=False), e["id"]),
+                )
+            conn.execute(
+                "UPDATE entity_rename_proposals SET status = 'accepted', "
+                "resolved_at = CURRENT_TIMESTAMP WHERE id = ?", (proposal_id,),
+            )
+        return {"status": "accepted", "proposal_id": proposal_id,
+                "entity_id": e["id"], "canonical_name": nouveau}
+    finally:
+        conn.close()
+
+
+@app.post("/rename-proposals/{proposal_id}/reject", dependencies=[Depends(require_auth)])
+def rename_proposal_reject(proposal_id: str):
+    """Refuser : l'entité garde son nom, et le renommage n'est plus reproposé."""
+    conn = get_connection()
+    try:
+        p = first_row(conn.execute(
+            "SELECT id, status FROM entity_rename_proposals WHERE id = ?", (proposal_id,)
+        ))
+        if not p:
+            raise HTTPException(status_code=404, detail="proposal not found")
+        if p["status"] != "pending":
+            raise HTTPException(status_code=400, detail=f"proposal already {p['status']}")
+        with conn:
+            conn.execute(
+                "UPDATE entity_rename_proposals SET status = 'rejected', "
+                "resolved_at = CURRENT_TIMESTAMP WHERE id = ?", (proposal_id,),
+            )
+        return {"status": "rejected", "proposal_id": proposal_id}
+    finally:
+        conn.close()
+
+
 # ── Negation proposals (SYN-189) ──────────────────────────────────────────────
 
 @app.get("/negation-proposals", dependencies=[Depends(require_auth)])
@@ -2543,8 +2658,11 @@ def update_entity(entity_id: str, body: EntityUpdate):
                 if e["canonical_name"] and e["canonical_name"] not in aliases:
                     aliases.append(e["canonical_name"])
                 aliases = [a for a in aliases if a.lower() != new_name.lower()]
+                # Le résumé de la fiche contient le nom : le laisser tel quel
+                # afficherait l'ancien indéfiniment, plus rien ne le régénérant.
                 conn.execute(
-                    "UPDATE entities SET canonical_name=?, aliases=? WHERE id=?",
+                    "UPDATE entities SET canonical_name=?, aliases=?, summary_stale=1 "
+                    "WHERE id=?",
                     (new_name, json.dumps(aliases, ensure_ascii=False), entity_id),
                 )
         return {"id": entity_id, "type": body.type,

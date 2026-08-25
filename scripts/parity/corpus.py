@@ -39,6 +39,8 @@ formulée. C'est `score.py` qui les lit, et lui seul.
     forbidden_value / forbidden_predicate   ce qui ne doit PAS naître
     obsoletes   "predicate" ou "predicate=valeur" que la capture doit périmer (SYN-189)
     no_obsolete True : la capture ne doit RIEN périmer
+    renamed_to  le nouveau nom que la capture déclare, à proposer et jamais à appliquer
+    no_rename   True : la capture ne déclare aucun renommage
     wm / repeat / expect          mode scénario : le fil, les passes, la branche attendue
     frontiere   le code de `frontieres.md` que ce cas couvre
     why         pourquoi cette étiquette, et ce qu'on a mesuré pour la fixer
@@ -60,7 +62,8 @@ CHAMPS = {
     "id", "text", "note", "kind", "ephemeral", "owner", "recurring", "event_date",
     "language", "needs_review", "drop_guard", "rel", "proj", "facts_min",
     "entity_expected", "no_entity", "forbidden_value", "forbidden_predicate",
-    "obsoletes", "no_obsolete", "wm", "repeat", "expect", "frontiere", "why",
+    "obsoletes", "no_obsolete", "renamed_to", "no_rename",
+    "wm", "repeat", "expect", "frontiere", "why",
     "ambigu", "valide",
 }
 

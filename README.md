@@ -59,7 +59,7 @@ The pipeline logic (classify, resolve, score, route, behavioral-validate, vector
 
 - **Entity summaries are derived, never stored opinions.** They are regenerated from the *active* facts and relations whenever those change, under a hard *timeless* rule (absolute dates only, never "next week"). User edits (rename keeps the old name as an alias, fact corrections, relation CRUD) are authoritative and flow into the next regeneration.
 
-- **A living map.** `GET /graph` assembles a projection (entities and atomic-notes as nodes, relations and mentions as edges) with Louvain communities, a ForceAtlas2 layout and cached Haiku region labels. It is no new source of truth and is fully rebuildable. Node size is `memory_strength × degree`, colour is the community.
+- **A living map.** `GET /graph` serves a projection (entities and atomic-notes as nodes, relations and mentions as edges) with Louvain communities, a force-directed layout and cached Haiku region labels. It is no new source of truth and is fully rebuildable. **The projection is computed by the Rust core**, so the map served here and the map an app rebuilds offline are the same map; only the region labels stay here, being an LLM call. Positions are not persisted: the solver is deterministic. Node size is `memory_strength × degree`, colour is the community.
 
 - **Embeddings are local, and computed in the core.** The Rust core embeds text (ONNX, `paraphrase-multilingual-MiniLM-L12-v2`, 384-d, about 50 languages) and stores vectors in SQLite plus `sqlite-vec` — one implementation shared by desktop and mobile, so vectors are byte-identical everywhere. No PyTorch, no embedding server, no network. The model files are **data** (`~/.synapse/models/…`), never compiled in (App Store rule 2.5.2).
 
@@ -124,7 +124,7 @@ python -m dream_cycle.digest         # --dry-run to preview
 Bearer auth (`SYNAPSE_API_TOKEN`; disabled if unset, for dev). **82 endpoints**; the frozen contract is [`openapi.json`](openapi.json). Highlights:
 
 - **Capture / inbox:** `POST /capture` (idempotent on a client UUID), `GET /feed` (includes the per-entry failure reason), `POST /inbox/{id}/requeue`, `POST /inbox/{id}/reprocess` (replay one capture through the cycle after a prompt fix; keeps entities).
-- **Graph / living map:** `GET /graph` with opt-in layers (atomic-note nodes, Louvain clusters, ForceAtlas2 positions, labelled regions, anti-hairball filters).
+- **Graph / living map:** `GET /graph` with opt-in layers (atomic-note nodes, Louvain clusters, force-directed positions, labelled regions, anti-hairball filters).
 - **Entities / facts / relations:** `GET /entity/{id}` (returns `relations` and `relations_incoming`), `PATCH /entity/{id}` (rename keeps an alias), `PATCH /fact/{id}`, `POST/PATCH/DELETE /relation`, `GET /entity/{id}/similar`, archive / obsolete / restore.
 - **"À valider":** `GET /pending` and `/pending/{id}/validate`, `GET /atomic-notes?review_status=pending` and `/atomic-note/{id}/confirm`, `GET /relations/pending` and `/relation/{id}/confirm`, merge-proposals, entity-type-proposals, project-attach-proposals.
 - **Notes / projects:** `GET /atomic-notes`, `POST /atomic-note/{id}/reinforce|date|archive|promote-to-project`, `GET /projects`, `GET /project/{id}/state`.

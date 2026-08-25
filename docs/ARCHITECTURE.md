@@ -259,7 +259,7 @@ SQLite (`~/.synapse/synapse.db`), extension `sqlite-vec`. **Le process n'a qu'un
 | `entity_type_proposals` / `active_entity_types` | vocab de types dynamique (SYN-58) | : |
 | `project_entries` / `project_state` / `project_state_versions` | agrégat projet (SYN-40) | : |
 | **`project_attach_proposals`** | propositions d'attache tâche/intention → projet (point 1 C) | : |
-| `node_positions` | cache des positions de la carte (x, y) : ForceAtlas2, SYN-69 | projection (carte) |
+| `node_positions` | **table morte** : plus rien ne l'écrit ni ne la lit depuis que les positions ne sont plus persistées | — |
 | `cluster_labels` | cache des labels Haiku par signature de cluster, SYN-70 | projection (carte) |
 | `space` / `devices` | singleton d'espace répliqué + registre d'appareils (SYN-127/128) | : |
 | `sync_log` / `sync_owner` | journal de versions HLC des tables répliquées + verrou de propriétaire (SYN-112) | : |
@@ -290,16 +290,18 @@ Et **l'épisode garde sa date** : la porte `durable` (event|task) est devenue `d
 
 ## 8. Modèle du graphe : la carte vivante (SYN-66)
 
-> La carte mentale n'est **pas** une table de plus : c'est une **projection** assemblée à la demande depuis le graphe existant. Aucune nouvelle source de vérité : juste deux caches (`node_positions`, `cluster_labels`). Un recalcul complet ne perd rien. Exposée par `GET /graph`. Code : [graph_layout.py](../graph_layout.py), [graph_clusters.py](../graph_clusters.py), handler dans [api/app.py](../api/app.py).
+> La carte mentale n'est **pas** une table de plus : c'est une **projection** assemblée à la demande depuis le graphe existant. Aucune nouvelle source de vérité : un seul cache, `cluster_labels` (un appel LLM). Un recalcul complet ne perd rien. Exposée par `GET /graph`.
+>
+> **Elle est calculée par le core Rust** (`snapshot.rs`), pas ici : communautés, ressorts sémantiques et disposition. Le backend appelle `conn.read_graph()` et n'ajoute que les libellés de zone, qui demandent une clé d'API. Il en existait deux implémentations, une en Python et une en Rust, et la carte changeait donc selon qui avait répondu au dernier chargement ; il n'en reste qu'une. Le Python garde la vue ego, la liste d'entités et les filtres anti-pelote, qui n'ont pas d'équivalent dans le core. Code : [graph_layout.py](../graph_layout.py) (ressorts sémantiques), [graph_communities.py](../graph_communities.py) (Louvain, pour ces chemins-là), [graph_clusters.py](../graph_clusters.py), handler dans [api/app.py](../api/app.py).
 
 **Deux natures de nœuds** : **Entités** (`entities`, id = uuid) : nœuds « durs » ; **Notes atomiques** (`atomic_notes`, id exposé `n:<rowid>`) : pensées libres, reliées sans devenir des entités.
 **Deux natures d'arêtes** : **Relations** entité↔entité ; **Mentions** note→entité (dérivées de `entities_mentioned`).
 
 ```mermaid
 flowchart LR
-  A["Assemblage<br/>entities ∪ atomic_notes<br/>relations + mentions"] --> C["Clustering<br/>Louvain (networkx)<br/>→ community_id"]
+  A["Assemblage<br/>entities ∪ atomic_notes<br/>relations + mentions"] --> C["Clustering<br/>Louvain déterministe (core)<br/>→ community_id"]
   C --> F["Filtres anti-hairball<br/>ms_min · top%/cluster · since<br/>· types · max_nodes"]
-  F --> L["Layout<br/>ForceAtlas2 → node_positions<br/>persisté · incrémental"]
+  F --> L["Disposition<br/>forceAtlas2Based (core)<br/>déterministe · non persistée"]
   L --> H["Zones<br/>label Haiku (caché) + hull<br/>→ cluster_labels"]
   H --> O["GET /graph"]
 ```
@@ -310,10 +312,17 @@ flowchart LR
 | Couleur de zone | `community_id` (Louvain) |
 | Saturation / vivacité | `memory_strength` (decay Ebbinghaus, SYN-19/68) |
 | Forme | `kind` (entity / atomic_note) + `type` |
-| Position (x, y) | mobile : **calculée côté client** (`ForceLayout.kt`, portage vis-network forceAtlas2Based, SYN-64) ; backend `node_positions` (ForceAtlas2) = advisory |
+| Position (x, y) | **calculée par le core** (portage vis-network forceAtlas2Based), servie telle quelle en HTTP comme hors ligne ; l'app la lit, elle ne la recalcule plus |
 | Épaisseur d'arête | `confidence` |
 
-**Décisions de modèle** : projection non source (`relayout=true` reconstruit tout) · stabilité (positions relues telles quelles, nouveau nœud placé près du barycentre de son cluster) · layout client sur mobile (calculé une fois puis figé, offline) · coût LLM négligeable (labels batchés + cachés par signature) · anti-hairball serveur (`max_nodes` plafonne par saillance) · pas de cluster forcé (< `MIN_CLUSTER_SIZE`=3 → orphelin flottant) · layout sémantique (`semantic_edges` : kNN embeddings top-4 cosinus ≥ 0.80, poids `0.45×score`, **layout-only**). **Dépendance : `networkx>=3.2`** (pur-Python ; package dans le .dmg PyInstaller, contrairement à igraph/leidenalg).
+**Décisions de modèle** :
+
+- **Une seule implémentation**, dans le core, pour que la carte en ligne et la carte hors ligne soient la même. Le déterminisme ne vient d'aucune graine : nœuds visités par id trié, égalités tranchées explicitement, partition renumérotée canoniquement (taille décroissante, puis plus petit id membre).
+- **Positions non persistées.** `node_positions` est morte, `relayout` est accepté et ignoré. Le solveur étant déterministe, le même graphe redonne la même carte ; et une carte a le droit de bouger quand la mémoire grandit.
+- **Une seule constante sépare une carte lisible d'un gaz uniforme** : `SPRING_CONSTANT`, 0,090. À 0,010, des ressorts huit fois trop faibles contre une répulsion inchangée étalent tout à distance égale. Mesuré sur la mémoire réelle, la silhouette des zones passe de 0,189 à 0,347.
+- **Ressorts sémantiques** (`semantic_edges` : kNN embeddings top-4, cosinus ≥ **0,62**, poids `0,45×score`) : ils nourrissent la disposition **et** les communautés, ne sont jamais renvoyés au client et ne comptent pas dans le degré. Le seuil était à 0,80, au-dessus des données (médiane du meilleur voisin 0,626), et ne produisait que deux arêtes. En dessous de 0,55 les arêtes relient n'importe quoi et la modularité s'effondre.
+- Coût LLM négligeable (labels batchés + cachés par signature) · anti-hairball serveur (`max_nodes` plafonne par saillance) · pas de cluster forcé (< `MIN_CLUSTER_SIZE`=3 → orphelin flottant).
+- **`networkx` n'est plus une dépendance d'exécution**, seulement de test (il fournit le graphe du karate club contre lequel notre Louvain est épinglé). Son Louvain a été abandonné parce qu'il mélange l'ordre des nœuds avec une graine : reproductible dans un process Python, impossible à reproduire en Rust, donc incompatible avec une implémentation unique.
 
 ---
 
@@ -355,7 +364,7 @@ Familles principales :
 | Famille | Endpoints (extrait) |
 |---|---|
 | Santé / capture | `GET /health` · `POST /capture` (**idempotent sur UUID client**) · `GET /feed` · `POST /inbox/{id}/requeue` · **`POST /inbox/{id}/reprocess`** (rejoue une capture après fix de prompt : supprime ses seuls artefacts, garde les entités) |
-| Graphe / carte | `GET /graph` (base entités+relations ; flags `include_notes`, `cluster`, `layout`/`relayout`, `clusters` + filtres `node_types`/`memory_strength_min`/`since`/`top_pct_per_cluster`/`include_isolated`/`max_nodes`) |
+| Graphe / carte | `GET /graph` (base entités+relations ; flags `include_notes`, `cluster`, `layout` (`relayout` accepté et ignoré), `clusters` + filtres `node_types`/`memory_strength_min`/`since`/`top_pct_per_cluster`/`include_isolated`/`max_nodes`) |
 | Entités / faits | `GET /entity/{id}` (`?include=archived,obsolete` ; `relations` + `relations_incoming`) · `PATCH /entity/{id}` (rename→alias) · `PATCH /fact/{id}` · `POST/PATCH/DELETE /relation` · `GET /entity/{id}/similar` (SYN-62) · archive/obsolete/restore (SYN-59) |
 | « À valider » | `GET /pending` · `POST /pending/{id}/validate` · `GET /atomic-notes?review_status=pending` · `POST /atomic-note/{id}/confirm` · `GET /relations/pending` · `POST /relation/{id}/confirm` · `GET/POST /merge-proposals*` (SYN-39) · `GET/POST /entity-type-proposals*` (SYN-58) · `GET /project-attach-proposals` + accept/reject |
 | Notes / projets | `GET /atomic-notes` · `GET /atomic-note/{id}` (+ `provenance_content`) · `POST /atomic-note/{id}/reinforce`·`/date`·`/archive`·`/promote-to-project` · `GET /projects` · `GET /project/{id}/state` · project-entry ops (`/move`, `/attach-to-project`, `/detach`, `/reclassify-as-fact`) |
@@ -426,7 +435,7 @@ Décisions verrouillées :
 
 ## 14. État d'implémentation & pistes restantes
 
-**Implémenté** : **cœur Rust partagé** `sinam-core` (SYN-96 T1→T5 : schéma + embeddings + classif + routing + decay + resummary/synthèse + digest + ressources, prompts en data, parité golden 224/224 ; desktop via wheel PyO3, mobile on-device via UniFFI) · **classifieur en deux appels** + fusion dans le core (SYN-171, §2quater) · **épisode**, `owner` et `review_reason` (SYN-182) · **multilingue EN-base** avec détection dans le prompt (SYN-119) · **embeddings chunkés** ~128 tokens (SYN-118) · **seam de provider** Anthropic / OpenAI-compatible / on-device (SYN-126/150/152/155) · **comptabilité du coût par appel** (SYN-160) · **sync P2P multi-Mac** (SYN-112 : HLC + LWW par colonne, pull mesh, owner-lock) · **espace + registre d'appareils + appairage** ECDH et code 6 chiffres (SYN-127/128/137) · **réplique mobile complète** : lecture locale (`snapshot.rs`, SYN-132/139/143/145) et rail d'écritures rejouables (`actions.rs`, SYN-135/144) · Dream Cycle unifié (routing **non-exclusif**) · **two-timescale** working memory + consolidation batchée + Batch API (SYN-93) · création d'entités sur mention + garde-fou · **file « À valider »** unifiée (tâches, relations, attache-projet, types, fusions) · **faits vs relations** de-dup + gating + fiche bidirectionnelle · **owner/« moi »** + **PROJET-vs-TÂCHE** · embeddings locaux · `search_memory` notes + entités + ressources · carte vivante (Louvain + ForceAtlas2 + zones) · API HTTP **68 endpoints** + modèle de sync · **provenance inverse** (SYN-92) · **reprocess** d'une capture · **digest hebdo** (SYN-23, lundi 08h + self-heal) · **entités liées offline** (SYN-91) · client Anthropic + fuel proxy (SYN-105) · résilience par entrée · tests hors-ligne (verts).
+**Implémenté** : **cœur Rust partagé** `sinam-core` (SYN-96 T1→T5 : schéma + embeddings + classif + routing + decay + resummary/synthèse + digest + ressources, prompts en data, parité golden 224/224 ; desktop via wheel PyO3, mobile on-device via UniFFI) · **classifieur en deux appels** + fusion dans le core (SYN-171, §2quater) · **épisode**, `owner` et `review_reason` (SYN-182) · **multilingue EN-base** avec détection dans le prompt (SYN-119) · **embeddings chunkés** ~128 tokens (SYN-118) · **seam de provider** Anthropic / OpenAI-compatible / on-device (SYN-126/150/152/155) · **comptabilité du coût par appel** (SYN-160) · **sync P2P multi-Mac** (SYN-112 : HLC + LWW par colonne, pull mesh, owner-lock) · **espace + registre d'appareils + appairage** ECDH et code 6 chiffres (SYN-127/128/137) · **réplique mobile complète** : lecture locale (`snapshot.rs`, SYN-132/139/143/145) et rail d'écritures rejouables (`actions.rs`, SYN-135/144) · Dream Cycle unifié (routing **non-exclusif**) · **two-timescale** working memory + consolidation batchée + Batch API (SYN-93) · création d'entités sur mention + garde-fou · **file « À valider »** unifiée (tâches, relations, attache-projet, types, fusions) · **faits vs relations** de-dup + gating + fiche bidirectionnelle · **owner/« moi »** + **PROJET-vs-TÂCHE** · embeddings locaux · `search_memory` notes + entités + ressources · carte vivante (Louvain déterministe + disposition, les deux dans le core) · API HTTP **68 endpoints** + modèle de sync · **provenance inverse** (SYN-92) · **reprocess** d'une capture · **digest hebdo** (SYN-23, lundi 08h + self-heal) · **entités liées offline** (SYN-91) · client Anthropic + fuel proxy (SYN-105) · résilience par entrée · tests hors-ligne (verts).
 
 **Pistes restantes** :
 

@@ -193,11 +193,29 @@ contexte exprès, donc il n'a aucun état antérieur.
 
 ### EMO, la capture émotionnelle
 
-Le prompt dit une seule chose, « A FEELING IS NOT AN ACHIEVEMENT », et seulement
-pour un ressenti collé à une activité routinière (`ep2`). La capture émotionnelle
-pure n'est tranchée nulle part et tombe en ligne 5 par défaut, sans que personne
-ne l'ait décidé. **Rien n'est étiquetable ici tant que SYN-191 n'a pas tranché** :
-un cas que le prompt ne tranche pas n'est pas un échec du modèle.
+**Tranché le 2026-08-25 (SYN-191), 8 cas dans `emotion.jsonl`.** Le prompt ne
+disait qu'une chose, « A FEELING IS NOT AN ACHIEVEMENT », et seulement pour un
+ressenti collé à une activité routinière (`ep2`). La capture émotionnelle pure
+tombait en ligne 5 par défaut, sans que personne ne l'ait décidé.
+
+L'arbitrage tient en un discriminant, le même que celui de la ligne épisode :
+**un ressenti rattaché à une CAUSE devient une note, un état nu ne laisse rien.**
+« Ça m'angoisse de devoir présenter devant le comité » a une cause ; « je me sens
+mal » n'en a pas, et le resservir trois semaines plus tard n'apporte rien.
+
+Trois conséquences, toutes assumées :
+
+* **La règle ne s'applique que si aucune ligne au-dessus n'a pris la capture.**
+  L'ordre de la table EST la règle, et c'était le piège : « ce que Marc a dit m'a
+  blessé » nomme une personne et raconte du vécu, donc la ligne épisode le prend
+  d'abord. Écrire la règle sans cette réserve aurait cassé une règle voisine, ce
+  que le ticket annonçait précisément.
+* **Une capture émotionnelle qui sort en épisode décroît en 10 jours au lieu de
+  30.** Sans effet réel : la décroissance ne supprime rien, elle fait descendre
+  dans le classement et dans la recherche.
+* **Aucun fait durable sur un état psychique**, interdit explicitement côté
+  graphe. Une CONDITION physique durable reste autorisée, et la base en contient
+  déjà deux à juste titre. Une condition est un fait, un état est la météo.
 
 ### Les cinq typologies, pas une
 
@@ -344,7 +362,6 @@ revue.
 | NEG-e, correction d'une capture antérieure | idem, plus le fil de mémoire de travail (mode scénario) |
 | PER-b, PER-c, renommage | SYN-188 |
 | Assertion d'un prédicat nommé, `category` | SYN-190 |
-| EMO, capture émotionnelle | SYN-191 |
 | G-LINK, lien commenté | SYN-186 |
 
 Environ 120 des 150 cas restent écrivables sans rien attendre.

@@ -44,6 +44,43 @@ ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "kind", "ephemeral",
 
 G, J, R, B, N = "\033[32m", "\033[33m", "\033[31m", "\033[1m", "\033[0m"
 
+# Un cas dont le `why` porte l'une de ces marques a demandé une DÉCISION : le
+# prompt ne le tranchait pas seul, ou l'axe ne mesure qu'une partie de la règle.
+# C'est là que se cachent les erreurs qui contaminent une famille entière, et
+# c'est donc là que la relecture humaine rapporte le plus.
+MARQUES = ("n'est PAS asserté", "pas asserté", "⚠", "ne tranche pas", "ne dit pas",
+           "question ouverte", "limite connue", "à ouvrir", "ne définit", "ne mesure",
+           "assumée", "Conséquence assumée")
+
+
+def porte_une_decision(cas: dict) -> bool:
+    return any(m in (cas.get("why") or "") for m in MARQUES)
+
+
+def echantillon(par_famille: int = 2) -> list[tuple[str, dict]]:
+    """Les cas à relire en priorité : toutes les décisions, plus un sondage.
+
+    Relire 150 cas coûte des heures et confirme surtout du mécanique. Ce qui se
+    cherche ici n'est pas l'erreur isolée, c'est l'erreur SYSTÉMATIQUE — une
+    règle du prompt mal lue, qui se retrouve alors dans toute une famille. Le
+    sondage par famille existe pour ça : deux cas ordinaires suffisent à la
+    révéler, là où le trentième cas d'une même règle n'apprend plus rien.
+
+    Le tirage est déterministe (indices régulièrement espacés sur les
+    identifiants triés) : deux personnes qui lancent la commande relisent le
+    même échantillon, et une session interrompue reprend le même.
+    """
+    lot: list[tuple[str, dict]] = []
+    for famille, cas in sorted(C.JEUX.items()):
+        decisions = [k for k in cas if porte_une_decision(k)]
+        lot += [(famille, k) for k in decisions]
+        reste = sorted((k for k in cas if k not in decisions), key=lambda k: k["id"])
+        if not reste:
+            continue
+        pas = max(1, len(reste) // par_famille)
+        lot += [(famille, k) for k in reste[::pas][:par_famille]]
+    return lot
+
 
 def _serialiser(cas: dict) -> str:
     inconnus = set(cas) - C.CHAMPS
@@ -208,6 +245,10 @@ def main() -> int:
     ap.add_argument("--frontiere", help="ne revoir que les cas d'une frontière")
     ap.add_argument("--tous", action="store_true",
                     help="y compris les cas déjà validés (défaut : seulement les autres)")
+    ap.add_argument("--echantillon", nargs="?", type=int, const=2, metavar="N",
+                    help="ne relire que les cas qui portent une décision, plus N cas "
+                         "ordinaires par famille (défaut 2). Cherche l'erreur systématique, "
+                         "pas l'erreur isolée.")
     ap.add_argument("--baseline", help="afficher ce que ce modèle a produit (baselines/<nom>.json)")
     args = ap.parse_args()
 
@@ -215,15 +256,24 @@ def main() -> int:
         rapport()
         return 0
 
-    jeux = {args.jeu: C.JEUX[args.jeu]} if args.jeu else C.JEUX
     if args.jeu and args.jeu not in C.JEUX:
         raise SystemExit(f"jeu inconnu : {args.jeu}. Connus : {', '.join(C.JEUX)}")
-    lot = [(j, k) for j, cas in jeux.items() for k in cas
+    if args.echantillon:
+        brut = echantillon(args.echantillon)
+    else:
+        jeux = {args.jeu: C.JEUX[args.jeu]} if args.jeu else C.JEUX
+        brut = [(j, k) for j, cas in jeux.items() for k in cas]
+    lot = [(j, k) for j, k in brut
            if (args.tous or not k.get("valide"))
+           and (not args.jeu or j == args.jeu)
            and (not args.frontiere or k.get("frontiere") == args.frontiere)]
     if not lot:
         print("rien à revoir avec ces filtres.")
         return 0
+    if args.echantillon:
+        d = sum(1 for _, k in lot if porte_une_decision(k))
+        print(f"{B}échantillon{N} : {len(lot)} cas sur "
+              f"{sum(len(v) for v in C.JEUX.values())}, dont {d} qui portent une décision.")
 
     traces = {}
     if args.baseline:

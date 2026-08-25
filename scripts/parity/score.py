@@ -215,8 +215,14 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         rels = parsed.get("relations") or []
         preds = [str(r.get("predicate", "")).lower() for r in rels]
         attendus = case["rel"] if isinstance(case["rel"], list) else [case["rel"]]
+        # Un fragment peut nommer plusieurs mots pour le MÊME lien, séparés par
+        # `|`. Ouvert le 2026-08-25 : l'étiquette exigeait `brother` et le modèle
+        # rendait `sibling_of`, qui est le lien demandé sous un autre nom.
+        # Arbitré par Alexis : ce qui compte est que l'identification fraternelle
+        # se fasse, pas le mot choisi pour la dire.
         for attendu in attendus:
-            if not any(attendu.lower() in p for p in preds):
+            variantes = [v.strip().lower() for v in str(attendu).split("|") if v.strip()]
+            if not any(v in p for v in variantes for p in preds):
                 out.append(f"relation '{attendu}' absente (vu : {preds or 'aucune'})")
 
     if case.get("proj") and not (parsed.get("project_entries") or []):

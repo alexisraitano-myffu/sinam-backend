@@ -296,13 +296,11 @@
       "uncached_tokens": 7273,
       "output_tokens": 193,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
-        "facts_min",
+        "event_date",
         "drop_guard"
       ]
     },
@@ -555,9 +553,7 @@
       "uncached_tokens": 7273,
       "output_tokens": 725,
       "confidence": 1.0,
-      "gaps": [
-        "relation 'brother' absente (vu : ['son_of', 'son_of', 'sibling_of', 'daughter_of', 'daughter_of'])"
-      ],
+      "gaps": [],
       "axes": [
         "rel",
         "facts_min"
@@ -815,12 +811,12 @@
       "output_tokens": 585,
       "confidence": 1.0,
       "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
+        "entité 'Globex' absente",
         "négation de trop : works_at='Acme'"
       ],
       "axes": [
         "note",
-        "facts_min",
+        "entity_expected",
         "no_obsolete"
       ]
     },
@@ -860,12 +856,9 @@
       "uncached_tokens": 7255,
       "output_tokens": 309,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
-        "facts_min",
         "no_obsolete"
       ]
     },
@@ -1195,7 +1188,7 @@
       ]
     }
   },
-  "ecarts": 11,
+  "ecarts": 8,
   "par_frontiere": {
     "routage": [
       "conf-minimal-action",
@@ -1210,15 +1203,8 @@
       "r1e-reported-event"
     ],
     "P-PERS": [
-      "r3b-place-alone"
-    ],
-    "X-ONE": [
-      "neg-b-replace-en",
       "neg-b-replace-fr",
-      "r3d-plumber"
-    ],
-    "P-FR": [
-      "deduc-family-en"
+      "r3b-place-alone"
     ],
     "NEG-c": [
       "neg-b-replace-fr",
@@ -1228,5 +1214,6 @@
       "r1j-no-name"
     ]
   },
-  "prompt_tokens_max": 3914
+  "prompt_tokens_max": 3914,
+  "rescored": "2026-08-25"
 }

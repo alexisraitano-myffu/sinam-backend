@@ -2344,12 +2344,12 @@
       "output_tokens": 187,
       "confidence": 1.0,
       "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+        "event_date attendu=2026-07-14 obtenu=None"
       ],
       "axes": [
         "note",
         "kind",
-        "facts_min",
+        "event_date",
         "drop_guard"
       ]
     },
@@ -3907,9 +3907,7 @@
       "uncached_tokens": 7341,
       "output_tokens": 725,
       "confidence": 1.0,
-      "gaps": [
-        "relation 'brother' absente (vu : ['son_of', 'son_of', 'sibling_of', 'daughter_of', 'daughter_of'])"
-      ],
+      "gaps": [],
       "axes": [
         "rel",
         "facts_min"
@@ -6361,12 +6359,12 @@
       "output_tokens": 354,
       "confidence": 1.0,
       "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
+        "entité 'Globex' absente",
         "négation de trop : works_at='Acme'"
       ],
       "axes": [
         "note",
-        "facts_min",
+        "entity_expected",
         "no_obsolete"
       ]
     },
@@ -6406,12 +6404,9 @@
       "uncached_tokens": 7323,
       "output_tokens": 325,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
-        "facts_min",
         "no_obsolete"
       ]
     },
@@ -7998,13 +7993,10 @@
       ]
     }
   },
-  "ecarts": 14,
+  "ecarts": 12,
   "par_frontiere": {
     "X-ONE": [
-      "a3",
-      "neg-b-replace-en",
-      "neg-b-replace-fr",
-      "r3d-plumber"
+      "a3"
     ],
     "routage": [
       "conf-minimal-action",
@@ -8020,16 +8012,15 @@
     "R2d": [
       "emo-cause-lived-episode-fr",
       "ez-wedding-anniversary-fr",
-      "r1e-reported-event"
+      "r1e-reported-event",
+      "r3d-plumber"
     ],
     "P-PERS": [
+      "neg-b-replace-fr",
       "r3b-place-alone"
     ],
     "R2e/R3e": [
       "ez-wedding-anniversary-fr"
-    ],
-    "P-FR": [
-      "deduc-family-en"
     ],
     "NEG-c": [
       "neg-b-replace-fr"
@@ -8038,5 +8029,6 @@
       "r1j-no-name"
     ]
   },
-  "prompt_tokens_max": 3864
+  "prompt_tokens_max": 3864,
+  "rescored": "2026-08-25"
 }

@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parent.parent.parent
@@ -230,6 +231,52 @@ def cmd_diff(args) -> int:
     return 0
 
 
+def cmd_rescore(args) -> int:
+    """Renoter une baseline contre les étiquettes d'AUJOURD'HUI, sans rappeler le modèle.
+
+    Les réponses sont stockées ; les écarts, eux, sont dérivés des étiquettes du
+    moment où la passe a tourné. Une revue qui corrige une étiquette laisse donc
+    derrière elle des baselines qui accusent le modèle d'un écart que plus personne
+    n'assert. Renoter est gratuit — c'est un calcul, pas un appel.
+    """
+    chemin = SNAP_DIR / f"{args.label}.json"
+    if not chemin.is_file():
+        raise SystemExit(f"baseline introuvable : {chemin}")
+    data = json.loads(chemin.read_text(encoding="utf-8"))
+    cases = {c["id"]: c for jeu in SETS.values() for c in jeu}
+    av = ap = 0
+    par_frontiere: dict[str, list[str]] = {}
+    for cid, rec in data["cases"].items():
+        case = cases.get(cid)
+        if case is None:
+            print(f"  ? {cid:22} cas disparu du corpus, écarts laissés tels quels")
+            continue
+        anciens = rec.get("gaps") or []
+        neufs = score.gaps(case, rec.get("parsed"))
+        av += bool(anciens)
+        ap += bool(neufs)
+        if anciens != neufs:
+            print(f"  ~ {cid}")
+            for g in anciens:
+                if g not in neufs:
+                    print(f"      parti  : {g}")
+            for g in neufs:
+                if g not in anciens:
+                    print(f"      apparu : {g}")
+        rec["gaps"] = neufs
+        rec["axes"] = score.axes_of(case)
+        for axe in neufs:
+            par_frontiere.setdefault(_frontiere(case, axe), []).append(cid)
+    data["ecarts"] = ap
+    data["par_frontiere"] = {k: sorted(set(v)) for k, v in par_frontiere.items()}
+    data["rescored"] = str(date.today())
+    if not args.sec:
+        chemin.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n{av} cas en écart avec les anciennes étiquettes → {ap} avec celles d'aujourd'hui."
+          + ("  (à sec, rien écrit)" if args.sec else f"  → {chemin.name} réécrite"))
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="SYN-171 — baselines de parité")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -252,6 +299,12 @@ def main() -> int:
     r.add_argument("--tout", action="store_true",
                    help="afficher les cas conformes aussi (défaut : seulement les écarts)")
     r.set_defaults(func=cmd_run)
+
+    rs = sub.add_parser("rescore", help="renoter une baseline contre les étiquettes "
+                                       "d'aujourd'hui, sans rappeler le modèle")
+    rs.add_argument("label")
+    rs.add_argument("--sec", action="store_true", help="montrer sans réécrire le fichier")
+    rs.set_defaults(func=cmd_rescore)
 
     d = sub.add_parser("diff", help="comparer deux baselines")
     d.add_argument("before")

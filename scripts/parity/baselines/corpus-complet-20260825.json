@@ -2326,13 +2326,11 @@
       "uncached_tokens": 6515,
       "output_tokens": 193,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
-        "facts_min",
+        "event_date",
         "drop_guard"
       ]
     },
@@ -3886,9 +3884,7 @@
       "uncached_tokens": 6515,
       "output_tokens": 776,
       "confidence": 1.0,
-      "gaps": [
-        "relation 'brother' absente (vu : ['son_of', 'son_of', 'sibling_of', 'daughter_of', 'daughter_of'])"
-      ],
+      "gaps": [],
       "axes": [
         "rel",
         "facts_min"
@@ -6476,11 +6472,11 @@
       "output_tokens": 309,
       "confidence": 0.3,
       "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+        "entité 'Globex' absente"
       ],
       "axes": [
         "note",
-        "facts_min",
+        "entity_expected",
         "no_obsolete"
       ]
     },
@@ -6550,7 +6546,6 @@
       ],
       "axes": [
         "note",
-        "facts_min",
         "no_obsolete"
       ]
     },
@@ -8136,7 +8131,7 @@
       ]
     }
   },
-  "ecarts": 16,
+  "ecarts": 14,
   "par_frontiere": {
     "routage": [
       "conf-minimal-action",
@@ -8152,18 +8147,12 @@
       "r1e-reported-event"
     ],
     "P-PERS": [
+      "neg-b-replace-fr",
       "pers-incidental-en",
       "r3b-place-alone"
     ],
-    "X-ONE": [
-      "neg-b-replace-fr",
-      "r3d-plumber"
-    ],
     "interdit": [
       "bday-age-not-birthdate"
-    ],
-    "P-FR": [
-      "deduc-family-en"
     ],
     "X-LANG": [
       "lang-en-french-name"
@@ -8179,5 +8168,6 @@
       "r1j-no-name"
     ]
   },
-  "prompt_tokens_max": 3453
+  "prompt_tokens_max": 3453,
+  "rescored": "2026-08-25"
 }

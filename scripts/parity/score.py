@@ -207,10 +207,17 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
             out.append(f"{attendu} : confiance {conf} (seuil {REVIEW_THRESHOLD})")
 
     # --- graphe ----------------------------------------------------------
+    # Une chaîne, ou une LISTE de fragments. Ouvert le 2026-08-25 sur la revue
+    # d'Alexis : « Yanis is Marc and Julie's son and Léna's brother » nomme deux
+    # liens, et l'axe n'en tenait qu'un. Compter les liens (`facts_min`) ne dit
+    # pas LESQUELS, donc un modèle qui produit deux fois le même passait.
     if case.get("rel"):
         rels = parsed.get("relations") or []
-        if not any(case["rel"] in str(r.get("predicate", "")).lower() for r in rels):
-            out.append(f"relation '{case['rel']}' absente")
+        preds = [str(r.get("predicate", "")).lower() for r in rels]
+        attendus = case["rel"] if isinstance(case["rel"], list) else [case["rel"]]
+        for attendu in attendus:
+            if not any(attendu.lower() in p for p in preds):
+                out.append(f"relation '{attendu}' absente (vu : {preds or 'aucune'})")
 
     if case.get("proj") and not (parsed.get("project_entries") or []):
         out.append("entrée projet absente")

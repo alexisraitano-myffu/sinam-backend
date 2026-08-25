@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import textwrap
 from datetime import date
 from pathlib import Path
 
@@ -29,6 +30,7 @@ _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
 from scripts.parity import corpus as C  # noqa: E402
+from scripts.parity import lexique as L  # noqa: E402
 from scripts.parity import score  # noqa: E402
 
 SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
@@ -41,9 +43,10 @@ ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "kind", "ephemeral",
          "drop_guard", "rel", "proj", "facts_min", "entity_expected", "no_entity",
          "forbidden_value", "forbidden_predicate", "obsoletes", "no_obsolete",
          "renamed_to", "no_rename",
-         "frontiere", "why", "ambigu", "valide"]
+         "frontiere", "why", "ambigu", "arbitrage", "valide"]
 
 G, J, R, B, N = "\033[32m", "\033[33m", "\033[31m", "\033[1m", "\033[0m"
+D = "\033[2m"
 
 # Un cas dont le `why` porte l'une de ces marques a demandé une DÉCISION : le
 # prompt ne le tranchait pas seul, ou l'axe ne mesure qu'une partie de la règle.
@@ -113,17 +116,75 @@ def _valeur(brut: str):
         return brut
 
 
-def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None) -> None:
+def _bloc(titre: str, lignes, indent: str = "  ") -> None:
+    print(f"\n{B}{titre}{N}")
+    for ligne in lignes:
+        print(f"{indent}{ligne}")
+
+
+def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None,
+              technique: bool = False) -> None:
     marque = f"{G}validé {cas['valide']}{N}" if cas.get("valide") else f"{J}non validé{N}"
+    if cas.get("arbitrage"):
+        marque = f"{J}ta décision est écrite, en attente de traduction{N}"
     if cas.get("ambigu"):
-        marque += f" · {J}ambigu (hors décompte){N}"
+        marque += f" · {J}le prompt ne tranche pas (hors décompte){N}"
     print(f"\n{'─' * 78}\n{B}[{i}/{total}] {cas['id']}{N}  ·  {jeu}  ·  {marque}")
-    if cas.get("frontiere"):
-        print(f"frontière : {cas['frontiere']}")
     print(f"\n  « {cas['text']} »")
     for w in cas.get("wm") or []:
-        print(f"    ↳ fil : « {w} »")
+        print(f"    ↳ dit juste avant : « {w} »")
 
+    if technique:
+        return _technique(cas, trace)
+
+    # Ce que le cas tranche. Le code de frontière est un index, pas une
+    # explication : on affiche la phrase, et le code seulement en petit.
+    lignes = []
+    for code, phrase in L.tranche(cas):
+        bouts = textwrap.wrap(phrase, 68)
+        lignes.append(f"{bouts[0]}  {D}[{code}]{N}")
+        lignes += [f"  {b}" for b in bouts[1:]]
+    if lignes:
+        _bloc("CE QUE CE CAS TRANCHE", lignes)
+
+    dit = L.dit(cas)
+    if dit:
+        print(f"\n{B}LA RÉPONSE ACTUELLE{N}")
+        for question, phrases in dit:
+            print(f"  {J}{question}{N}")
+            for ph in phrases:
+                for k, bout in enumerate(textwrap.wrap(ph, 70)):
+                    print(f"    {'·' if k == 0 else ' '} {bout}")
+    elif "expect" in cas:
+        _bloc("LA RÉPONSE ACTUELLE",
+              [f"branche attendue : {cas['expect']} "
+               f"({cas.get('repeat', 1)} passes)"])
+    else:
+        print(f"\n  {R}Ce cas n'asserte rien : il ne vérifie rien.{N}")
+
+    muets = L.muet(cas)
+    if muets:
+        _bloc("CE CAS NE DIT RIEN SUR",
+              textwrap.wrap(" · ".join(muets), 74)
+              + [f"{D}donc rien ne sera jugé là-dessus, et tu n'as pas à "
+                 f"l'arbitrer ici{N}"])
+
+    if cas.get("why"):
+        _bloc("POURQUOI CETTE RÉPONSE",
+              [l for w in cas["why"].split("\n") for l in textwrap.wrap(w, 74)])
+
+    if cas.get("arbitrage"):
+        _bloc(f"{J}CE QUE TU AS DIT{N}",
+              [l for w in cas["arbitrage"].split("\n") for l in textwrap.wrap(w, 74)])
+
+    if trace is not None:
+        _trace(cas, trace)
+
+
+def _technique(cas: dict, trace: dict | None) -> None:
+    """La vue d'origine : les axes bruts, pour quand on veut la mécanique."""
+    if cas.get("frontiere"):
+        print(f"frontière : {cas['frontiere']}")
     axes = [k for k in score.AXES if k in cas]
     print(f"\n{B}étiquette{N}")
     if not axes and "expect" not in cas:
@@ -135,44 +196,95 @@ def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None) -> No
               f"   ({cas.get('repeat', 1)} passes)")
     if cas.get("why"):
         print(f"\n{B}pourquoi{N}\n  " + cas["why"].replace("\n", "\n  "))
-
     if trace is not None:
-        parsed = trace.get("parsed") or {}
-        ecarts = score.gaps(cas, parsed) if parsed else ["réponse inexploitable"]
-        etat = f"{G}conforme{N}" if not ecarts else f"{R}{len(ecarts)} écart(s){N}"
-        print(f"\n{B}ce que le modèle a produit{N} — {etat}")
-        print(f"  note={trace.get('has_note')} kind={trace.get('kind')} "
-              f"ephemeral={trace.get('ephemeral')} faits={trace.get('facts')} "
-              f"relations={trace.get('relations')} projets={trace.get('projects')}")
-        for e in ecarts:
-            print(f"  {R}·{N} {e}")
+        _trace(cas, trace)
 
 
-MENU = ("[o] valider  [m] modifier un axe  [p] pourquoi  [f] frontière  "
-        "[a] ambigu  [s] passer  [q] quitter")
+def _trace(cas: dict, trace: dict) -> None:
+    parsed = trace.get("parsed") or {}
+    ecarts = score.gaps(cas, parsed) if parsed else ["réponse inexploitable"]
+    etat = f"{G}conforme{N}" if not ecarts else f"{R}{len(ecarts)} écart(s){N}"
+    print(f"\n{B}CE QUE LE MODÈLE A PRODUIT{N} — {etat}")
+    print(f"  note={trace.get('has_note')} kind={trace.get('kind')} "
+          f"ephemeral={trace.get('ephemeral')} faits={trace.get('facts')} "
+          f"relations={trace.get('relations')} projets={trace.get('projects')}")
+    for e in ecarts:
+        print(f"  {R}·{N} {e}")
+
+
+def _saisir_libre(invite: str) -> str:
+    """Un paragraphe, terminé par une ligne vide.
+
+    Une seule ligne ne suffisait pas : ce qu'on demande ici est un RAISONNEMENT,
+    et un raisonnement qu'il faut tasser sur une ligne se raccourcit jusqu'à ne
+    plus rien dire.
+    """
+    print(f"\n{J}{invite}{N}")
+    print(f"{D}(plusieurs lignes possibles · ligne vide pour terminer · "
+          f"rien du tout pour annuler){N}")
+    lignes = []
+    while True:
+        try:
+            ligne = input("  ")
+        except (EOFError, KeyboardInterrupt):
+            break
+        if not ligne.strip():
+            break
+        lignes.append(ligne.rstrip())
+    return "\n".join(lignes).strip()
+
+
+MENU = ("[o] d'accord  [d] je dis autre chose  [t] vue technique  "
+        "[a] le prompt ne tranche pas  [s] passer  [q] quitter")
+MENU_TECH = ("[m] modifier un axe  [p] pourquoi  [f] frontière  "
+             "[a] le prompt ne tranche pas  [h] revenir au français  "
+             "[s] passer  [q] quitter")
 
 
 def reviser(cas_par_jeu: list[tuple[str, dict]], traces: dict) -> None:
     aujourdhui = date.today().isoformat()
     total = len(cas_par_jeu)
     i = 0
+    technique = False
     while i < total:
         jeu, cas = cas_par_jeu[i]
-        _afficher(cas, jeu, i + 1, total, traces.get(cas["id"]))
+        _afficher(cas, jeu, i + 1, total, traces.get(cas["id"]), technique)
+        menu = MENU_TECH if technique else MENU
         try:
-            choix = input(f"\n{MENU}\n> ").strip().lower()
+            choix = input(f"\n{menu}\n> ").strip().lower()
         except (EOFError, KeyboardInterrupt):
-            print("\ninterrompu — tout ce qui était validé est déjà écrit.")
+            print("\ninterrompu — tout ce qui était écrit l'est déjà.")
             return
         if choix == "q":
             return
         if choix in ("", "s"):
             i += 1
             continue
+        if choix == "t":
+            technique = True
+            continue
+        if choix == "h":
+            technique = False
+            continue
         if choix == "o":
             cas["valide"] = aujourdhui
             ecrire(jeu, cas)
             print(f"{G}validé{N}")
+            i += 1
+        elif choix == "d":
+            texte = _saisir_libre(
+                "Dis ce qui devrait se passer avec cette capture, et pourquoi. "
+                "Avec tes mots.")
+            if not texte:
+                print("annulé")
+                continue
+            cas["arbitrage"] = texte
+            # Sa décision remplace l'étiquette actuelle : la garder validée
+            # ferait passer pour arbitré ce qu'il vient justement de contester.
+            cas.pop("valide", None)
+            ecrire(jeu, cas)
+            print(f"{G}écrit.{N} Je le traduirai en axes, et tu reverras la "
+                  f"traduction avant qu'elle compte.")
             i += 1
         elif choix == "m":
             champ = input("axe (vide = annuler) : ").strip()
@@ -200,7 +312,8 @@ def reviser(cas_par_jeu: list[tuple[str, dict]], traces: dict) -> None:
         elif choix == "a":
             cas["ambigu"] = not cas.get("ambigu")
             ecrire(jeu, cas)
-            print("ambigu" if cas["ambigu"] else "plus ambigu")
+            print("le prompt ne tranche pas : hors décompte"
+                  if cas["ambigu"] else "revenu dans le décompte")
         else:
             print("?")
 
@@ -232,11 +345,39 @@ def rapport() -> None:
     for f, n in sorted(couverture.items(), key=lambda x: -x[1]):
         print(f"  {f:14} {n:4}")
 
+    en_attente = [k["id"] for _, k in tous if k.get("arbitrage")]
+    if en_attente:
+        print(f"\n{J}décisions écrites, en attente de traduction{N} : "
+              f"{', '.join(en_attente)}")
+
     inertes = C.inertes()
     if inertes:
         print(f"\n{J}cas qui n'assertent rien{N} : {', '.join(inertes)}")
     if C.AMBIGUOUS:
         print(f"{J}cas ambigus (hors décompte){N} : {', '.join(sorted(C.AMBIGUOUS))}")
+
+
+def arbitrages() -> None:
+    """Ce qu'Alexis a dit, et que personne n'a encore traduit en axes.
+
+    Le point de rendez-vous entre les deux moitiés du travail : il décide, la
+    machine traduit, et la traduction lui revient avant de compter.
+    """
+    en_attente = [(j, k) for j, cas in sorted(C.JEUX.items()) for k in cas
+                  if k.get("arbitrage")]
+    if not en_attente:
+        print("aucune décision en attente de traduction.")
+        return
+    print(f"{B}{len(en_attente)} décision(s) à traduire en axes{N}")
+    for jeu, k in en_attente:
+        print(f"\n{'─' * 78}\n{B}{k['id']}{N}  ·  {jeu}")
+        print(f"  « {k['text']} »")
+        axes = [a for a in score.AXES if a in k]
+        print(f"  {D}étiquette actuelle : "
+              f"{', '.join(f'{a}={json.dumps(k[a], ensure_ascii=False)}' for a in axes) or 'aucune'}{N}")
+        for w in k["arbitrage"].split("\n"):
+            for ligne in textwrap.wrap(w, 74):
+                print(f"  {J}│{N} {ligne}")
 
 
 def main() -> int:
@@ -251,10 +392,17 @@ def main() -> int:
                          "ordinaires par famille (défaut 2). Cherche l'erreur systématique, "
                          "pas l'erreur isolée.")
     ap.add_argument("--baseline", help="afficher ce que ce modèle a produit (baselines/<nom>.json)")
+    ap.add_argument("--arbitrages", action="store_true",
+                    help="lister les décisions écrites en français qui attendent "
+                         "d'être traduites en axes")
     args = ap.parse_args()
 
     if args.rapport:
         rapport()
+        return 0
+
+    if args.arbitrages:
+        arbitrages()
         return 0
 
     if args.jeu and args.jeu not in C.JEUX:

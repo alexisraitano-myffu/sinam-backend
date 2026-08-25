@@ -32,7 +32,8 @@ formulée. C'est `score.py` qui les lit, et lui seul.
     drop_guard  True : cette capture NE DOIT PAS disparaître (note, entrée projet,
                 fait ou relation — au moins une trace durable). Garde-fou du bug
                 historique « action terse classée éphémère puis droppée ».
-    rel         fragment attendu dans un prédicat de relation
+    rel         fragment attendu dans un prédicat de relation, ou LISTE de fragments
+                quand la capture nomme plusieurs liens
     proj        "new" | "existing" : une entrée projet est attendue
     facts_min   nombre minimal de faits + relations (atomicité, SYN-98)
     entity_expected / no_entity   l'échelle de persistance décide du nœud
@@ -46,6 +47,11 @@ formulée. C'est `score.py` qui les lit, et lui seul.
     why         pourquoi cette étiquette, et ce qu'on a mesuré pour la fixer
     ambigu      True : le prompt ne tranche pas, observé mais hors décompte
     valide      date à laquelle l'étiquette a été validée à la main
+    arbitrage   ce qu'Alexis a DIT, avec ses mots, quand l'étiquette ne convenait
+                pas. Ce n'est pas une étiquette : c'est la décision, en attente
+                d'être traduite en axes. La traduction est mécanique, donc elle
+                revient à la machine ; la décision ne l'est pas, donc elle
+                revient à lui. Un cas qui en porte un n'est PAS validé.
 """
 from __future__ import annotations
 
@@ -64,12 +70,13 @@ CHAMPS = {
     "entity_expected", "no_entity", "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",
     "wm", "repeat", "expect", "frontiere", "why",
-    "ambigu", "valide",
+    "ambigu", "valide", "arbitrage",
 }
 
 # Les champs qui ne sont pas des assertions. Un cas qui n'a QUE ceux-là ne
 # vérifie rien, et le chargeur le dit.
-META = {"id", "text", "wm", "repeat", "frontiere", "why", "ambigu", "valide"}
+META = {"id", "text", "wm", "repeat", "frontiere", "why", "ambigu", "valide",
+        "arbitrage"}
 
 
 def charger(nom: str) -> list[dict]:

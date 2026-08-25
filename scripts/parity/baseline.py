@@ -22,20 +22,11 @@ _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
 from scripts.parity import context, providers, score  # noqa: E402
-from scripts.parity.corpus import (  # noqa: E402
-    ADVERSARIAL_CASES, ATOMICITY_CASES, GATE_CASES, HARD_CASES,
-)
+from scripts.parity.corpus import SETS  # noqa: E402
 from scripts.parity.paths import path_of  # noqa: E402
 from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
 SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
-
-SETS = {
-    "gate": GATE_CASES,
-    "hard": HARD_CASES,
-    "atomicity": ATOMICITY_CASES,
-    "adversarial": ADVERSARIAL_CASES,
-}
 
 # Les axes qu'on diffe. Volontairement les signaux de ROUTAGE seulement : le
 # texte d'une note varie d'une exécution à l'autre sans que ce soit une

@@ -124,6 +124,12 @@ CLASSIFY_SCHEMA = {
         "event_date": {"type": ["string", "null"]},
         "event_recurring": {"type": "boolean"},
         "is_ephemeral": {"type": "boolean"},
+        # Absent du schéma jusqu'au 2026-08-25, alors que `routing.rs` le lit en
+        # PREMIER pour le texte du rappel à 48 h. Contraint, le modèle ne pouvait
+        # donc pas l'émettre ; libre, le prompt le lui présentait comme un `null`
+        # littéral. Sur les 7 captures éphémères du corpus, il était rempli 0 fois,
+        # et la fonctionnalité ne tenait que par le repli sur `summary`.
+        "ephemeral_content": {"type": ["string", "null"]},
         "classification_confidence": {"type": "number"},
         "project_entries": {"type": "array", "items": _PROJECT_ENTRY},
         "entities": {"type": "array", "items": _ENTITY},
@@ -140,7 +146,7 @@ CLASSIFY_SCHEMA = {
     # n'exige pas la forme complète mesure autre chose que ce qu'on croit.
     "required": [
         "language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
-        "event_date", "event_recurring", "is_ephemeral",
+        "event_date", "event_recurring", "is_ephemeral", "ephemeral_content",
         "classification_confidence", "project_entries", "entities", "relations",
         # Requis comme les autres, et pour la même raison mesurée : un champ
         # facultatif est un champ que le modèle cesse d'émettre. Le tableau vide

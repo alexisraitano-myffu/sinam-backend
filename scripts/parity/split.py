@@ -17,7 +17,12 @@ décision du routeur. C'est le test pur. Un enchaînement rendrait de la cohére
 rétablirait le couplage qu'on cherche justement à supprimer — et on ne pourrait plus
 dire si le gain vient de la séparation ou de l'ordre.
 
-    python -m scripts.parity.split run <modèle> --label deux-appels [--schema]
+Ce module ne se lance pas seul : c'est `baseline.py run` qui joue le corpus, ici
+comme ailleurs. Il y a eu deux lanceurs jusqu'au 2026-08-25, et ils ont divergé
+exactement comme on pouvait le craindre — celui qui NOTAIT les réponses appelait
+le prompt en un seul appel, abandonné en production depuis le 2026-08-21, et
+celui qui appelait les vrais prompts ne notait rien. On mesurait donc avec
+application un prompt que plus personne n'exécute.
 
 La sortie est FUSIONNÉE au format d'un appel unique, pour que `path_of`, les baselines
 et `baseline diff` marchent sans la moindre modification : un résultat qui ne se compare
@@ -25,8 +30,6 @@ pas aux mesures d'hier ne vaut rien.
 """
 from __future__ import annotations
 
-import argparse
-import json
 import os
 import sys
 from pathlib import Path
@@ -35,8 +38,6 @@ _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
 from scripts.parity import context, providers  # noqa: E402
-from scripts.parity.baseline import SETS, SNAP_DIR  # noqa: E402
-from scripts.parity.paths import path_of  # noqa: E402
 from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
 # Les deux moitiés du classifieur. Depuis leur adoption (SYN-171, 2026-08-21)
@@ -171,63 +172,3 @@ def _cout(model: str, cases: dict) -> str:
     usd = (nc * entree + lu * cache + out * sortie) / 1e6
     return (f"coût     : ~{usd:.2f} $  "
             f"({nc/1000:.0f}k entrée · {lu/1000:.0f}k relus du cache · {out/1000:.0f}k sortie)")
-
-
-def cmd_run(args) -> int:
-    schema = bool(args.schema)
-    sets = args.sets.split(",") if args.sets else list(SETS)
-    fp_note = context.fingerprint(_system("note.md"))
-    fp_graph = context.fingerprint(_system("graph.md"))
-    print(f"modèle   : {args.model}")
-    print(f"appel 1  : {sum(len(b) for b in _system('note.md'))} car · empreinte {fp_note}")
-    print(f"appel 2  : {sum(len(b) for b in _system('graph.md'))} car · empreinte {fp_graph}")
-    print(f"décodage : {'schéma contraint' if schema else 'libre'}\n")
-
-    out: dict = {"model": args.model, "fingerprint": f"{fp_note}+{fp_graph}",
-                 "label": args.label, "schema_constrained": schema,
-                 "temperature": args.temperature, "split": True, "cases": {}}
-    demi = 0
-    for set_name in sets:
-        for case in SETS[set_name]:
-            merged, diag = classify_split(args.model, case["text"], schema, args.temperature)
-            rec = path_of(merged)
-            rec.update(set=set_name, text=case["text"], **diag,
-                       confidence=(merged or {}).get("classification_confidence"))
-            out["cases"][case["id"]] = rec
-            if not (diag["note_parsed"] and diag["graph_parsed"]):
-                demi += 1
-            mark = "·" if rec.get("parsed") else "✗"
-            half = "" if diag["note_parsed"] and diag["graph_parsed"] else "  ⚠ moitié perdue"
-            print(f"  {mark} {case['id']:22} "
-                  f"note={str(rec.get('has_note')):5} kind={str(rec.get('kind')):6} "
-                  f"f={rec.get('facts')} r={rec.get('relations')}{half}", flush=True)
-
-    if demi:
-        print(f"\n⚠ {demi} cas où une seule des deux moitiés a répondu — c'est le coût "
-              f"propre au découpage, il ne doit pas se lire comme une erreur de jugement.")
-    ligne = _cout(args.model.split(":", 1)[-1], out["cases"])
-    if ligne:
-        print(f"\n{ligne}")
-    SNAP_DIR.mkdir(parents=True, exist_ok=True)
-    path = SNAP_DIR / f"{args.label}.json"
-    path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n→ baseline écrite : {path.relative_to(_REPO)}  ({len(out['cases'])} cas)")
-    return 0
-
-
-def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__)
-    sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("run")
-    r.add_argument("model")
-    r.add_argument("--label", required=True)
-    r.add_argument("--sets", default=None)
-    r.add_argument("--schema", action="store_true")
-    r.add_argument("--temperature", type=float, default=0.0)
-    r.set_defaults(func=cmd_run)
-    args = p.parse_args()
-    return args.func(args)
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

@@ -8,6 +8,7 @@ pas, tout ce qu'il mesure est faux avec assurance.
     python -m scripts.parity.revue --rapport
     python -m scripts.parity.revue --jeu adversarial
     python -m scripts.parity.revue --frontiere NEG-b --baseline haiku-v28-final
+    python -m scripts.parity.revue --cas x-attend-noun,x-no-invention
 
 `--baseline` affiche, à côté de l'étiquette, ce que ce modèle a RÉELLEMENT
 produit sur le cas. Arbitrer contre une trace vaut mieux qu'arbitrer dans
@@ -385,6 +386,9 @@ def main() -> int:
     ap.add_argument("--rapport", action="store_true", help="état des lieux, sans rien écrire")
     ap.add_argument("--jeu", help="ne revoir qu'un fichier corpus/<jeu>.jsonl")
     ap.add_argument("--frontiere", help="ne revoir que les cas d'une frontière")
+    ap.add_argument("--cas", help="ne revoir que ces cas, par identifiant, séparés par "
+                                  "des virgules. Implique --tous : on rouvre un cas "
+                                  "nommément parce qu'on le sait mal étiqueté.")
     ap.add_argument("--tous", action="store_true",
                     help="y compris les cas déjà validés (défaut : seulement les autres)")
     ap.add_argument("--echantillon", nargs="?", type=int, const=2, metavar="N",
@@ -412,10 +416,17 @@ def main() -> int:
     else:
         jeux = {args.jeu: C.JEUX[args.jeu]} if args.jeu else C.JEUX
         brut = [(j, k) for j, cas in jeux.items() for k in cas]
+    vises = {c.strip() for c in args.cas.split(",") if c.strip()} if args.cas else None
+    if vises:
+        connus = {k["id"] for _, k in brut}
+        inconnus = vises - connus
+        if inconnus:
+            raise SystemExit(f"cas inconnu(s) : {', '.join(sorted(inconnus))}")
     lot = [(j, k) for j, k in brut
-           if (args.tous or not k.get("valide"))
+           if (args.tous or vises or not k.get("valide"))
            and (not args.jeu or j == args.jeu)
-           and (not args.frontiere or k.get("frontiere") == args.frontiere)]
+           and (not args.frontiere or k.get("frontiere") == args.frontiere)
+           and (vises is None or k["id"] in vises)]
     if not lot:
         print("rien à revoir avec ces filtres.")
         return 0

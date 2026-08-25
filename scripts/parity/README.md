@@ -9,9 +9,16 @@ décision s'est prise sur un harnais jeté après usage. Celui-ci est versionné
 | | Ce que ça répond | Coût |
 | -- | -- | -- |
 | **Étage 1 — `gate`** | Le modèle est-il *utilisable* ? | ~12 appels |
-| **Étage 2 — `baseline`** | Le modèle est-il *bon* ? | 58 cas |
+| **Étage 2 — `baseline`** | Le modèle est-il *bon* ? | 150 cas × 2 appels |
 | **Étage 3 — `scenario`** | La règle tient-elle *en contexte* ? | 5 scénarios × 5 passes |
 | **Étage 4 — `prose`** | Les CINQ AUTRES prompts tiennent-ils ? | 8 cas |
+
+L'étage 2 joue **les deux moitiés du classifieur**, celles que le core exécute
+depuis le 2026-08-21. Il y a eu deux lanceurs jusqu'au 2026-08-25 et ils avaient
+divergé : celui qui notait les réponses appelait l'ancien prompt en un seul
+appel, celui qui appelait les vrais prompts ne notait rien. Il n'en reste qu'un.
+`--appel-unique` rejoue l'ancien prompt, uniquement pour relire une baseline
+d'avant cette date, et le dit à l'écran.
 
 Les deux premiers mesurent une capture seule. Le troisième mesure ce que le
 CONTEXTE fait à la décision — et c'est là qu'on a trouvé des règles vertes aux

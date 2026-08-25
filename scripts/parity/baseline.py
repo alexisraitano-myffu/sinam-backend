@@ -10,6 +10,12 @@ C'est l'outil qui manquait aux trois décisions de modèle prises depuis juillet
     python -m scripts.parity.baseline run anthropic:claude-haiku-4-5-20251001 \
         --label avant-arbitrages
     python -m scripts.parity.baseline diff avant-arbitrages apres-arbitrages
+
+Il joue LES DEUX MOITIÉS du classifieur, c'est-à-dire ce que le core exécute
+réellement depuis le 2026-08-21. `--appel-unique` rejoue l'ancien `classifier.md`,
+et sert à une seule chose : relire une baseline d'avant cette date. Toute mesure
+prise avec ce drapeau sur une règle écrite depuis est fausse par construction, et
+le lanceur le dit à l'écran.
 """
 from __future__ import annotations
 
@@ -21,7 +27,7 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
-from scripts.parity import context, providers, score  # noqa: E402
+from scripts.parity import context, providers, score, split  # noqa: E402
 from scripts.parity.corpus import SETS  # noqa: E402
 from scripts.parity.paths import path_of  # noqa: E402
 from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
@@ -57,40 +63,71 @@ def _frontiere(case: dict, ecart: str) -> str:
         return score.AXES["forbidden_value"]
     if ecart.startswith("prédicat interdit"):
         return score.AXES["forbidden_predicate"]
+    # Trois axes dont l'écart s'énonce en français et non par leur nom de clé :
+    # sans ces lignes ils tombaient dans « autre », c'est-à-dire dans le tas où
+    # l'on ne regarde plus.
+    if ecart.startswith("négation"):
+        return score.AXES["no_obsolete" if "de trop" in ecart else "obsoletes"]
+    if ecart.startswith("renommage"):
+        return score.AXES["no_rename" if "de trop" in ecart else "renamed_to"]
     if "À valider" in ecart:
         return score.AXES["needs_review"]
     return "autre"
 
 
 def cmd_run(args) -> int:
-    system = context.classifier_system(Path(args.prompt) if args.prompt else None)
-    fp = context.fingerprint(system)
+    if args.prompt and not args.appel_unique:
+        raise SystemExit("--prompt ne s'applique qu'à --appel-unique : les deux "
+                         "moitiés se lisent dans sinam-core, là où le core les lit.")
     schema = CLASSIFY_SCHEMA if args.schema else None
     sets = args.sets.split(",") if args.sets else list(SETS)
-
     print(f"modèle   : {args.model}")
-    print(f"contexte : {sum(len(b) for b in system)} caractères · empreinte {fp}")
+
+    if args.appel_unique:
+        system = context.classifier_system(Path(args.prompt) if args.prompt else None)
+        fp = context.fingerprint(system)
+        print(f"contexte : {sum(len(b) for b in system)} caractères · empreinte {fp}")
+        print("⚠ appel unique : `classifier.md` n'est plus exécuté en production "
+              "depuis le 2026-08-21. Ce que ce run mesure d'une règle écrite depuis "
+              "cette date ne veut rien dire.")
+    else:
+        note, graphe = split._system("note.md"), split._system("graph.md")
+        fp_note, fp_graph = context.fingerprint(note), context.fingerprint(graphe)
+        fp = f"{fp_note}+{fp_graph}"
+        print(f"appel 1  : {sum(len(b) for b in note)} car · empreinte {fp_note}")
+        print(f"appel 2  : {sum(len(b) for b in graphe)} car · empreinte {fp_graph}")
     print(f"corpus   : {', '.join(sets)}\n")
 
     out: dict = {"model": args.model, "fingerprint": fp, "label": args.label,
-                 "schema_constrained": bool(schema),
+                 "schema_constrained": bool(schema), "split": not args.appel_unique,
                  "temperature": args.temperature, "cases": {}}
     ecarts = 0
     par_frontiere: dict[str, list[str]] = {}
     joues = 0
+    demi = 0
     for set_name in sets:
         for case in SETS[set_name]:
             joues += 1
-            reply = providers.call(args.model, system, case["text"],
-                                   context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
-                                   args.temperature)
-            parsed = context.parse_classify(reply.text, reply.stop_reason)
+            if args.appel_unique:
+                reply = providers.call(args.model, system, case["text"],
+                                       context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
+                                       args.temperature)
+                parsed = context.parse_classify(reply.text, reply.stop_reason)
+                diag = {"latency_s": reply.latency_s, "prompt_tokens": reply.prompt_tokens}
+            else:
+                parsed, diag = split.classify_split(args.model, case["text"],
+                                                    bool(schema), args.temperature)
+                if not (diag["note_parsed"] and diag["graph_parsed"]):
+                    demi += 1
             rec = path_of(parsed)
             gaps = score.gaps(case, parsed)
-            rec.update(set=set_name, text=case["text"], latency_s=reply.latency_s,
+            # `parsed` en dernier, et à dessein : `path_of` y met un booléen
+            # « ça s'est lu », alors que la notation et `revue --baseline` ont
+            # besoin de l'OBJET. L'ordre inverse rend un booléen là où le reste
+            # du harnais attend un dictionnaire.
+            rec.update(set=set_name, text=case["text"], **diag,
                        confidence=(parsed or {}).get("classification_confidence"),
-                       prompt_tokens=reply.prompt_tokens, gaps=gaps,
-                       axes=score.axes_of(case), parsed=parsed)
+                       gaps=gaps, axes=score.axes_of(case), parsed=parsed)
             out["cases"][case["id"]] = rec
             if gaps:
                 ecarts += 1
@@ -107,6 +144,9 @@ def cmd_run(args) -> int:
                       f"f={rec.get('facts')} r={rec.get('relations')}{detail}", flush=True)
 
     print(f"\n{joues - ecarts}/{joues} cas conformes à l'étiquette validée.")
+    if demi:
+        print(f"⚠ {demi} cas où une seule des deux moitiés a répondu — c'est le coût "
+              f"propre au découpage, il ne se lit pas comme une erreur de jugement.")
     if par_frontiere:
         print("\nÉcarts par frontière (voir scripts/parity/frontieres.md) :")
         for frontiere, ids in sorted(par_frontiere.items(),
@@ -116,6 +156,9 @@ def cmd_run(args) -> int:
             print(f"  {frontiere:12} {len(ids):3}  {liste}{reste}")
     out["ecarts"] = ecarts
     out["par_frontiere"] = {k: sorted(set(v)) for k, v in par_frontiere.items()}
+    ligne = split._cout(args.model.split(":", 1)[-1], out["cases"])
+    if ligne:
+        print(f"\n{ligne}")
 
     # Combien de la fenêtre le prompt a mangé. Le gate vérifie déjà qu'il ENTRE
     # (`prompt_tokens < num_ctx`) — mais entrer ne suffit pas : il faut aussi
@@ -183,7 +226,11 @@ def main() -> int:
     r = sub.add_parser("run", help="jouer le corpus et figer une baseline")
     r.add_argument("model")
     r.add_argument("--label", required=True)
-    r.add_argument("--prompt")
+    r.add_argument("--prompt", help="fichier de prompt, avec --appel-unique seulement")
+    r.add_argument("--appel-unique", action="store_true",
+                   help="rejouer `classifier.md`, le prompt en un seul appel abandonné "
+                        "en production le 2026-08-21. Sert à relire une baseline "
+                        "d'avant cette date, pas à mesurer aujourd'hui.")
     r.add_argument("--sets", help=f"sous-ensembles séparés par des virgules ({', '.join(SETS)})")
     r.add_argument("--schema", action="store_true")
     r.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)

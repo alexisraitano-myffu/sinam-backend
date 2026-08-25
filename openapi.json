@@ -813,6 +813,225 @@
         }
       }
     },
+    "/pair/offer-code": {
+      "post": {
+        "summary": "Pair Offer Code",
+        "description": "Member: display a 6-digit code for a camera-less joiner (another Mac).",
+        "operationId": "pair_offer_code_pair_offer_code_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pair/request-code": {
+      "post": {
+        "summary": "Pair Request Code",
+        "description": "Joiner (no auth): SPAKE2 handshake half → {request_id, msg}.",
+        "operationId": "pair_request_code_pair_request_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairCodeRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pair/confirm-code": {
+      "post": {
+        "summary": "Pair Confirm Code",
+        "description": "Joiner (no auth): prove code knowledge; promotes into the approval\nqueue. A mismatch burns one attempt, three kill the code.",
+        "operationId": "pair_confirm_code_pair_confirm_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairCodeConfirmIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pair/join": {
+      "post": {
+        "summary": "Pair Join",
+        "description": "THIS device joins another space with a displayed code (SYN-137).\nv1: virgin installs only (no captures, no entities).",
+        "operationId": "pair_join_pair_join_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairJoinIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pair/join-status": {
+      "get": {
+        "summary": "Pair Join Status",
+        "description": "Progress of the running join (searching → waiting_approval → applying\n→ done, or denied/expired/not_found/failed).",
+        "operationId": "pair_join_status_pair_join_status_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/space": {
       "get": {
         "summary": "Space Get",
@@ -2373,6 +2592,504 @@
         "summary": "Merge Proposal Reject",
         "description": "Mark the proposal rejected (status terminal, won't be re-proposed).",
         "operationId": "merge_proposal_reject_merge_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predicate-proposals": {
+      "get": {
+        "summary": "Predicate Proposals List",
+        "description": "Les rapprochements de prédicats en attente d'arbitrage (SYN-190).\n\nUn prédicat vu pour la première fois est comparé à ceux déjà en usage ; un\nquasi-doublon devient une proposition. Renvoie de quoi trancher sans requête\nde suivi : combien de faits chaque nom porte, et sur combien d'entités\ndistinctes, parce que c'est le second chiffre qui dit lequel est du\nvocabulaire et lequel est une phrase déguisée en nom.",
+        "operationId": "predicate_proposals_list_predicate_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predicate-proposals/{proposal_id}/accept": {
+      "post": {
+        "summary": "Predicate Proposal Accept",
+        "description": "Renommer le prédicat candidat vers l'existant, partout où il est écrit.\n\nAucune suppression : seul le NOM change, les faits et leurs valeurs restent.\nLe résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits,\nSYN-89) — sans ça la fiche continuerait d'afficher une phrase construite sur\nl'ancien nom et plus rien ne la régénérerait.",
+        "operationId": "predicate_proposal_accept_predicate_proposals__proposal_id__accept_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predicate-proposals/{proposal_id}/reject": {
+      "post": {
+        "summary": "Predicate Proposal Reject",
+        "description": "Refuser : les deux noms restent distincts et la paire n'est plus reproposée.",
+        "operationId": "predicate_proposal_reject_predicate_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rename-proposals": {
+      "get": {
+        "summary": "Rename Proposals List",
+        "description": "Les renommages déclarés en capture, en attente de confirmation (SYN-188).\n\nLe nom canonique titre la fiche, sort dans le digest et remonte en recherche :\nc'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le\npropose, une personne l'applique — même porte que pour un type d'entité neuf.\n\nLa liste rend de quoi trancher sans requête de suivi : le poids de l'entité\n(faits, relations) et l'extrait de la capture qui a déclaré le renommage.",
+        "operationId": "rename_proposals_list_rename_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rename-proposals/{proposal_id}/accept": {
+      "post": {
+        "summary": "Rename Proposal Accept",
+        "description": "Appliquer le renommage : l'ancien nom canonique devient un alias.\n\nMême écriture que `PATCH /entity` (SYN-82), pour qu'il n'existe qu'un seul\nchemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,\nle nouveau nom étant retiré de la liste au passage.",
+        "operationId": "rename_proposal_accept_rename_proposals__proposal_id__accept_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rename-proposals/{proposal_id}/reject": {
+      "post": {
+        "summary": "Rename Proposal Reject",
+        "description": "Refuser : l'entité garde son nom, et le renommage n'est plus reproposé.",
+        "operationId": "rename_proposal_reject_rename_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negation-proposals": {
+      "get": {
+        "summary": "Negation Proposals List",
+        "description": "Les négations que le core n'a pas su appliquer seul (SYN-189).\n\nUne négation dont la cible est certaine est appliquée à la capture : le fait\nest périmé, et `POST /fact/{id}/restore` l'annule. N'arrivent ici que les\ntrois cas où viser serait deviner, et le motif dit lequel :\n\n* `valeur_differente` — la capture nie une valeur, la mémoire en porte une\n  autre sous le même prédicat. Les deux se contredisent sur ce qui était\n  vrai ; trancher sans regarder serait pire que ne rien faire.\n* `approximatif` — aucun prédicat exact, mais un nom voisin. C'est le résidu\n  que laisse la gouvernance des prédicats (SYN-190) sur les noms libres.\n* `introuvable` — rien ne correspond sur une entité qui porte pourtant des\n  faits, ce qui signale en général une dérive de nommage.\n\nLes faits candidats sont résolus ici, pas laissés en ids : une file qui\ndemande d'arbitrer sans montrer sur quoi n'est pas arbitrable. Quand il n'y\na aucun candidat (`introuvable`), ce sont les faits vivants de l'entité qui\nsont renvoyés — c'est précisément là que se cache celui qui était visé.",
+        "operationId": "negation_proposals_list_negation_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negation-proposals/{proposal_id}/accept": {
+      "post": {
+        "summary": "Negation Proposal Accept",
+        "description": "Périmer le fait désigné, et clore la proposition.\n\n`fact_id` est OBLIGATOIRE : accepter une négation, c'est choisir laquelle\ndes lectures possibles était la bonne, et c'est justement ce que le core a\nrefusé de deviner. Le fait doit appartenir à l'entité de la proposition,\nfaute de quoi accepter une question sur Pierre pourrait périmer un fait de\nMarie.\n\nRien n'est supprimé. `obsoleted_at` est posé, `obsoleted_by` reste NULL —\naucun fait n'a remplacé celui-ci, il a cessé — et `POST /fact/{id}/restore`\nle rappelle. Le résumé de l'entité est marqué obsolète, étant dérivé des\nfaits vivants (SYN-89).",
+        "operationId": "negation_proposal_accept_negation_proposals__proposal_id__accept_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "fact_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fact Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negation-proposals/{proposal_id}/reject": {
+      "post": {
+        "summary": "Negation Proposal Reject",
+        "description": "Refuser : rien ne cesse d'être vrai, et la question n'est plus reposée.",
+        "operationId": "negation_proposal_reject_negation_proposals__proposal_id__reject_post",
         "parameters": [
           {
             "name": "proposal_id",
@@ -4444,6 +5161,59 @@
         ],
         "title": "PairApproveIn"
       },
+      "PairCodeConfirmIn": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "mac": {
+            "type": "string",
+            "title": "Mac"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "mac"
+        ],
+        "title": "PairCodeConfirmIn"
+      },
+      "PairCodeRequestIn": {
+        "properties": {
+          "msg": {
+            "type": "string",
+            "title": "Msg"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          }
+        },
+        "type": "object",
+        "required": [
+          "msg"
+        ],
+        "title": "PairCodeRequestIn"
+      },
       "PairDenyIn": {
         "properties": {
           "request_id": {
@@ -4456,6 +5226,30 @@
           "request_id"
         ],
         "title": "PairDenyIn"
+      },
+      "PairJoinIn": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "PairJoinIn"
       },
       "PairRequestIn": {
         "properties": {

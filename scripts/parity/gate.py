@@ -26,11 +26,11 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
-from scripts.parity import context, providers  # noqa: E402
+from scripts.parity import context, providers, score  # noqa: E402
 from scripts.parity.corpus import AMBIGUOUS, GATE_CASES  # noqa: E402
 from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
-VALID_NOTE_KINDS = {"note", "task", "event", "episode"}
+VALID_NOTE_KINDS = score.VALID_NOTE_KINDS
 
 
 def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
@@ -90,52 +90,6 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
     return None
 
 
-def _quality_notes(case: dict, parsed: dict) -> list[str]:
-    """Écarts NON bloquants — ils relèvent de l'étage 2, on les signale seulement."""
-    out = []
-    note = parsed.get("atomic_note")
-    has_note = bool(note) and str(note).strip().lower() not in ("", "null", "none")
-    if "note" in case and has_note != case["note"]:
-        out.append(f"note attendue={case['note']} obtenue={has_note}")
-    if case.get("kind") and has_note:
-        # Miroir de `routing.rs:196` : le core normalise un kind absent, vide ou
-        # non-textuel en "note". Mesurer la sortie BRUTE surestimerait l'échec là
-        # où la production s'en sort — et le masquerait là où « task » silencieusement
-        # dégradé en « note » fait vraiment perdre une tâche.
-        raw = parsed.get("atomic_note_kind")
-        kind = raw if isinstance(raw, str) and raw else "note"
-        if kind != case["kind"]:
-            got = f"{kind} (brut={raw!r}, défaut du core)" if raw != kind else kind
-            out.append(f"kind attendu={case['kind']} obtenu={got}")
-    if "ephemeral" in case and bool(parsed.get("is_ephemeral")) != case["ephemeral"]:
-        out.append(f"ephemeral attendu={case['ephemeral']}")
-    # SYN-182 — le propriétaire de l'action. `None` = l'auteur ; un nom veut dire
-    # que la capture rapportait l'action de quelqu'un d'autre. Chaîne vide et
-    # "null" textuel valent None : c'est ce que produisent les petits modèles
-    # quand on leur demande un champ nullable.
-    if "owner" in case:
-        raw = parsed.get("atomic_note_owner")
-        got = raw.strip() if isinstance(raw, str) else None
-        if not got or got.lower() in ("null", "none"):
-            got = None
-        if got != case["owner"]:
-            out.append(f"owner attendu={case['owner']!r} obtenu={got!r}")
-    if "recurring" in case and bool(parsed.get("event_recurring")) != case["recurring"]:
-        out.append(f"recurring attendu={case['recurring']}")
-    if case.get("rel"):
-        rels = parsed.get("relations") or []
-        if not any(case["rel"] in str(r.get("predicate", "")).lower() for r in rels):
-            out.append(f"relation '{case['rel']}' absente")
-    if case.get("proj") and not (parsed.get("project_entries") or []):
-        out.append("entrée projet absente")
-    if case.get("facts_min"):
-        n = sum(len(e.get("facts") or []) for e in (parsed.get("entities") or []))
-        n += len(parsed.get("relations") or [])
-        if n < case["facts_min"]:
-            out.append(f"atomicité : {n} fait(s)/relation(s) pour {case['facts_min']} attendu(s)")
-    return out
-
-
 def main() -> int:
     ap = argparse.ArgumentParser(description="SYN-171 — gate de parité (étage 1)")
     ap.add_argument("model", help="provider:modèle, ex. ollama:qwen2.5:3b-instruct-q4_K_M")
@@ -168,7 +122,7 @@ def main() -> int:
                                args.temperature)
         parsed = context.parse_classify(reply.text, reply.stop_reason)
         blocking = _check_blocking(case, reply, parsed, system_chars, args.num_ctx)
-        quality = _quality_notes(case, parsed) if parsed else []
+        quality = score.gaps(case, parsed, skip=("drop_guard",)) if parsed else []
         notes_count += len(quality)
 
         records.append({"id": case["id"], "text": case["text"], "blocking": blocking,

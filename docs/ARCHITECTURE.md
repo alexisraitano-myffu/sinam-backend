@@ -188,10 +188,29 @@ Tout ce qui est **incertain n'est jamais jeté silencieusement** : c'est mis de 
 | **Attache-projet** | similarité tâche/intention ↔ projet ≥ 0.30 | `project_attach_proposals` | `GET /project-attach-proposals` | `.../accept` · `.../reject` |
 | Types d'entité | type hors vocab actif | `entity_type_proposals` (`status='pending'`) | `GET /entity-type-proposals` | `POST .../accept|reject` (SYN-58) |
 | Fusion d'entités | doublon substring/embedding | `entity_merge_proposals` | `GET /merge-proposals` | `POST .../accept|reject` (SYN-39/61) |
+| **Fusion de prédicats** | un prédicat vu pour la 1ʳᵉ fois ressemble à un prédicat en usage | `predicate_merge_proposals` | `GET /predicate-proposals` | `POST .../accept|reject` (SYN-190) |
+| **Négation d'un fait** | la capture nie un fait, mais la cible n'est pas certaine | `fact_negation_proposals` | `GET /negation-proposals` | `POST .../accept?fact_id=…|reject` (SYN-189) |
+| **Renommage d'entité** | la capture déclare que l'entité s'appelle désormais X | `entity_rename_proposals` | `GET /rename-proposals` | `POST .../accept|reject` (SYN-188) |
 
 Les éléments `pending` sont **exclus de toutes les surfaces de lecture** (listes par défaut, `/graph`, `/changes`, digest, régénération de résumé) tant qu'ils ne sont pas confirmés : un « à valider » ne peut pas polluer la mémoire ni l'embedding avant validation. Côté app : segments **Tâches** et **Liens** dans l'onglet « À valider ».
 
 > **Un motif voyage avec la ligne (SYN-182 B).** La file ne couvrait que `task`/`event` : un épisode dont le modèle n'était sûr qu'à 0,2 était écrit `confirmed`. L'étendre lui ajoute un **second sens** (« je ne suis pas sûr que ça mérite d'exister », à côté de « je ne suis pas sûr de la date »), et deux sens dans une file la rendent inutilisable : d'où `atomic_notes.review_reason`, nommé et stocké sur la ligne. Décision correcte mais **inerte** à ce jour : aucun épisode n'est jamais passé sous 0,7, parce que le prompt ne demande de douter que sur deux frontières.
+>
+> **Quatre files disent la même chose : proposer, jamais appliquer.** Types
+> d'entité, fusion d'entités, fusion de prédicats, renommage. L'invariant n'est
+> pas « le modèle se trompe parfois », c'est **ce que l'erreur coûte** : chacune
+> de ces écritures change l'IDENTITÉ de quelque chose que l'utilisateur lit
+> comme étant sa mémoire, et une identité changée à tort ne se remarque pas. Une
+> valeur fausse se corrige quand on la voit ; un nom canonique faux devient la
+> vérité.
+>
+> **La négation est le seul cas où l'application peut être immédiate (SYN-189)**,
+> et ce n'est pas une exception à la règle mais son application : périmer est
+> RÉVERSIBLE (`obsoleted_at`, annulé par `/fact/{id}/restore`), là où renommer ou
+> fusionner ne l'est pas. Quand la cible n'est pas certaine — la valeur niée
+> diffère de celle en mémoire, le prédicat ne correspond qu'approximativement,
+> ou rien ne correspond sur une entité qui porte pourtant des faits — la
+> négation retourne en file comme les autres.
 >
 > **Le classifieur ne dit plus ses règles en prose (SYN-171).** La moitié note est une **table de décision** : une porte en tête (ce qui ne mérite aucune note), puis des lignes ordonnées. Le durcissement tâche-vs-éphémère de 2026-06-29, écrit à l'époque en paragraphes, y est absorbé : en cas d'hésitation « action durable vs éphémère », la consigne est de **ne pas jeter** et de choisir `kind="task"`. Une règle de récurrence, elle, n'est écrite **nulle part** en prose : le routage l'impose structurellement, jamais une répétition annuelle décidée par un modèle.
 

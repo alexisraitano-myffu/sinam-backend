@@ -111,11 +111,19 @@ def _call_anthropic(model: str, system_blocks: list[str], user: str,
         messages=[{"role": "user", "content": user}],
     )
     text = msg.content[0].text if msg.content else ""
-    # ⚠️ `input_tokens` EXCLUT ce qui a été servi par le cache de prompt : sur un
-    # deuxième appel, le classifieur (~4 500 tokens) bascule dans
-    # `cache_read_input_tokens` et `input_tokens` retombe à ~200. Compter la seule
-    # valeur brute ferait croire que le modèle n'a pas reçu le prompt — le gate a
-    # justement rendu ce faux NO-GO à sa première exécution.
+    # ⚠️ `input_tokens` EXCLUT ce qui a été servi par le cache de prompt : quand le
+    # cache mord, le prompt bascule dans `cache_read_input_tokens` et
+    # `input_tokens` retombe à ~200. Compter la seule valeur brute ferait croire
+    # que le modèle n'a pas reçu le prompt — le gate a justement rendu ce faux
+    # NO-GO à sa première exécution.
+    #
+    # ⚠️ Mesuré le 2026-08-25 : sur Haiku 4.5, le cache ne mord PLUS. Il demande un
+    # préfixe d'au moins ~4 096 tokens ; le classifieur en un seul appel en faisait
+    # ~4 500 et passait, chaque moitié en fait ~3 050 et ne passe pas. Le marqueur
+    # ci-dessus est donc posé pour rien depuis le découpage du 2026-08-21. Vérifié
+    # dans les deux sens : rallongé au-dessus du seuil, le même prompt écrit puis
+    # relit bien 7 775 tokens. Ne pas relire ce commentaire comme la promesse d'un
+    # cache actif : c'est la trace de ce qu'il coûte de ne plus l'avoir.
     usage = msg.usage
     prompt_tokens = (usage.input_tokens
                      + (getattr(usage, "cache_read_input_tokens", 0) or 0)

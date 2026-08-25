@@ -170,5 +170,10 @@ def _cout(model: str, cases: dict) -> str:
              for c in cases.values())
     out = sum(c.get("output_tokens") or 0 for c in cases.values())
     usd = (nc * entree + lu * cache + out * sortie) / 1e6
+    # Un run entier sans une seule lecture de cache n'est pas un détail de
+    # facture : il dit que le préfixe est passé sous le plancher du modèle, et
+    # personne ne le remarque en lisant seulement le total.
+    alerte = "  ⚠ aucun cache n'a mordu" if lu == 0 and nc else ""
     return (f"coût     : ~{usd:.2f} $  "
-            f"({nc/1000:.0f}k entrée · {lu/1000:.0f}k relus du cache · {out/1000:.0f}k sortie)")
+            f"({nc/1000:.0f}k entrée · {lu/1000:.0f}k relus du cache · "
+            f"{out/1000:.0f}k sortie){alerte}")

@@ -1163,8 +1163,17 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
             nodes, edges = _prune(nodes, edges, {n["id"] for n in nodes if n["degree"] > 0})
 
         # top_pct needs community_id; layout/clusters need it too.
-        if cluster or layout or clusters or top_pct_per_cluster is not None:
-            _assign_communities(nodes, edges)
+        needs_communities = cluster or layout or clusters or top_pct_per_cluster is not None
+        # Embedding-kNN springs (SYN-64), computed once and never returned: they
+        # feed BOTH the clustering and the layout. A memory this sparse (a
+        # quarter of its entities carry no relation at all) leaves Louvain
+        # nothing to work with otherwise.
+        soft_edges: list[dict] = []
+        if needs_communities and semantic_layout:
+            from graph_layout import semantic_edges
+            soft_edges = semantic_edges(conn, nodes)
+        if needs_communities:
+            _assign_communities(nodes, edges + soft_edges)
         if top_pct_per_cluster is not None:
             nodes, edges = _top_pct_per_cluster(nodes, edges, top_pct_per_cluster)
         if max_nodes and len(nodes) > max_nodes:
@@ -1174,7 +1183,8 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
 
         if layout or clusters:  # clusters need positions for their hulls
             from graph_layout import ensure_positions
-            positions = ensure_positions(conn, nodes, edges, full=relayout, semantic=semantic_layout)
+            positions = ensure_positions(conn, nodes, edges, full=relayout,
+                                         soft_edges=soft_edges)
             for n in nodes:
                 xy = positions.get(n["id"])
                 if xy:

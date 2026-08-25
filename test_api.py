@@ -227,6 +227,39 @@ def test_community_ids_ignore_node_order(client):
     assert max(reference.values()) >= 1  # the graph really is split
 
 
+def test_semantic_edges_group_entities_without_a_relation(client):
+    """The springs feed the clustering: two entities that no relation connects,
+    but whose embeddings are close, land in the same zone. And they stay
+    invisible — nothing semantic ever reaches the client as an edge."""
+    import struct
+    conn = _conn()
+    try:
+        with conn:
+            for eid, name, vec in (
+                ("e1", "Guitare", (1.0, 0.0, 0.0, 0.0)),
+                ("e2", "Piano", (0.95, 0.31, 0.0, 0.0)),
+                ("e3", "Tennis", (0.0, 0.0, 0.0, 1.0)),
+            ):
+                conn.execute(
+                    "INSERT INTO entities (id, type, canonical_name, status, embedding) "
+                    "VALUES (?,?,?, 'active', ?)",
+                    (eid, "concept", name, struct.pack(f"<{len(vec)}f", *vec)))
+    finally:
+        conn.close()
+
+    g = client.get("/graph", params={"cluster": "true"}).json()
+    zone = {n["label"]: n["community_id"] for n in g["nodes"]}
+    assert zone["Guitare"] == zone["Piano"]
+    assert zone["Tennis"] != zone["Guitare"]
+    assert g["edges"] == []                       # no relation, and none invented
+
+    # semantic_layout=false puts them back apart: the springs are the only thing
+    # holding them together.
+    apart = client.get("/graph", params={"cluster": "true", "semantic_layout": "false"}).json()
+    zone = {n["label"]: n["community_id"] for n in apart["nodes"]}
+    assert zone["Guitare"] != zone["Piano"]
+
+
 def test_graph_layout_is_stable_and_incremental(client):
     """SYN-69 — positions persist (same map on reopen), and adding a node does
     not move the nodes already placed."""

@@ -30,7 +30,7 @@ def test_semantic_edges_links_close_vectors(isolated_db):
         edges = semantic_edges(conn, nodes)
         pairs = {frozenset((e["from"], e["to"])) for e in edges}
         assert frozenset(("e1", "e2")) in pairs                     # close vectors → linked
-        assert frozenset(("e1", "e3")) not in pairs                 # below the 0.80 cosine floor
+        assert frozenset(("e1", "e3")) not in pairs                 # below the 0.62 cosine floor
         assert all(e.get("semantic") and e["confidence"] > 0 for e in edges)
     finally:
         conn.close()
@@ -45,5 +45,37 @@ def test_semantic_edges_empty_when_no_embeddings(isolated_db):
             conn.execute("INSERT INTO entities (id, type, canonical_name, status) VALUES ('x','concept','X','active')")
         # notes are skipped (entities only); no embeddings → no edges, no crash
         assert semantic_edges(conn, [{"id": "x", "kind": "entity"}, {"id": "n:1", "kind": "atomic_note"}]) == []
+    finally:
+        conn.close()
+
+
+def test_semantic_edges_match_the_core(isolated_db):
+    """The fixture is shared with the Rust core
+    (`snapshot.rs::semantic_springs_match_the_backend`): same vectors, same
+    expected pairs and weights. If one side drifts, the map served over HTTP and
+    the map rebuilt offline stop grouping the same entities."""
+    from db import get_connection
+    from graph_layout import semantic_edges
+    vectors = {
+        "e1": (1.00, 0.00, 0.00, 0.00),
+        "e2": (0.95, 0.31, 0.00, 0.00),
+        "e3": (0.90, 0.44, 0.00, 0.00),
+        "e4": (0.00, 1.00, 0.00, 0.00),
+        "e5": (0.00, 0.95, 0.31, 0.00),
+        "e6": (0.00, 0.00, 0.00, 1.00),   # orthogonal to everything: stays alone
+    }
+    conn = get_connection()
+    try:
+        with conn:
+            for eid, v in vectors.items():
+                _ins(conn, eid, eid.upper(), _vec(*v))
+        nodes = [{"id": eid, "kind": "entity"} for eid in vectors]
+        got = sorted((e["from"], e["to"], e["confidence"]) for e in semantic_edges(conn, nodes))
+        assert got == [
+            ("e1", "e2", 0.4278),
+            ("e1", "e3", 0.4043),
+            ("e2", "e3", 0.4456),
+            ("e4", "e5", 0.4278),
+        ]
     finally:
         conn.close()

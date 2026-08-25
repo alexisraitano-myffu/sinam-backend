@@ -30,7 +30,12 @@ _INTRA_COMMUNITY_PULL = 3.0  # intra-cluster edges tug harder than bridges
 # these edges are never returned to the client. Tunable via env; kept gentle so real
 # relations still dominate the structure.
 _SEMANTIC_K = int(os.environ.get("SYNAPSE_SEMANTIC_K", "4"))             # neighbours per entity
-_SEMANTIC_MIN_SCORE = float(os.environ.get("SYNAPSE_SEMANTIC_MIN_SCORE", "0.80"))  # cosine floor
+# 0.62, not the 0.80 this shipped with: measured on the real memory, the median
+# best neighbour scores 0.626 and only 4 entities out of 60 have a neighbour at
+# 0.80, so the old floor produced two edges in production and the feature was
+# inert. Do not go below 0.55 either — past that the edges link anything and the
+# zones stop reading (silhouette 0.372 → 0.203).
+_SEMANTIC_MIN_SCORE = float(os.environ.get("SYNAPSE_SEMANTIC_MIN_SCORE", "0.62"))  # cosine floor
 _SEMANTIC_WEIGHT = float(os.environ.get("SYNAPSE_SEMANTIC_WEIGHT", "0.45"))        # vs ~1.0 relations
 _SEMANTIC_MAX_NODES = int(os.environ.get("SYNAPSE_SEMANTIC_MAX_NODES", "800"))     # O(n²) guard
 
@@ -110,11 +115,13 @@ def semantic_edges(conn, nodes: list[dict]) -> list[dict]:
     edges: list[dict] = []
     seen: set = set()
     for a in range(len(ids)):
-        for b in np.argpartition(-sims[a], k - 1)[:k]:
-            b = int(b)
+        # Best K neighbours, ties broken by id: the core runs the same rule, and
+        # an arbitrary pick would make the two maps disagree on close calls.
+        ranked = sorted(range(len(ids)), key=lambda b: (-float(sims[a, b]), ids[b]))
+        for b in ranked[:k]:
             score = float(sims[a, b])
             if score < _SEMANTIC_MIN_SCORE:
-                continue
+                break                                   # sorted: the rest is worse
             key = (a, b) if a < b else (b, a)
             if key in seen:
                 continue
@@ -169,19 +176,20 @@ def _place_incremental(nodes: list[dict], existing: dict) -> dict:
 
 
 def ensure_positions(conn, nodes: list[dict], edges: list[dict], *, full: bool = False,
-                     semantic: bool = False) -> dict:
+                     soft_edges: list[dict] | None = None) -> dict:
     """Return {node_id: {'x':, 'y':}} for every node, persisting as needed.
 
     full=True forces a ForceAtlas2 recompute of the whole map (and rewrites every
     position). Otherwise only nodes without a stored position are placed
     incrementally; already-placed nodes are returned byte-identical.
 
-    semantic=True adds embedding-kNN soft edges to the layout graph (SYN-64) — only
-    meaningful on a full recompute, so it's ignored on the incremental path."""
+    `soft_edges` are the caller's embedding-kNN springs (SYN-64). The caller owns
+    them because the clustering pass needs the very same list — computing them
+    twice would risk the layout and the zones disagreeing. They only matter on a
+    full recompute, so the incremental path ignores them."""
     existing = _read_positions(conn)
     if full or not existing:
-        extra = semantic_edges(conn, nodes) if semantic else []
-        pos = _full_layout(nodes, edges + extra)
+        pos = _full_layout(nodes, edges + list(soft_edges or []))
         if pos:
             with conn:
                 _write_positions(conn, pos)

@@ -1164,3 +1164,95 @@ def test_adopt_reset_leaves_no_founding_traces(client):
         assert int(applying) == 0
     finally:
         conn.close()
+
+
+# ── Entity creation proposals ────────────────────────────────────────────────
+
+def _propose_vivatech(client):
+    """Route une capture qui nomme une entité sans rien prouver, et rend la
+    proposition qui en sort."""
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT INTO inbox (id, content) VALUES ('c-viva', ?)",
+                         ("Salon Vivatech le 20 juin",))
+    finally:
+        conn.close()
+    from datetime import datetime, timezone
+
+    from dream_cycle import cycle
+    conn = _conn()
+    try:
+        cycle._process_entry(
+            {"id": "c-viva", "content": "Salon Vivatech le 20 juin"},
+            None, conn, datetime.now(timezone.utc).isoformat(), False, False,
+            classified={
+                "atomic_note": "Salon Vivatech le 20 juin",
+                "atomic_note_kind": "event",
+                "event_date": "2026-06-20",
+                "is_ephemeral": False,
+                "entities": [{"canonical_name": "Vivatech", "type": "concept",
+                              "aliases": [], "summary": None, "attributes": {},
+                              "facts": [{"predicate": "happens_on",
+                                         "value": "2026-06-20",
+                                         "persistence_value": 1,
+                                         "evidence_strength": "explicit",
+                                         "category": "event"}]}],
+                "relations": [], "project_entries": [],
+            })
+    finally:
+        conn.close()
+    r = client.get("/entity-creation-proposals")
+    assert r.status_code == 200
+    return r.json()
+
+
+def test_creation_proposals_list_carries_what_it_takes_to_decide(client):
+    props = _propose_vivatech(client)
+    assert len(props) == 1
+    p = props[0]
+    assert p["canonical_name"] == "Vivatech"
+    assert p["status"] == "pending"
+    # Sans les faits ni l'extrait, « créer Vivatech ? » ne dit pas ce qu'on crée.
+    assert p["facts"] and p["facts"][0]["predicate"] == "happens_on"
+    assert p["evidence_excerpt"] == "Salon Vivatech le 20 juin"
+    # Liste NUE, comme les cinq files antérieures : pas d'enveloppe.
+    assert isinstance(props, list)
+
+
+def test_accepting_creates_the_entity_and_is_final(client):
+    p = _propose_vivatech(client)[0]
+    r = client.post(f"/entity-creation-proposals/{p['id']}/accept")
+    assert r.status_code == 200
+    assert r.json()["status"] == "accepted"
+    conn = _conn()
+    try:
+        noms = [row[0] for row in conn.execute(
+            "SELECT canonical_name FROM entities")]
+    finally:
+        conn.close()
+    assert noms == ["Vivatech"]
+    assert client.get("/entity-creation-proposals").json() == []
+    # Trancher deux fois est une erreur d'appelant, pas un second passage.
+    again = client.post(f"/entity-creation-proposals/{p['id']}/accept")
+    assert again.status_code == 400, again.json()
+
+
+def test_rejecting_creates_nothing(client):
+    p = _propose_vivatech(client)[0]
+    r = client.post(f"/entity-creation-proposals/{p['id']}/reject")
+    assert r.status_code == 200
+    conn = _conn()
+    try:
+        assert conn.execute("SELECT COUNT(*) FROM entities").fetchone()[0] == 0
+    finally:
+        conn.close()
+    assert client.get("/entity-creation-proposals", params={"status": "rejected"}
+                      ).json()[0]["id"] == p["id"]
+
+
+def test_unknown_proposal_is_a_404(client):
+    assert client.post(
+        "/entity-creation-proposals/pas-un-id/accept").status_code == 404
+    assert client.post(
+        "/entity-creation-proposals/pas-un-id/reject").status_code == 404

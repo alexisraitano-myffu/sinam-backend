@@ -2021,6 +2021,98 @@ def rename_proposal_reject(proposal_id: str):
         conn.close()
 
 
+# ── Entity creation proposals ─────────────────────────────────────────────────
+
+@app.get("/entity-creation-proposals", dependencies=[Depends(require_auth)])
+def entity_creation_proposals_list(status: str = "pending"):
+    """Les entités que rien ne prouve, en attente de création.
+
+    Une fiche naissait dès qu'un nom apparaissait dans une capture laissant une
+    note durable — sans fait, sans lien, sans antériorité. C'est la seule des
+    quatre conditions de naissance qui ne repose sur aucune preuve, et c'est
+    elle qui créait « Pierre » sur « J'ai la fête de Pierre le 20 ».
+
+    La liste rend de quoi trancher sans requête de suivi : ce que la fiche
+    contiendrait (type proposé, alias, faits) et l'extrait de la capture qui l'a
+    nommée. Sans les faits affichés, la question « créer Pierre ? » ne dit pas
+    ce qu'on crée.
+    """
+    if status not in {"pending", "accepted", "rejected"}:
+        raise HTTPException(status_code=400, detail="invalid status filter")
+    conn = get_connection()
+    try:
+        rows = cursor_to_dicts(conn.execute(
+            "SELECT id, canonical_name, proposed_type, entity_data, "
+            "       evidence_capture_id, status, created_at, resolved_at, "
+            "       created_entity_id "
+            "FROM entity_creation_proposals "
+            "WHERE status = ? ORDER BY created_at DESC",
+            (status,),
+        ))
+        for r in rows:
+            try:
+                charge = json.loads(r.pop("entity_data") or "{}")
+            except (ValueError, TypeError):
+                charge = {}
+            r["aliases"] = charge.get("aliases") or []
+            r["facts"] = charge.get("facts") or []
+            r["summary"] = charge.get("summary")
+            cap = first_row(conn.execute(
+                "SELECT content FROM inbox WHERE id = ?", (r["evidence_capture_id"],)
+            )) or {}
+            r["evidence_excerpt"] = (cap.get("content") or "")[:280]
+        # Liste nue, comme les cinq files antérieures.
+        return rows
+    finally:
+        conn.close()
+
+
+@app.post("/entity-creation-proposals/{proposal_id}/accept",
+          dependencies=[Depends(require_auth)])
+def entity_creation_proposal_accept(proposal_id: str):
+    """Créer l'entité proposée, avec ses alias, ses attributs et ses faits.
+
+    L'écriture est déléguée au core, et ce n'est pas de la paresse : `upsert_entity`
+    y est le SEUL endroit qui écrit une fiche. La refaire ici en ferait un second
+    chemin de création, qui dériverait du premier au premier changement sans que
+    personne s'en aperçoive.
+    """
+    from datetime import date
+
+    from core_store import get_brain
+    out = json.loads(get_brain().accept_entity_creation(
+        proposal_id, date.today().isoformat()))
+    statut = out.get("status")
+    if statut == "not_found":
+        raise HTTPException(status_code=404, detail="proposal not found")
+    if statut == "invalid_payload":
+        raise HTTPException(status_code=422, detail="proposal payload unusable")
+    if statut == "already_resolved":
+        raise HTTPException(status_code=400,
+                            detail=f"proposal already {out.get('resolution')}")
+    return out
+
+
+@app.post("/entity-creation-proposals/{proposal_id}/reject",
+          dependencies=[Depends(require_auth)])
+def entity_creation_proposal_reject(proposal_id: str):
+    """Refuser : rien ne naît, et le nom n'est plus reproposé tel quel.
+
+    Le refus porte sur « nommée en passant », pas sur l'entité : une capture
+    ultérieure qui apporte un fait durable ou un lien la crée directement, sans
+    repasser par la file.
+    """
+    from core_store import get_brain
+    out = json.loads(get_brain().reject_entity_creation(proposal_id))
+    statut = out.get("status")
+    if statut == "not_found":
+        raise HTTPException(status_code=404, detail="proposal not found")
+    if statut == "already_resolved":
+        raise HTTPException(status_code=400,
+                            detail=f"proposal already {out.get('resolution')}")
+    return out
+
+
 # ── Negation proposals (SYN-189) ──────────────────────────────────────────────
 
 @app.get("/negation-proposals", dependencies=[Depends(require_auth)])

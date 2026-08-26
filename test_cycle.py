@@ -309,13 +309,14 @@ def test_intention_object_content_is_coerced_to_text(isolated_db):
     assert rows[0][0] == "aller chercher les croquettes"
 
 
-def test_durable_note_anchor_creates_factless_entity(isolated_db):
-    """SYN-86: an entity anchoring a task/event note is created even with zero
-    facts (a salon's date lives in the event note, not in a fact). The anchor
-    now comes from the classified itself: a durable (task/event) atomic_note."""
-    from db import get_connection
+def _ancre_de_note_durable():
+    """« Salon Vivatech le 20 juin » : un nom, une note datée, et rien d'autre.
 
-    ids, _ = _route({
+    Zéro fait, zéro lien, aucune antériorité. C'est le cas exact que la
+    quatrième condition de naissance couvrait, et le seul qu'elle couvrait
+    seule.
+    """
+    return _route({
         "resolved_entities": [{
             "canonical_name": "Vivatech", "type": "concept",
             "aliases": [], "summary": None, "attributes": {},
@@ -324,13 +325,52 @@ def test_durable_note_anchor_creates_factless_entity(isolated_db):
         "relations": [],
     }, atomic_note="Salon Vivatech le 20 juin", atomic_note_kind="event",
        event_date="2026-06-20")
+
+
+def test_durable_note_anchor_proposes_the_entity(isolated_db):
+    """L'ancre d'une note durable PROPOSE la fiche, elle ne la crée plus.
+
+    SYN-86 avait ouvert cette quatrième condition parce qu'une entité sans fait
+    tombait sous le garde-fou anti-bruit : la date d'un salon vit dans la note
+    de l'événement, pas dans un fait. La raison tient toujours, et l'ancre est
+    conservée telle quelle — c'est sa CONSÉQUENCE qui change. Une fiche est
+    l'objet le plus visible de la mémoire, et une fiche de trop ne se remarque
+    pas plus qu'un renommage de trop.
+    """
+    from db import get_connection
+
+    ids, _ = _ancre_de_note_durable()
     conn = get_connection()
     try:
-        rows = list(conn.execute("SELECT canonical_name FROM entities"))
+        entites = list(conn.execute("SELECT canonical_name FROM entities"))
+        props = list(conn.execute(
+            "SELECT canonical_name, status FROM entity_creation_proposals"))
+        notes = list(conn.execute("SELECT content FROM atomic_notes"))
     finally:
         conn.close()
+    assert entites == [], "l'ancre ne doit plus fabriquer de fiche toute seule"
+    assert ids == [], "aucune entité routée, donc rien à rendre à l'appelant"
+    assert props == [("Vivatech", "pending")]
+    # La capture, elle, n'attend pas : c'est l'entité qui est en question, pas
+    # ce que l'utilisateur a écrit.
+    assert len(notes) == 1
+
+
+def test_le_repli_remet_la_creation_directe(isolated_db, monkeypatch):
+    """Le levier de rollback du ticket, vérifié plutôt que promis."""
+    from db import get_connection
+
+    monkeypatch.setenv("SYNAPSE_ENTITY_CREATE_UNPROVEN", "1")
+    ids, _ = _ancre_de_note_durable()
+    conn = get_connection()
+    try:
+        entites = list(conn.execute("SELECT canonical_name FROM entities"))
+        props = list(conn.execute("SELECT id FROM entity_creation_proposals"))
+    finally:
+        conn.close()
+    assert entites == [("Vivatech",)]
+    assert props == []
     assert len(ids) == 1
-    assert rows[0][0] == "Vivatech"
 
 
 def test_validation_resolves_entity_by_alias(isolated_db):

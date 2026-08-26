@@ -2967,6 +2967,169 @@
         }
       }
     },
+    "/entity-creation-proposals": {
+      "get": {
+        "summary": "Entity Creation Proposals List",
+        "description": "Les entités que rien ne prouve, en attente de création.\n\nUne fiche naissait dès qu'un nom apparaissait dans une capture laissant une\nnote durable — sans fait, sans lien, sans antériorité. C'est la seule des\nquatre conditions de naissance qui ne repose sur aucune preuve, et c'est\nelle qui créait « Pierre » sur « J'ai la fête de Pierre le 20 ».\n\nLa liste rend de quoi trancher sans requête de suivi : ce que la fiche\ncontiendrait (type proposé, alias, faits) et l'extrait de la capture qui l'a\nnommée. Sans les faits affichés, la question « créer Pierre ? » ne dit pas\nce qu'on crée.",
+        "operationId": "entity_creation_proposals_list_entity_creation_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity-creation-proposals/{proposal_id}/accept": {
+      "post": {
+        "summary": "Entity Creation Proposal Accept",
+        "description": "Créer l'entité proposée, avec ses alias, ses attributs et ses faits.\n\nL'écriture est déléguée au core, et ce n'est pas de la paresse : `upsert_entity`\ny est le SEUL endroit qui écrit une fiche. La refaire ici en ferait un second\nchemin de création, qui dériverait du premier au premier changement sans que\npersonne s'en aperçoive.",
+        "operationId": "entity_creation_proposal_accept_entity_creation_proposals__proposal_id__accept_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity-creation-proposals/{proposal_id}/reject": {
+      "post": {
+        "summary": "Entity Creation Proposal Reject",
+        "description": "Refuser : rien ne naît, et le nom n'est plus reproposé tel quel.\n\nLe refus porte sur « nommée en passant », pas sur l'entité : une capture\nultérieure qui apporte un fait durable ou un lien la crée directement, sans\nrepasser par la file.",
+        "operationId": "entity_creation_proposal_reject_entity_creation_proposals__proposal_id__reject_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proposal Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/negation-proposals": {
       "get": {
         "summary": "Negation Proposals List",

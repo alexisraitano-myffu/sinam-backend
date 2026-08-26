@@ -20,6 +20,7 @@ sans lesquels les cas correspondants seraient inertes :
     forbidden_predicate   ce fait ne doit PAS naître
     entity_expected       cette entité mérite son nœud
     no_entity             celle-ci non
+    entity_proposed       celle-ci ne doit PAS naître seule : elle passe en file
 
 Les trois derniers existaient déjà comme champs dans `corpus.py` et n'étaient lus
 par personne.
@@ -52,6 +53,7 @@ AXES = {
     "facts_min": "X-ONE",
     "entity_expected": "P-PERS",
     "no_entity": "P-PERS",
+    "entity_proposed": "P-CREATE",
     # Ces deux-là sont GÉNÉRIQUES : ils disent « ceci ne doit pas naître », et
     # servent aujourd'hui à P-DEDUC, P-BDAY, EMO et PER-c. Les rattacher à une
     # frontière particulière gonflait son décompte avec les cas des autres.
@@ -90,6 +92,53 @@ def _nullable_str(value) -> str | None:
     if not got or got.lower() in ("null", "none"):
         return None
     return got
+
+
+def porte_de_creation(parsed: dict, nom: str) -> str:
+    """Ce que `routing.rs` ferait de cette entité : « créée », « proposée », « ignorée ».
+
+    Miroir délibéré du core, et il faut le savoir : la vraie décision est en
+    Rust (`step4_route`), ici on la rejoue sur la sortie du classifieur. Les
+    deux doivent bouger ensemble.
+
+    Une des quatre clauses de naissance est INVÉRIFIABLE ici et le restera :
+    « l'entité existe déjà ». Le harnais fige le contexte sans aucune mémoire
+    antérieure, donc elle est toujours fausse. Ce que cet axe mesure, c'est
+    donc la première rencontre, qui est justement le moment où la question se
+    pose.
+    """
+    cible = nom.strip().lower()
+    entite = None
+    for e in parsed.get("entities") or []:
+        canon = (e.get("canonical_name") or "").strip().lower()
+        alias = [(a or "").strip().lower() for a in (e.get("aliases") or [])]
+        if cible == canon or cible in alias:
+            entite = e
+            break
+    if entite is None:
+        return "absente"
+
+    for rel in parsed.get("relations") or []:
+        for bout in ("from", "to"):
+            if (rel.get(bout) or "").strip().lower() == cible:
+                return "créée"
+
+    faits = entite.get("facts") or []
+    # Le core ne retombe PAS sur le défaut 3 quand il n'y a aucun fait : il
+    # force 0, et c'est ce qui rend la clause « nommée en passant » atteignable.
+    if faits:
+        forte = max(
+            (f.get("persistence_value") if isinstance(f.get("persistence_value"), int)
+             else 3)
+            for f in faits
+        )
+        if forte >= 2:
+            return "créée"
+
+    note = parsed.get("atomic_note")
+    durable = bool(note and str(note).strip()) and \
+        parsed.get("atomic_note_kind") in ("task", "event")
+    return "proposée" if durable else "ignorée"
 
 
 def _entity_names(parsed: dict) -> set[str]:
@@ -239,6 +288,12 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if case.get("entity_expected"):
         if case["entity_expected"].strip().lower() not in _entity_names(parsed):
             out.append(f"entité '{case['entity_expected']}' absente")
+
+    if case.get("entity_proposed"):
+        vu = porte_de_creation(parsed, case["entity_proposed"])
+        if vu != "proposée":
+            out.append(f"entité '{case['entity_proposed']}' : {vu} au lieu "
+                       f"d'être proposée")
 
     if case.get("no_entity"):
         if case["no_entity"].strip().lower() in _entity_names(parsed):

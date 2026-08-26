@@ -67,7 +67,8 @@ CORPUS_DIR = Path(__file__).resolve().parent / "corpus"
 CHAMPS = {
     "id", "text", "note", "kind", "ephemeral", "owner", "recurring", "event_date",
     "language", "needs_review", "drop_guard", "rel", "proj", "facts_min",
-    "entity_expected", "no_entity", "forbidden_value", "forbidden_predicate",
+    "entity_expected", "no_entity", "entity_proposed",
+    "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",
     "wm", "repeat", "expect", "frontiere", "why",
     "ambigu", "valide", "arbitrage",

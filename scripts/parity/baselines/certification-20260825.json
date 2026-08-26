@@ -2579,7 +2579,8 @@
         "note",
         "kind",
         "event_date",
-        "entity_expected"
+        "entity_expected",
+        "entity_proposed"
       ]
     },
     "ez-passport-en": {

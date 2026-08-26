@@ -155,6 +155,7 @@ parasite coûte le plus cher : il crée une fiche.
 | # | Frontière | Verdict |
 |---|---|---|
 | PERS-a | personne croisée une fois ⇒ persistance 1, sous `MIN_ENTITY_PERSISTENCE = 2` (`routing.rs:35`) | trou complet |
+| P-CREATE | entité NOMMÉE sans preuve dans une capture qui laisse une note durable ⇒ **proposée**, pas créée | **ouvert le 2026-08-26**, axe `entity_proposed`, un cas (`ez-coffee-fr`, Hugo). Miroir de la porte du core, à faire bouger avec elle. Manque le côté adverse : une entité que le modèle ferait naître en gonflant la persistance d'un fait |
 | PERS-b | personne désignée par un rôle et non par un nom (« ma mère », « mon dentiste ») | `f2` existe et n'asserte que `note=False` : personne ne dit si « ma mère » mérite un nœud |
 | PERS-c | homonymes : deux Marie dans la même mémoire | trou complet |
 | PERS-d | `aliases` : nom partiel puis nom complet | jamais asserté, et **jamais gouverné** (voir SYN-190) |

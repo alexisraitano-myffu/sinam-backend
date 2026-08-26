@@ -4414,6 +4414,7 @@
       "axes": [
         "note",
         "kind",
+        "event_date",
         "drop_guard"
       ]
     },
@@ -6344,9 +6345,12 @@
       "uncached_tokens": 7255,
       "output_tokens": 309,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "entité 'Hamburg' absente"
+      ],
       "axes": [
         "note",
+        "entity_expected",
         "no_obsolete"
       ]
     },
@@ -7952,7 +7956,7 @@
       ]
     }
   },
-  "ecarts": 8,
+  "ecarts": 9,
   "par_frontiere": {
     "routage": [
       "conf-minimal-action",
@@ -7967,6 +7971,7 @@
       "r1e-reported-event"
     ],
     "P-PERS": [
+      "neg-b-replace-en",
       "neg-b-replace-fr",
       "r3b-place-alone"
     ],
@@ -7978,5 +7983,6 @@
       "r1j-no-name"
     ]
   },
-  "prompt_tokens_max": 3925
+  "prompt_tokens_max": 3925,
+  "rescored": "2026-08-26"
 }

@@ -39,9 +39,14 @@ SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
 # L'ordre canonique d'une ligne. Il n'a aucune importance pour le chargeur et
 # toute son importance pour le diff : deux cas voisins doivent se comparer à
 # l'œil, et une réécriture ne doit jamais permuter des clés au passage.
+# ⚠ Cette liste EST le contrat d'écriture : `ligne_json` reconstruit le cas à
+# partir d'elle seule, donc un champ de `corpus.CHAMPS` absent d'ici est
+# SUPPRIMÉ du corpus dès qu'on revoit le cas. Le test plus bas le vérifie.
 ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "kind", "ephemeral",
          "owner", "recurring", "event_date", "language", "needs_review",
          "drop_guard", "rel", "proj", "facts_min", "entity_expected", "no_entity",
+         "entity_proposed", "fact_proposed",
+         "resource_url", "resource_owner_type", "resource_comment",
          "forbidden_value", "forbidden_predicate", "obsoletes", "no_obsolete",
          "renamed_to", "no_rename",
          "frontiere", "why", "ambigu", "arbitrage", "valide"]

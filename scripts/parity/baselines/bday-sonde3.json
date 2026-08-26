@@ -1,0 +1,740 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "7af4ee039679+f5cf53f7db20",
+  "label": "bday-sonde3",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "x-birthday-party": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "La fête d'anniversaire de Yanis est le 12 juin",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2027-06-12",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Fête d'anniversaire de Yanis le 12 juin",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 12 juin.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "adversarial",
+      "text": "La fête d'anniversaire de Yanis est le 12 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.48,
+      "prompt_tokens": 4681,
+      "input_tokens": 8200,
+      "uncached_tokens": 3724,
+      "output_tokens": 340,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "fact_proposed",
+        "drop_guard"
+      ]
+    },
+    "x-birthday-birth": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Né le 12 juin 1990.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "adversarial",
+      "text": "Yanis est né le 12 juin 1990",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.5,
+      "prompt_tokens": 4677,
+      "input_tokens": 8192,
+      "uncached_tokens": 3716,
+      "output_tokens": 303,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "facts_min"
+      ]
+    },
+    "x-birthday-bare": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Le 12 juin c'est l'anniversaire de Yanis",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2027-06-12",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de Yanis le 12 juin",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 12 juin.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "adversarial",
+      "text": "Le 12 juin c'est l'anniversaire de Yanis",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.59,
+      "prompt_tokens": 4680,
+      "input_tokens": 8198,
+      "uncached_tokens": 3722,
+      "output_tokens": 335,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "needs_review"
+      ]
+    },
+    "a1": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Neveu de Julie, vit à Nantes.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "March 3",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              },
+              {
+                "predicate": "lives_in",
+                "value": "Nantes",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "places"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Julie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Marc",
+            "predicate": "nephew_of",
+            "to": "Julie",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "atomicity",
+      "text": "Marc est né le 3 mars, c'est le neveu de Julie et il vit à Nantes",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.51,
+      "prompt_tokens": 4689,
+      "input_tokens": 8216,
+      "uncached_tokens": 3740,
+      "output_tokens": 470,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "rel",
+        "facts_min",
+        "drop_guard"
+      ]
+    },
+    "date-birthday-party-recurring": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-23",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Apéro d'anniversaire de Nadia le 23 juillet",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 23 juillet.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "July 23",
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.39,
+      "prompt_tokens": 4683,
+      "input_tokens": 8204,
+      "uncached_tokens": 3728,
+      "output_tokens": 343,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date",
+        "needs_review",
+        "fact_proposed"
+      ]
+    },
+    "g-atomicity-mixed": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Anniversaire de Yanis le 23 juillet",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-23",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de Yanis, le 23 juillet.",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 23 juillet.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "July 23",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Julie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Léna",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Yanis",
+            "predicate": "son_of",
+            "to": "Marc",
+            "confidence": 1.0
+          },
+          {
+            "from": "Yanis",
+            "predicate": "son_of",
+            "to": "Julie",
+            "confidence": 1.0
+          },
+          {
+            "from": "Yanis",
+            "predicate": "sibling_of",
+            "to": "Léna",
+            "confidence": 1.0
+          },
+          {
+            "from": "Léna",
+            "predicate": "daughter_of",
+            "to": "Marc",
+            "confidence": 0.6
+          },
+          {
+            "from": "Léna",
+            "predicate": "daughter_of",
+            "to": "Julie",
+            "confidence": 0.6
+          },
+          {
+            "from": "Yanis",
+            "predicate": "nephew_of",
+            "to": "Alexis",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 6,
+      "projects": 0,
+      "fields": 15,
+      "set": "gate",
+      "text": "C'est l'anniversaire de Yanis le 23 juillet, Yanis est le fils de Marc et Julie donc mon neveu et le frère de Léna",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.72,
+      "prompt_tokens": 4703,
+      "input_tokens": 8244,
+      "uncached_tokens": 3768,
+      "output_tokens": 876,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "facts_min",
+        "drop_guard"
+      ]
+    },
+    "bday-party-no-fact": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "La fête de Thibault est le 20 juillet.",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-20",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Fête de Thibault le 20 juillet.",
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Thibault",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "La fête de Thibault est le 20",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.75,
+      "prompt_tokens": 4676,
+      "input_tokens": 8190,
+      "uncached_tokens": 3714,
+      "output_tokens": 269,
+      "confidence": 0.85,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "bday-bare-review-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "16 June is Léa's birthday",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-06-16",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Léa's birthday occurs on 16 June.",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Léa",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Birthday on June 16.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 16",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "16 June is Léa's birthday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.42,
+      "prompt_tokens": 4674,
+      "input_tokens": 8186,
+      "uncached_tokens": 3710,
+      "output_tokens": 324,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "language",
+        "needs_review"
+      ]
+    },
+    "bday-age-not-birthdate": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Tom",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "age",
+                "value": "30",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Tom a fêté ses 30 ans",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.26,
+      "prompt_tokens": 4674,
+      "input_tokens": 8186,
+      "uncached_tokens": 3710,
+      "output_tokens": 287,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "facts_min",
+        "forbidden_predicate"
+      ]
+    },
+    "e4": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'anniversaire de Léa est le 16 juin",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2027-06-16",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de Léa",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Léa",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 16 juin.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 16",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "hard",
+      "text": "L'anniversaire de Léa est le 16 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.43,
+      "prompt_tokens": 4678,
+      "input_tokens": 8194,
+      "uncached_tokens": 3718,
+      "output_tokens": 328,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "needs_review",
+        "drop_guard"
+      ]
+    }
+  },
+  "ecarts": 0,
+  "par_frontiere": {},
+  "prompt_tokens_max": 4703
+}

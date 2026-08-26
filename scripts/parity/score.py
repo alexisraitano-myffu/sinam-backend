@@ -21,6 +21,7 @@ sans lesquels les cas correspondants seraient inertes :
     entity_expected       cette entité mérite son nœud
     no_entity             celle-ci non
     entity_proposed       celle-ci ne doit PAS naître seule : elle passe en file
+    fact_proposed         ce fait ne doit PAS être asserté : il passe en file de validation
     resource_url          ce lien est-il enregistré comme ressource
     resource_owner_type   et à quel TYPE d'entité appartient-il
     resource_comment      les mots de l'auteur sur le lien sont-ils gardés
@@ -57,6 +58,7 @@ AXES = {
     "entity_expected": "P-PERS",
     "no_entity": "P-PERS",
     "entity_proposed": "P-CREATE",
+    "fact_proposed": "F-QUEUE",
     "resource_url": "RES",
     "resource_owner_type": "RES",
     "resource_comment": "RES",
@@ -107,6 +109,59 @@ def _ressource(parsed: dict, url: str) -> dict | None:
         if isinstance(r, dict) and (r.get("url") or "").strip().lower() == cible:
             return r
     return None
+
+
+def confiance_du_fait(persistence: int, evidence: str, existing: bool = False,
+                      mentions: int = 1) -> float:
+    """Miroir de `routing.rs::compute_confidence`. Les deux doivent bouger ensemble.
+
+    Recopié, donc exposé au même piège que la liste de fusion de `split.py` : si
+    la formule change côté Rust et pas ici, cet axe se met à mesurer une porte
+    qui n'existe plus. C'est la deuxième copie manuelle du core dans ce fichier,
+    et la raison de la garder est la même que pour `porte_de_creation` : sans
+    elle, la destination d'un fait n'est pas exprimable dans une étiquette.
+    """
+    base = {"hedged": 0.65, "implicit": 0.40}.get(evidence, 0.92)
+    bonus = 0.05 if existing else 0.0
+    bonus += min(mentions * 0.02, 0.05)
+    bonus += {5: 0.2, 4: 0.15, 3: 0.05, 2: 0.0, 1: -0.1}.get(persistence, 0.0)
+    score = base + bonus
+    if evidence == "hedged":
+        score = min(score, 0.84)
+    return max(0.0, min(1.0, score))
+
+
+def porte_du_fait(parsed: dict, entite: str, predicat: str) -> str:
+    """Où ce fait atterrit : « asserté », « proposé », « en revue », « absent ».
+
+    Les trois destinations de `dispatch_facts` et leurs deux seuils, rejoués sur
+    la sortie du classifieur. Le modèle ne choisit AUCUNE des trois : il choisit
+    `evidence_strength` et `persistence_value`, et la porte fait le reste. C'est
+    exactement pour ça que l'axe est utile — il mesure la conséquence, pas
+    l'intention, et une étiquette « proposé » se lit sans connaître la formule.
+
+    « existe déjà » est inatteignable ici pour la même raison qu'à la création :
+    le harnais fige un contexte sans mémoire antérieure.
+    """
+    cible_e = entite.strip().lower()
+    cible_p = predicat.strip().lower()
+    for e in parsed.get("entities") or []:
+        canon = (e.get("canonical_name") or "").strip().lower()
+        alias = [(a or "").strip().lower() for a in (e.get("aliases") or [])]
+        if cible_e not in (canon, *alias):
+            continue
+        for f in e.get("facts") or []:
+            if not isinstance(f, dict):
+                continue
+            if cible_p not in str(f.get("predicate") or "").strip().lower():
+                continue
+            pers = f.get("persistence_value")
+            pers = pers if isinstance(pers, int) else 3
+            c = confiance_du_fait(pers, str(f.get("evidence_strength") or "explicit"))
+            if c > 0.85:
+                return "asserté"
+            return "proposé" if c >= 0.5 else "en revue"
+    return "absent"
 
 
 def porte_de_creation(parsed: dict, nom: str) -> str:
@@ -340,6 +395,16 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         if vu != "proposée":
             out.append(f"entité '{case['entity_proposed']}' : {vu} au lieu "
                        f"d'être proposée")
+
+    # P-BDAY — la troisième marche de l'échelle anniversaire. « fait interdit »
+    # et « fait asserté » ne suffisaient pas à dire la seule bonne réponse quand
+    # la date vient d'une FÊTE : le jour est très probable et pas certain, donc
+    # ni inventer ni jeter, demander.
+    if case.get("fact_proposed"):
+        ent, _, pred = case["fact_proposed"].partition(":")
+        vu = porte_du_fait(parsed, ent, pred)
+        if vu != "proposé":
+            out.append(f"fait '{pred}' sur '{ent}' : {vu} au lieu d'être proposé")
 
     if case.get("no_entity"):
         if case["no_entity"].strip().lower() in _entity_names(parsed):

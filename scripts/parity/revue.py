@@ -123,6 +123,39 @@ def _bloc(titre: str, lignes, indent: str = "  ") -> None:
         print(f"{indent}{ligne}")
 
 
+def _branche(cas: dict, jeu: str) -> list[str]:
+    """Ce qu'un cas scénario prouve, en français, et contre quel témoin.
+
+    Un cas scénario ne se juge pas sur une sortie mais sur une BRANCHE, tenue
+    sur N passes. Et il ne prouve rien tout seul : sa valeur est l'écart, ou
+    l'absence d'écart, avec le même texte dans un autre fil. Sans le témoin
+    affiché, la revue porte sur une phrase isolée, ce qui n'est pas la question
+    posée.
+    """
+    e = cas["expect"]
+    dits = []
+    if "note" in e:
+        dits.append("une note" if e["note"] else "aucune note")
+    if e.get("kind"):
+        dits.append(f"de genre {e['kind']}")
+    if "confidence_below" in e:
+        dits.append(f"sous {e['confidence_below']} de confiance")
+    if "ephemeral" in e:
+        dits.append("éphémère" if e["ephemeral"] else "non éphémère")
+    lignes = [f"{', '.join(dits) or e}, sur "
+              f"{cas.get('repeat', 1)} passes identiques"]
+
+    temoins = [k["id"] for k in C.charger(jeu)
+               if k["id"] != cas["id"] and k.get("text") == cas.get("text")]
+    if temoins:
+        lignes += ["", "Le même texte est mesuré ailleurs dans ce jeu, et c'est "
+                       "LÀ qu'est la question :",
+                   "  " + ", ".join(temoins),
+                   "La bonne réponse n'est pas « que vaut cette phrase » mais "
+                   "« la réponse doit-elle bouger d'un fil à l'autre »."]
+    return lignes
+
+
 def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None,
               technique: bool = False) -> None:
     marque = f"{G}validé {cas['valide']}{N}" if cas.get("valide") else f"{J}non validé{N}"
@@ -132,8 +165,16 @@ def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None,
         marque += f" · {J}le prompt ne tranche pas (hors décompte){N}"
     print(f"\n{'─' * 78}\n{B}[{i}/{total}] {cas['id']}{N}  ·  {jeu}  ·  {marque}")
     print(f"\n  « {cas['text']} »")
-    for w in cas.get("wm") or []:
-        print(f"    ↳ dit juste avant : « {w} »")
+    if cas.get("wm"):
+        # Le fil se LIT et ne s'écrit pas. `_build_day_context` le passe au
+        # classifieur en contexte seule-lecture pour que « elle », « ce
+        # projet », « hier » se résolvent ; seule la capture ci-dessus produit
+        # une sortie. L'ancienne formule, « dit juste avant », laissait croire
+        # le contraire, et une revue a été rendue sur cette lecture-là.
+        print(f"    {D}↑ la seule capture notée. Ce qui suit est du contexte "
+              f"lu, qui ne produit RIEN :{N}")
+        for w in cas.get("wm") or []:
+            print(f"      {D}·{N} « {w} »")
 
     if technique:
         return _technique(cas, trace)
@@ -158,8 +199,7 @@ def _afficher(cas: dict, jeu: str, i: int, total: int, trace: dict | None,
                     print(f"    {'·' if k == 0 else ' '} {bout}")
     elif "expect" in cas:
         _bloc("LA RÉPONSE ACTUELLE",
-              [f"branche attendue : {cas['expect']} "
-               f"({cas.get('repeat', 1)} passes)"])
+              _branche(cas, jeu))
     else:
         print(f"\n  {R}Ce cas n'asserte rien : il ne vérifie rien.{N}")
 

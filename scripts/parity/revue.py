@@ -309,6 +309,15 @@ def reviser(cas_par_jeu: list[tuple[str, dict]], traces: dict) -> None:
             continue
         if choix == "o":
             cas["valide"] = aujourdhui
+            # Valider répond à la question que l'ancienne décision posait : la
+            # laisser en place ferait compter le cas comme « en attente de
+            # traduction » alors qu'il vient d'être tranché, et l'affichage le
+            # disait, le marqueur d'arbitrage passant avant celui de validation.
+            ancienne = cas.pop("arbitrage", None)
+            if ancienne:
+                cas["why"] = ((cas.get("why") or "").rstrip()
+                              + f" Tu avais écrit « {ancienne} » ; l'étiquette "
+                                f"validée le {aujourdhui} y répond.").strip()
             ecrire(jeu, cas)
             print(f"{G}validé{N}")
             i += 1

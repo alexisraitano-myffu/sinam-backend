@@ -1256,3 +1256,74 @@ def test_unknown_proposal_is_a_404(client):
         "/entity-creation-proposals/pas-un-id/accept").status_code == 404
     assert client.post(
         "/entity-creation-proposals/pas-un-id/reject").status_code == 404
+
+
+# ── Ressources : liste, projet, réglage ──────────────────────────────────────
+
+def test_resources_list_carries_the_links_posed_on_other_entities(client):
+    """La liste se bâtit sur la TABLE, et c'est ce qui justifie qu'elle survive.
+
+    Une URL qui décrit une chose ayant déjà son identité — un outil, un lieu —
+    se pose sur SA fiche et ne crée aucune entité de type ressource. Une liste
+    bâtie sur les entités les raterait toutes.
+    """
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT INTO entities (id, canonical_name, type) "
+                "VALUES ('e-lin', 'Linear', 'tool')")
+            conn.execute(
+                "INSERT INTO resources (id, type, url, entity_id, user_comment) "
+                "VALUES ('r-lin', 'page', 'https://linear.app/b', 'e-lin', "
+                "        'là que tout se suit')")
+    finally:
+        conn.close()
+    rows = client.get("/resources").json()
+    assert len(rows) == 1
+    assert rows[0]["url"] == "https://linear.app/b"
+    assert rows[0]["entity_name"] == "Linear"
+    assert rows[0]["entity_type"] == "tool", "un lien peut vivre sur autre chose qu'une ressource"
+    assert rows[0]["user_comment"] == "là que tout se suit"
+
+
+def test_a_project_carries_the_resources_tied_to_it(client):
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT INTO entities (id, canonical_name, type) "
+                         "VALUES ('p1', 'Japonais', 'project')")
+            conn.execute("INSERT INTO entities (id, canonical_name, type) "
+                         "VALUES ('r1', 'Un article', 'resource')")
+            conn.execute("INSERT INTO entities (id, canonical_name, type) "
+                         "VALUES ('r2', 'Un autre', 'resource')")
+            conn.execute("INSERT INTO relations (id, entity_from, predicate, entity_to) "
+                         "VALUES ('rel1', 'r1', 'about', 'p1')")
+            for rid, eid in (("res1", "r1"), ("res2", "r2")):
+                conn.execute(
+                    "INSERT INTO resources (id, type, url, entity_id) "
+                    f"VALUES ('{rid}', 'article', 'https://x/{rid}', '{eid}')")
+    finally:
+        conn.close()
+    state = client.get("/project/p1/state").json()
+    urls = [r["url"] for r in state["resources"]]
+    assert urls == ["https://x/res1"], "seule celle qui tient dans une relation"
+
+
+def test_fetch_setting_round_trips_and_reaches_the_core(client, monkeypatch):
+    """Le réglage de vie privée, et la preuve qu'il atteint le core.
+
+    Le core lit l'environnement du processus, qu'il partage avec l'hôte : sans
+    cette écriture-là, le bouton serait décoratif.
+    """
+    import os
+    # Le réglage écrit dans l'environnement du PROCESSUS : sans restauration, il
+    # déborderait sur les tests suivants.
+    monkeypatch.delenv("SYNAPSE_FETCH_RESOURCES", raising=False)
+    assert client.get("/config").json()["fetch_resources"] is True
+    r = client.put("/config/fetch-resources", json={"enabled": False})
+    assert r.status_code == 200
+    assert client.get("/config").json()["fetch_resources"] is False
+    assert os.environ["SYNAPSE_FETCH_RESOURCES"] == "0"
+    client.put("/config/fetch-resources", json={"enabled": True})
+    assert os.environ["SYNAPSE_FETCH_RESOURCES"] == "1"

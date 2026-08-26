@@ -244,6 +244,9 @@ def _recover_interrupted_runs() -> None:
 @contextlib.asynccontextmanager
 async def lifespan(_app):
     _recover_interrupted_runs()
+    # Le réglage « aller chercher les pages » vit dans config.json et se pose
+    # dans l'environnement, que l'hôte partage avec le core.
+    config_store.apply_fetch_resources_at_startup()
     # SYN-127 — self-register in the replicated device registry, and let the
     # owner found the space if it's missing (migrates existing installs).
     from api.sync_peers import ensure_space, register_self_device
@@ -365,6 +368,10 @@ class AnthropicKeyIn(BaseModel):
     key: str
 
 
+class FetchResourcesIn(BaseModel):
+    enabled: bool
+
+
 class OwnerIn(BaseModel):
     entity_id: str | None = None  # the entity that IS the user (« moi »); null clears it
 
@@ -467,7 +474,8 @@ def health():
 def get_config():
     """Status only — never echoes the key back. Used by the wizard to know
     whether to prompt for one."""
-    return {"anthropic_key_set": config_store.has_anthropic_key()}
+    return {"anthropic_key_set": config_store.has_anthropic_key(),
+            "fetch_resources": config_store.get_fetch_resources()}
 
 
 @app.put("/config/anthropic-key", dependencies=[Depends(require_auth)])
@@ -480,6 +488,48 @@ def put_anthropic_key(body: AnthropicKeyIn):
         raise HTTPException(status_code=400, detail="invalid key format (expected sk-... or syn-fuel-...)")
     config_store.set_anthropic_key(key)
     return {"status": "ok"}
+
+
+@app.put("/config/fetch-resources", dependencies=[Depends(require_auth)])
+def put_fetch_resources(body: FetchResourcesIn):
+    """Aller chercher les pages des liens capturés, ou non.
+
+    La requête apprend au serveur d'en face l'adresse IP, l'heure, l'URL et le
+    user-agent — au moment où l'utilisateur ENREGISTRE le lien, pas au moment où
+    il le lit, et pendant le cycle, donc sans qu'il soit devant. Un lien
+    raccourci l'apprend à deux serveurs, le raccourcisseur puis la destination.
+
+    Éteindre ne perd pas le lien : depuis que le classifieur émet lui-même les
+    ressources, on garde l'URL, sa catégorie et le commentaire de l'utilisateur
+    sans qu'aucune requête sorte de la machine. Ce qu'on perd est le titre réel
+    de la page et le résumé de son contenu.
+    """
+    config_store.set_fetch_resources(body.enabled)
+    return {"status": "ok", "fetch_resources": body.enabled}
+
+
+@app.get("/resources", dependencies=[Depends(require_auth)])
+def resources_list(limit: int = 200):
+    """Tout ce que l'utilisateur a gardé comme lien.
+
+    La liste se bâtit sur la TABLE et non sur les entités, et c'est ce qui
+    justifie que la table survive : une URL qui décrit une chose ayant déjà son
+    identité — un outil, un lieu — se pose sur SA fiche et ne crée aucune entité
+    de type ressource. Une liste bâtie sur les entités les raterait toutes.
+    """
+    conn = get_connection()
+    try:
+        return cursor_to_dicts(conn.execute(
+            "SELECT r.id, r.url, r.type AS category, r.title, r.user_comment, "
+            "       r.fetched_at, r.created_at, r.source AS capture_id, "
+            "       r.entity_id, e.canonical_name AS entity_name, "
+            "       e.type AS entity_type "
+            "FROM resources r LEFT JOIN entities e "
+            "  ON e.id = r.entity_id AND e.merged_into_id IS NULL "
+            "ORDER BY r.created_at DESC LIMIT ?", (limit,)
+        ))
+    finally:
+        conn.close()
 
 
 @app.get("/owner", dependencies=[Depends(require_auth)])
@@ -2751,6 +2801,21 @@ def project_state(project_id: str):
             "AND obsoleted_at IS NULL AND archived_at IS NULL "
             "ORDER BY created_at ASC", (project_id,)
         ))
+        # Les ressources rattachées au projet : celles dont la fiche tient dans
+        # une relation avec lui, dans un sens ou dans l'autre. C'est ce que
+        # « faire des ressources des entités » achète — la question ne pouvait
+        # pas se poser tant qu'une ressource vivait hors du graphe.
+        # ⚠ Miroir : snapshot.rs::project_state, à faire évoluer avec.
+        resources = cursor_to_dicts(conn.execute(
+            "SELECT r.id, r.url, r.type AS category, r.title, r.user_comment, "
+            "       r.entity_id, e.canonical_name AS entity_name "
+            "FROM resources r JOIN entities e ON e.id = r.entity_id "
+            "WHERE e.merged_into_id IS NULL AND EXISTS ("
+            "  SELECT 1 FROM relations rel "
+            "  WHERE (rel.entity_from = e.id AND rel.entity_to = ?1) "
+            "     OR (rel.entity_to = e.id AND rel.entity_from = ?1)) "
+            "ORDER BY r.created_at DESC", (project_id,)
+        ))
         return {
             "project_id": ent["id"],
             "canonical_name": ent["canonical_name"],
@@ -2758,6 +2823,7 @@ def project_state(project_id: str):
             "entries_recent": entries,
             "entries_total": total_entries,
             "facts": facts,
+            "resources": resources,
         }
     finally:
         conn.close()

@@ -79,3 +79,39 @@ def get_instance_id() -> str:
         data["instance_id"] = iid
         _save(data)
     return iid
+
+
+# ── Aller chercher les pages, ou non ──────────────────────────────────────────
+# La requête apprend au serveur d'en face l'IP, l'heure, l'URL et le user-agent,
+# au moment où l'utilisateur ENREGISTRE et non au moment où il lit, et pendant le
+# cycle, donc sans qu'il soit devant. Un lien raccourci l'apprend à deux
+# serveurs. Allumé par défaut, parce que le titre réel et un résumé valent
+# quelque chose — mais c'est désormais un choix, et ça ne l'était pas : sans
+# récupération, il n'y avait pas de ressource du tout.
+_FETCH_ENV = "SYNAPSE_FETCH_RESOURCES"
+
+
+def get_fetch_resources() -> bool:
+    return bool(_load().get("fetch_resources", True))
+
+
+def set_fetch_resources(on: bool) -> None:
+    data = _load()
+    data["fetch_resources"] = bool(on)
+    _save(data)
+    # Le core lit l'environnement du processus, qu'il partage avec l'hôte. Un
+    # geste explicite de l'utilisateur écrase donc la variable, même posée à la
+    # main : c'est LUI qui vient de trancher.
+    os.environ[_FETCH_ENV] = "1" if on else "0"
+
+
+def apply_fetch_resources_at_startup() -> None:
+    """Poser le réglage stocké, sans écraser une variable déjà présente.
+
+    L'ordre compte et il est délibéré : une variable posée par celui qui lance
+    le service gagne au démarrage, parce qu'elle exprime une intention sur CE
+    lancement. Le réglage de l'application gagne quand l'utilisateur le change,
+    parce que c'est une intention plus récente.
+    """
+    if _FETCH_ENV not in os.environ:
+        os.environ[_FETCH_ENV] = "1" if get_fetch_resources() else "0"

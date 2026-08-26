@@ -121,6 +121,116 @@
         }
       }
     },
+    "/config/fetch-resources": {
+      "put": {
+        "summary": "Put Fetch Resources",
+        "description": "Aller chercher les pages des liens capturés, ou non.\n\nLa requête apprend au serveur d'en face l'adresse IP, l'heure, l'URL et le\nuser-agent — au moment où l'utilisateur ENREGISTRE le lien, pas au moment où\nil le lit, et pendant le cycle, donc sans qu'il soit devant. Un lien\nraccourci l'apprend à deux serveurs, le raccourcisseur puis la destination.\n\nÉteindre ne perd pas le lien : depuis que le classifieur émet lui-même les\nressources, on garde l'URL, sa catégorie et le commentaire de l'utilisateur\nsans qu'aucune requête sorte de la machine. Ce qu'on perd est le titre réel\nde la page et le résumé de son contenu.",
+        "operationId": "put_fetch_resources_config_fetch_resources_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FetchResourcesIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resources": {
+      "get": {
+        "summary": "Resources List",
+        "description": "Tout ce que l'utilisateur a gardé comme lien.\n\nLa liste se bâtit sur la TABLE et non sur les entités, et c'est ce qui\njustifie que la table survive : une URL qui décrit une chose ayant déjà son\nidentité — un outil, un lieu — se pose sur SA fiche et ne crée aucune entité\nde type ressource. Une liste bâtie sur les entités les raterait toutes.",
+        "operationId": "resources_list_resources_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 200,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/owner": {
       "get": {
         "summary": "Get Owner",
@@ -5245,6 +5355,19 @@
         },
         "type": "object",
         "title": "FactUpdate"
+      },
+      "FetchResourcesIn": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "FetchResourcesIn"
       },
       "HTTPValidationError": {
         "properties": {

@@ -156,6 +156,7 @@ parasite coûte le plus cher : il crée une fiche.
 |---|---|---|
 | PERS-a | personne croisée une fois ⇒ persistance 1, sous `MIN_ENTITY_PERSISTENCE = 2` (`routing.rs:35`) | trou complet |
 | P-CREATE | entité NOMMÉE sans preuve dans une capture qui laisse une note durable ⇒ **proposée**, pas créée | **ouvert le 2026-08-26**, axe `entity_proposed`, un cas (`ez-coffee-fr`, Hugo). Miroir de la porte du core, à faire bouger avec elle. Manque le côté adverse : une entité que le modèle ferait naître en gonflant la persistance d'un fait |
+| P-CREATE′ | un LIEN vaut-il preuve de naissance ? | **tranché le 2026-08-26 : oui, il la fait naître sans demander.** Un lien ne s'écrit que si ses DEUX bouts existent : proposer l'un des deux ferait perdre le lien. Le choix était entre une fiche de trop et un lien perdu. Mesuré sur les 155 cas : 27 entités naissent par un fait durable, 27 par un lien seul, 18 passent en file |
 | PERS-b | personne désignée par un rôle et non par un nom (« ma mère », « mon dentiste ») | `f2` existe et n'asserte que `note=False` : personne ne dit si « ma mère » mérite un nœud |
 | PERS-c | homonymes : deux Marie dans la même mémoire | trou complet |
 | PERS-d | `aliases` : nom partiel puis nom complet | jamais asserté, et **jamais gouverné** (voir SYN-190) |

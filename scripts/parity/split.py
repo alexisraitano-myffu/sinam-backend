@@ -67,7 +67,7 @@ _NOTE_FIELDS = ("language", "atomic_note", "atomic_note_kind", "atomic_note_owne
                 "event_recurring", "is_ephemeral", "ephemeral_content",
                 "classification_confidence", "summary")
 _GRAPH_FIELDS = ("language", "entities", "relations", "project_entries",
-                 "obsoleted_facts")
+                 "obsoleted_facts", "resources")
 
 
 def _subschema(fields: tuple[str, ...]) -> dict:
@@ -149,7 +149,12 @@ def classify_split(model: str, text: str, schema: bool, temperature: float) -> t
     # sortaient « négation absente » alors que la production, elle, la voyait.
     # Un harnais qui perd un champ ne mesure pas une régression, il en invente
     # une, et c'est pire : on corrige alors ce qui marchait.
-    for k in ("entities", "relations", "project_entries", "obsoleted_facts"):
+    # `resources` ajouté le 2026-08-26, et le piège s'est reproduit à
+    # l'identique : la moitié graphe l'émettait, le harnais le jetait, et les
+    # sept cas de la famille sortaient « ressource absente ». Deuxième fois en
+    # deux jours. Quand cette liste bouge, elle bouge des deux côtés.
+    for k in ("entities", "relations", "project_entries", "obsoleted_facts",
+              "resources"):
         merged[k] = (graph or {}).get(k) or []
     merged.setdefault("language", (graph or {}).get("language"))
     return merged, diag

@@ -123,3 +123,59 @@ def test_stored_resource_is_searchable(isolated_db, html_stub):
     assert ids, "the URL in the capture should be fetched and stored"
     assert results, "the resource should be retrievable by similarity"
     assert "/page" in (results[0]["url"] or "")
+
+
+def test_le_reglage_coupe_la_requete_sortante(isolated_db, html_stub, monkeypatch):
+    """Éteindre la récupération n'appelle personne, et ne stocke rien.
+
+    L'intérêt du réglage est là : la requête apprend au serveur d'en face l'IP,
+    l'heure et l'URL, au moment où l'utilisateur ENREGISTRE et non au moment où
+    il lit. Le stub compte les appels, donc le test prouve l'absence de requête
+    au lieu de la supposer.
+    """
+    import dream_cycle.resources as R
+    from db import get_connection
+    base, set_page = html_stub
+    set_page("<html><head><title>Jamais lu</title></head><body><p>x</p></body></html>")
+    monkeypatch.setenv("SYNAPSE_FETCH_RESOURCES", "0")
+    conn = get_connection()
+    try:
+        rid = R.process_resource(f"{base}/page", conn, client=None)
+        n = conn.execute("SELECT COUNT(*) FROM resources").fetchone()[0]
+    finally:
+        conn.close()
+    assert rid is None
+    assert n == 0, "réglage éteint : ni requête, ni ligne"
+
+
+def test_une_ressource_deja_recuperee_ne_lest_pas_deux_fois(isolated_db, html_stub):
+    """Le garde a changé de nature et il faut que ça tienne.
+
+    Il disait « cette URL est connue » ; depuis que le routage enregistre la
+    ligne AVANT toute requête, ce garde-là n'aurait plus jamais laissé passer
+    personne. Il dit maintenant « elle a déjà été récupérée ».
+    """
+    import dream_cycle.resources as R
+    from db import get_connection
+    base, set_page = html_stub
+    set_page("<html><head><title>Article</title></head><body><p>du texte</p></body></html>")
+    conn = get_connection()
+    try:
+        # La ligne telle que le routage la pose : une URL, une catégorie, un
+        # commentaire, et surtout pas de fetched_at.
+        with conn:
+            conn.execute(
+                "INSERT INTO resources (id, type, source, url, user_comment) "
+                "VALUES ('r1', 'article', 'c1', ?, 'à lire')", (f"{base}/page",))
+        rid = R.process_resource(f"{base}/page", conn, client=None)
+        rows = conn.execute(
+            "SELECT id, type, title, user_comment FROM resources").fetchall()
+    finally:
+        conn.close()
+    assert rid == "r1", "la ligne du routage est complétée, pas doublée"
+    assert len(rows) == 1
+    assert rows[0][2] == "Article", "le titre réel est venu de la page"
+    # La page n'a pas voix au chapitre sur la catégorie ni sur ce que l'auteur
+    # a dit : ces deux-là viennent de la capture.
+    assert rows[0][1] == "article"
+    assert rows[0][3] == "à lire"

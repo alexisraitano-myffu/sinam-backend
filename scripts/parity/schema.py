@@ -104,6 +104,25 @@ _OBSOLETED_FACT = {
     "required": ["entity_canonical", "predicate", "value"],
 }
 
+# Un lien de la capture, et l'entité à qui il appartient. `entity_canonical`
+# nomme une entité que la même réponse émet, donc les faits, les relations et le
+# résumé d'une ressource passent par la machinerie ordinaire au lieu d'un chemin
+# à part. `user_comment` est nullable et c'est le champ qui compte : c'est la
+# seule chose qu'aucun résumé de la page ne peut reproduire.
+_RESOURCE = {
+    "type": "object",
+    "properties": {
+        "url": {"type": "string"},
+        "category": {
+            "type": "string",
+            "enum": ["article", "video", "podcast", "paper", "thread", "page"],
+        },
+        "entity_canonical": {"type": "string"},
+        "user_comment": {"type": ["string", "null"]},
+    },
+    "required": ["url", "category", "entity_canonical", "user_comment"],
+}
+
 # Les deux énumérations que le prompt déclare fermées. Ce sont elles qui portent
 # tout l'intérêt du décodage contraint : le reste du schéma n'est là que pour que
 # la contrainte reste cohérente avec la forme attendue.
@@ -135,6 +154,7 @@ CLASSIFY_SCHEMA = {
         "entities": {"type": "array", "items": _ENTITY},
         "relations": {"type": "array", "items": _RELATION},
         "obsoleted_facts": {"type": "array", "items": _OBSOLETED_FACT},
+        "resources": {"type": "array", "items": _RESOURCE},
         "summary": {"type": ["string", "null"]},
     },
     # ⚠️ TOUS les champs déclarés sont requis, et ce n'est pas du zèle.
@@ -153,6 +173,7 @@ CLASSIFY_SCHEMA = {
         # est ici la réponse NORMALE, il faut donc qu'il soit écrit, sans quoi
         # « rien à périmer » et « le modèle a oublié le champ » se confondent.
         "obsoleted_facts",
+        "resources",
         "summary",
     ],
 }

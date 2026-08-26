@@ -21,6 +21,9 @@ sans lesquels les cas correspondants seraient inertes :
     entity_expected       cette entité mérite son nœud
     no_entity             celle-ci non
     entity_proposed       celle-ci ne doit PAS naître seule : elle passe en file
+    resource_url          ce lien est-il enregistré comme ressource
+    resource_owner_type   et à quel TYPE d'entité appartient-il
+    resource_comment      les mots de l'auteur sur le lien sont-ils gardés
 
 Les trois derniers existaient déjà comme champs dans `corpus.py` et n'étaient lus
 par personne.
@@ -54,6 +57,9 @@ AXES = {
     "entity_expected": "P-PERS",
     "no_entity": "P-PERS",
     "entity_proposed": "P-CREATE",
+    "resource_url": "RES",
+    "resource_owner_type": "RES",
+    "resource_comment": "RES",
     # Ces deux-là sont GÉNÉRIQUES : ils disent « ceci ne doit pas naître », et
     # servent aujourd'hui à P-DEDUC, P-BDAY, EMO et PER-c. Les rattacher à une
     # frontière particulière gonflait son décompte avec les cas des autres.
@@ -92,6 +98,15 @@ def _nullable_str(value) -> str | None:
     if not got or got.lower() in ("null", "none"):
         return None
     return got
+
+
+def _ressource(parsed: dict, url: str) -> dict | None:
+    """L'item de `resources` qui porte cette URL, ou None."""
+    cible = url.strip().lower()
+    for r in parsed.get("resources") or []:
+        if isinstance(r, dict) and (r.get("url") or "").strip().lower() == cible:
+            return r
+    return None
 
 
 def porte_de_creation(parsed: dict, nom: str) -> str:
@@ -288,6 +303,37 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if case.get("entity_expected"):
         if case["entity_expected"].strip().lower() not in _entity_names(parsed):
             out.append(f"entité '{case['entity_expected']}' absente")
+
+    # RES — un lien appartient à quelque chose, et ce quelque chose dit tout.
+    # Le type de l'entité qui le reçoit distingue les deux formes : « le lien
+    # donne accès à une chose qui a son identité » et « le lien EST la chose ».
+    if case.get("resource_url"):
+        r = _ressource(parsed, case["resource_url"])
+        if r is None:
+            vus = [x.get("url") for x in (parsed.get("resources") or [])]
+            out.append(f"ressource '{case['resource_url']}' absente "
+                       f"(vu : {vus or 'aucune'})")
+        else:
+            if case.get("resource_owner_type"):
+                nom = (r.get("entity_canonical") or "").strip().lower()
+                vu = next(
+                    ((e.get("type") or "").strip().lower()
+                     for e in (parsed.get("entities") or [])
+                     if (e.get("canonical_name") or "").strip().lower() == nom),
+                    None,
+                )
+                if vu != case["resource_owner_type"].strip().lower():
+                    out.append(f"le lien appartient à un '{vu or 'rien'}' au lieu "
+                               f"d'un '{case['resource_owner_type']}'")
+            if "resource_comment" in case:
+                attendu = case["resource_comment"]
+                got = (r.get("user_comment") or "").strip()
+                if attendu is None:
+                    if got:
+                        out.append(f"commentaire de trop sur le lien : {got!r}")
+                elif attendu.strip().lower() not in got.lower():
+                    out.append(f"les mots de l'auteur sur le lien sont perdus "
+                               f"(attendu {attendu!r}, vu {got or 'rien'!r})")
 
     if case.get("entity_proposed"):
         vu = porte_de_creation(parsed, case["entity_proposed"])

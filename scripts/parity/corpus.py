@@ -68,6 +68,7 @@ CHAMPS = {
     "id", "text", "note", "kind", "ephemeral", "owner", "recurring", "event_date",
     "language", "needs_review", "drop_guard", "rel", "proj", "facts_min",
     "entity_expected", "no_entity", "entity_proposed",
+    "resource_url", "resource_owner_type", "resource_comment",
     "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",
     "wm", "repeat", "expect", "frontiere", "why",

@@ -6432,13 +6432,12 @@
       "uncached_tokens": 7283,
       "output_tokens": 441,
       "confidence": 1.0,
-      "gaps": [
-        "négation de trop : works_at='Acme'"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "facts_min",
-        "no_obsolete"
+        "entity_expected",
+        "obsoletes"
       ]
     },
     "neg-b-hedged-fr": {
@@ -7956,7 +7955,7 @@
       ]
     }
   },
-  "ecarts": 9,
+  "ecarts": 8,
   "par_frontiere": {
     "routage": [
       "conf-minimal-action",
@@ -7976,8 +7975,7 @@
       "r3b-place-alone"
     ],
     "NEG-c": [
-      "neg-b-replace-fr",
-      "neg-b-replace-two-clauses"
+      "neg-b-replace-fr"
     ],
     "perte": [
       "r1j-no-name"

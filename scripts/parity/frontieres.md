@@ -175,7 +175,7 @@ retire une vérité, et personne ne remarque qu'un fait a disparu.
 | NEG-a | action annulée ⇒ la décision se garde, la tâche non | couvert, 1 cas |
 | NEG-b | négation d'un FAIT (« Pierre ne travaille plus chez Acme ») | **débloqué** (SYN-189) : asserter `obsoletes="works_at=Acme"`. Trou complet, écrivable dès maintenant |
 | NEG-c | négation d'existence (« Marie n'a pas de chat ») | **débloqué** : asserter `no_obsolete=True` ET aucun fait. Une absence énoncée pour la première fois ne nie rien |
-| NEG-b′ | un REMPLACEMENT n'est pas une négation (« il a quitté Acme pour Globex ») | **débloqué**, et c'est le piège du lot : la bonne réponse est un fait ordinaire avec la nouvelle valeur et `no_obsolete=True`, le supersede faisant le reste |
+| NEG-b′ | un REMPLACEMENT (« il a quitté Acme pour Globex ») | **tranché le 2026-08-26** : l'ancien passe en péremption ET le nouveau est créé avec la bonne valeur, les deux. L'étiquette du 25/08 disait le contraire (`no_obsolete`, le supersede faisant le reste) et comptait un succès comme un écart. Se mesure sur un sujet NOMMÉ : avec un pronom sans antécédent, rien ne s'attache, `entity_canonical` étant requis |
 | NEG-b″ | négation nuancée (« je crois qu'il a quitté Acme ») | **débloqué** : `no_obsolete=True`. Retirer une connaissance sur un peut-être est pire que la garder |
 | NEG-d | événement annulé (par opposition à la tâche annulée) | trou complet, TOUJOURS bloqué : annuler un événement demande de retrouver la note qui le porte, donc un rappel, pas un champ de sortie |
 | NEG-e | correction d'une capture antérieure (« en fait c'était mercredi ») | trou complet, toujours bloqué : même rappel, plus le fil de mémoire de travail (mode scénario) |

@@ -496,19 +496,14 @@
       "output_tokens": 347,
       "confidence": 1.0,
       "gaps": [
-        "kind attendu=event obtenu=note",
-        "recurring attendu=True obtenu=False",
-        "event_date attendu=2026-07-14 obtenu=None"
+        "note attendue=False obtenue=True",
+        "fait 'birthday' sur 'Sophie' : asserté au lieu d'être proposé"
       ],
       "axes": [
         "note",
-        "kind",
         "ephemeral",
-        "owner",
-        "recurring",
-        "event_date",
         "language",
-        "needs_review"
+        "fact_proposed"
       ]
     },
     "g-date-progress-dated-cancelled-by-birthday": {
@@ -627,9 +622,7 @@
       "uncached_tokens": 325,
       "output_tokens": 333,
       "confidence": 0.55,
-      "gaps": [
-        "ne doit PAS encombrer « À valider » : confiance 0.55 (seuil 0.7)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -715,19 +708,14 @@
       "output_tokens": 484,
       "confidence": 1.0,
       "gaps": [
-        "kind attendu=event obtenu=note",
-        "recurring attendu=True obtenu=False",
-        "event_date attendu=2026-07-14 obtenu=None"
+        "note attendue=False obtenue=True",
+        "fait 'birthday' sur 'mère d'Alexis' : asserté au lieu d'être proposé"
       ],
       "axes": [
         "note",
-        "kind",
         "ephemeral",
-        "owner",
-        "recurring",
-        "event_date",
         "language",
-        "needs_review"
+        "fact_proposed"
       ]
     },
     "g-routine-pain-passe": {
@@ -1955,11 +1943,10 @@
       "uncached_tokens": 321,
       "output_tokens": 262,
       "confidence": 0.7,
-      "gaps": [
-        "note attendue=False obtenue=True"
-      ],
+      "gaps": [],
       "axes": [
-        "note"
+        "note",
+        "kind"
       ]
     },
     "r1b-tache-vs-info-admin-pair-en": {
@@ -2338,12 +2325,9 @@
       "uncached_tokens": 331,
       "output_tokens": 162,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=True obtenue=False"
-      ],
+      "gaps": [],
       "axes": [
-        "note",
-        "kind"
+        "note"
       ]
     },
     "r1f-action-annulee-tronquee": {
@@ -2755,14 +2739,16 @@
       "output_tokens": 370,
       "confidence": 1.0,
       "gaps": [
-        "doit passer par « À valider » : confiance 1.0 (seuil 0.7)"
+        "entité 'Vivatech' : créée au lieu d'être proposée",
+        "valeur inventée : date='2026-06-24'"
       ],
       "axes": [
         "note",
         "kind",
         "recurring",
         "event_date",
-        "needs_review"
+        "entity_proposed",
+        "forbidden_value"
       ]
     },
     "r2b-note-syntagme-nominal-dicte": {
@@ -2992,14 +2978,12 @@
       "confidence": 1.0,
       "gaps": [
         "note attendue=True obtenue=False",
-        "owner attendu='Léa' obtenu=None",
-        "doit passer par « À valider » : confiance 1.0 (seuil 0.7)"
+        "owner attendu='Léa' obtenu=None"
       ],
       "axes": [
         "note",
         "kind",
-        "owner",
-        "needs_review"
+        "owner"
       ]
     },
     "r2e-birthday-party-fr": {
@@ -3597,34 +3581,32 @@
       ]
     }
   },
-  "ecarts": 9,
+  "ecarts": 6,
   "par_frontiere": {
     "routage": [
       "g-date-anniversary-cancels-other",
       "g-date-corvee-dated-cancelled-by-birthday",
-      "r1b-non-action-vs-action-fr-pair",
-      "r1f-action-annulee-dicte",
       "r1i-course-futur-rappel",
       "r2b-note-syntagme-nominal-dicte",
       "r2b-note-syntagme-nominal-listes"
     ],
-    "R2e/R3e": [
+    "autre": [
       "g-date-anniversary-cancels-other",
       "g-date-corvee-dated-cancelled-by-birthday"
     ],
     "R2d": [
-      "g-date-anniversary-cancels-other",
-      "g-date-corvee-dated-cancelled-by-birthday",
       "r1i-course-futur-rappel"
     ],
-    "X-CONF": [
-      "g-date-birthday-standalone",
-      "r2a-salon-vivatech-info-vs-participation",
-      "r2b-note-syntagme-nominal-listes"
+    "P-PERS": [
+      "r2a-salon-vivatech-info-vs-participation"
+    ],
+    "interdit": [
+      "r2a-salon-vivatech-info-vs-participation"
     ],
     "R1e": [
       "r2b-note-syntagme-nominal-listes"
     ]
   },
-  "prompt_tokens_max": 5101
+  "prompt_tokens_max": 5101,
+  "rescored": "2026-08-27"
 }

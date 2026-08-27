@@ -100,9 +100,28 @@ Invente des prénoms courants et des sociétés fictives, et varie-les : le corp
 actuel tourne en boucle sur les mêmes cinq prénoms, ce qui apprend les prénoms
 plutôt que les formes.
 
-**Une capture, une situation.** N'empile pas trois frontières dans une phrase
-pour être efficace : quand un cas composite échoue, on ne sait pas laquelle a
-lâché. Sauf si la frontière visée EST l'empilement, auquel cas dis-le.
+**N'empile pas par commodité, empile par intention.** Mettre trois frontières
+dans une phrase pour aller plus vite rend le cas illisible : quand il échoue, on
+ne sait pas laquelle a lâché.
+
+Mais la **capture qui porte plusieurs choses est elle-même une famille à
+couvrir**, et c'est une des plus fréquentes dans la vraie vie. Quand c'est elle
+que tu vises, dis-le dans `arbitrage`, et sache où en est le moteur :
+
+- **plusieurs faits ou relations** dans une capture : c'est géré, ils sortent en
+  tableau. Assert avec `facts_min`. « Marc est né le 3 mars, c'est le neveu de
+  Julie et il vit à Nantes » en est l'exemple.
+- **plusieurs projets** : géré aussi, chacun reçoit son entrée. Assert avec
+  `proj`.
+- **plusieurs SOUVENIRS de nature différente** — un épisode passé ET une tâche
+  future, une note ET un événement : **le schéma de sortie n'en accepte qu'un**,
+  « exactly ONE atomic_note per capture, or none ». Sur « J'ai appelé le
+  dentiste ce matin, il faut que je rappelle jeudi », le moteur garde la tâche
+  et perd l'appel déjà passé. Écris ces cas, ils sont utiles et attendus, mais
+  **n'asserte ni `note` ni `kind`** dessus : la bonne réponse n'est pas encore
+  exprimable, et une étiquette posée dessus mesurerait un choix arbitraire.
+  Assert ce qui SURVIT (`drop_guard`, `facts_min`), et dis dans `arbitrage` ce
+  que la capture aurait dû laisser en entier.
 
 **Le temps de référence est fourni**, et c'est un lundi. Toute date relative
 (« mardi », « hier », « le 12 ») se résout par rapport à lui, et ton étiquette

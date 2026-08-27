@@ -6,14 +6,44 @@ sur ce que les gens écriront. Encore faut-il savoir où elles sont. Ce document
 (`classifier-note.md`, `classifier-graph.md`), dit ce qui la couvre aujourd'hui,
 et nomme les trous. C'est lui qui décide quoi écrire, pas l'inspiration.
 
+## Ce qu'est une frontière
+
+Une **règle du prompt prise par son bord**. Pas un thème, pas un type de
+capture : une phrase précise, et la condition exacte sous laquelle elle bascule.
+
+`G-ROUTINE` dit qu'une activité routinière faite seul et déjà faite ne laisse
+rien. Son centre est « j'ai sorti les poubelles » : personne n'hésite, et un cas
+de test posé là sera vert aujourd'hui, vert dans six mois, sans jamais rien
+apprendre. Son bord est ailleurs :
+
+```
+J'ai acheté du pain hier                    →  rien
+J'ai pris une douche chez la mère de Léa    →  un épisode
+```
+
+Les deux sont routinières, solitaires, déjà faites. La règle devrait jeter les
+deux. Mais la seconde nomme un lieu, et un lieu que l'auteur a pris la peine de
+nommer casse la ligne à lui tout seul. Cette ligne entre les deux EST la
+frontière ; `G-ROUTINE` est son nom.
+
+On ne couvre que les bords parce qu'un moteur ne se trompe pas au centre. Il se
+trompe au bord, et dans les deux sens : il garde ce qu'il devrait jeter, et la
+mémoire se remplit de bruit ; il jette ce qu'il devrait garder, et la perte est
+silencieuse.
+
 Règle de lecture : une frontière n'est couverte que si **les deux côtés** sont
 étiquetés. Un seul côté n'apprend rien, il autorise la règle paresseuse (« tout
-ce qui ressemble à X est X ») à passer pour la bonne réponse.
+ce qui ressemble à X est X ») à passer pour la bonne réponse. Et la bonne paire
+ne fait varier **qu'une seule chose** : si le lieu est le seul écart entre les
+deux captures et que le moteur les traite pareil, on sait quelle règle a lâché.
+Deux phrases sans rapport n'apprennent rien.
 
 ## Comment lire un code
 
-Le code ne dit pas de quoi la frontière parle, il dit **où la décision se prend**
-dans les prompts. C'est la seule chose qu'il faut savoir pour lire ce document.
+Le code est une **adresse**, pas une catégorie : il ne dit pas de quoi la
+frontière parle, il dit **où** la règle se lit dans les prompts. `R1c` ne veut
+pas dire « les tâches courtes », il veut dire « ligne 1 du tableau, troisième
+règle », c'est-à-dire cette phrase-là, qu'on peut aller relire.
 
 | préfixe | où |
 |---|---|

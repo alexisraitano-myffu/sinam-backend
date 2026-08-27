@@ -131,7 +131,13 @@ def _call_anthropic(model: str, system_blocks: list[str], user: str,
     return Reply(
         text=text, stop_reason=msg.stop_reason, latency_s=round(time.time() - t0, 2),
         prompt_tokens=prompt_tokens, output_tokens=usage.output_tokens,
-        extra={"uncached_input_tokens": usage.input_tokens},
+        extra={"uncached_input_tokens": usage.input_tokens,
+               # Écrire le cache et le relire ne se paient pas au même
+               # prix (1,25× l'entrée contre 0,1×). Les additionner dans
+               # `prompt_tokens` était juste pour « le modèle a-t-il reçu
+               # le prompt », mais ne permet plus de chiffrer un lot.
+               "cache_creation_input_tokens":
+                   getattr(usage, "cache_creation_input_tokens", 0) or 0},
     )
 
 

@@ -1,60 +1,45 @@
-# Écrire un cas de corpus
+# Écrire une capture de corpus
 
-Ce fichier est le prompt donné à un modèle pour **écrire des captures**, pas pour
-les étiqueter. Il est complété par une seule ligne de la carte des frontières et
-par la liste des textes déjà présents dans la famille visée.
+Ce fichier est le prompt donné à un modèle pour **écrire des captures**. Il ne
+les étiquette pas : c'est une seconde étape, faite par quelqu'un d'autre qui a
+lu les règles du moteur. Toi, tu ne les as pas, et ce n'est pas un oubli.
+
+Il est complété par une ligne de la carte des frontières et par la liste des
+textes déjà présents dans la famille visée.
 
 ---
 
 ## Ce que tu produis
 
 Des **captures**, c'est-à-dire ce qu'une personne tape ou dicte dans son second
-cerveau, plus une étiquette **proposée** que l'auteur du corpus validera ou
-corrigera. Une ligne JSON par cas, rien d'autre, aucun texte autour.
+cerveau. Une ligne JSON par cas, rien d'autre, aucun texte autour.
 
 ```json
-{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","note":false,"frontiere":"G-PROGRESS","arbitrage":"Progrès sur un projet en cours, dicté et sans ponctuation. La porte doit le jeter comme les autres progrès. C'est le côté que G-PROGRESS n'a pas."}
+{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","frontiere":"G-PROGRESS","arbitrage":"Progrès sur un projet en cours, dicté et sans ponctuation. C'est le côté que G-PROGRESS n'a pas : tous ses cas existants sont ponctués. Je m'attends à ce que ça ne laisse aucun souvenir, comme les autres progrès, mais la forme dictée est ce qui est mesuré ici."}
 ```
 
-Champs obligatoires : `id`, `text`, `frontiere`, `arbitrage`, et **au moins une
-assertion**. Un cas qui n'assertait rien passerait pour vert en n'ayant rien
-mesuré, ce qui est le pire état possible pour un corpus.
+Quatre champs, exactement ceux-là :
 
-Le vocabulaire des assertions est **fermé**. N'invente aucune valeur : un champ
-ou une valeur hors de cette liste ne lève pas d'erreur, il ne mesure simplement
-rien.
+| champ | ce qu'il porte |
+|---|---|
+| `id` | un identifiant en minuscules, mots séparés par des tirets, qui dit la frontière et la variante |
+| `text` | la capture elle-même, telle qu'une personne l'aurait écrite |
+| `frontiere` | le code qu'on t'a donné, recopié |
+| `arbitrage` | pourquoi ce cas existe (voir la dernière section) |
 
-| assertion | valeurs | ce qu'elle dit |
-|---|---|---|
-| `note` | `true` / `false` | la capture laisse-t-elle un souvenir |
-| `kind` | `note`, `task`, `event`, `episode` — **ces quatre-là et rien d'autre** | de quelle nature. Jamais sans `note: true` |
-| `event_date` | `AAAA-MM-JJ` | la date absolue, jamais la relative |
-| `recurring` | `true` / `false` | la date revient-elle chaque année |
-| `ephemeral` | `true` / `false` | rappel qui expire en 48 h |
-| `owner` | un prénom | à qui l'action appartient, quand ce n'est pas l'auteur |
-| `needs_review` | `true` / `false` | la capture doit-elle passer par « À valider » |
-| `language` | `fr`, `en`, `es`, … | la langue de la PHRASE, jamais des noms dedans |
-| `facts_min` | un entier | combien de faits ou relations durables au minimum |
-| `entity_expected` / `no_entity` | un nom | cette fiche doit naître / ne doit pas naître |
-| `forbidden_predicate` / `forbidden_value` | une chaîne | ceci ne doit PAS être écrit |
-| `drop_guard` | `true` | quelque chose de durable doit survivre, sans dire quoi |
-
-Il en existe d'autres, plus rares ; ne les utilise que si la frontière qu'on te
-donne les nomme.
-
-**N'écris jamais `valide`.** Ce champ n'est posé que par un humain, à travers
-l'outil de revue. Ton étiquette est une proposition, et `arbitrage` est
-l'endroit où tu expliques ce que tu as voulu mesurer et pourquoi.
+**N'écris aucun autre champ.** Pas `note`, pas `kind`, pas `event_date`, pas
+`valide`. Ce n'est pas de la modestie : une étiquette écrite sans les règles est
+une étiquette fausse, et une étiquette fausse fait corriger ce qui marchait.
 
 ---
 
 ## La règle qui prime sur toutes les autres
 
-**Tu n'as pas accès à la table de routage, et c'est délibéré.**
+**Tu n'as pas accès aux règles du classifieur, et c'est délibéré.**
 
-Si tu écrivais des cas à partir des règles du classifieur, tu produirais des cas
-que ces règles gèrent déjà. Un corpus dérivé du règlement ne peut pas trouver un
-trou que le règlement n'a pas : il grave les défauts existants au lieu de les
+Si tu écrivais des cas à partir de ces règles, tu produirais des cas que ces
+règles gèrent déjà. Un corpus dérivé du règlement ne peut pas trouver un trou
+que le règlement n'a pas : il grave les défauts existants au lieu de les
 révéler. C'est le mode d'échec que ce corpus existe pour éviter.
 
 Tu écris donc à partir de **deux choses seulement** :
@@ -63,7 +48,7 @@ Tu écris donc à partir de **deux choses seulement** :
 2. ce qu'une personne réelle écrirait dans cette situation.
 
 Quand les deux sont en tension, la personne réelle gagne. Si tu penses qu'un cas
-devrait recevoir une réponse que la frontière n'attend pas, **écris-le quand
+mérite une réponse que la frontière n'a pas l'air d'attendre, **écris-le quand
 même et dis-le dans `arbitrage`**. Un désaccord documenté est le signal le plus
 précieux que tu puisses produire : il pointe soit une règle à changer, soit une
 frontière mal décrite. Le taire pour rendre une copie propre fait perdre les
@@ -84,7 +69,8 @@ Pour chaque frontière, écris donc par paires :
 
 La bonne paire ne diffère que par ce qui compte. « Le devis pour Acme est parti
 ce matin » contre « Le devis est parti ce matin » vaut mieux que deux phrases
-sans rapport, parce qu'elle isole exactement une variable.
+sans rapport, parce qu'elle isole exactement une variable. Dis dans `arbitrage`
+de quel côté tu es et quelle est la variable.
 
 ---
 
@@ -127,27 +113,22 @@ dans une phrase pour aller plus vite rend le cas illisible : quand il échoue, o
 ne sait pas laquelle a lâché.
 
 Mais la **capture qui porte plusieurs choses est elle-même une famille à
-couvrir**, et c'est une des plus fréquentes dans la vraie vie. Quand c'est elle
-que tu vises, dis-le dans `arbitrage`, et sache où en est le moteur :
+couvrir**, et c'est une des plus fréquentes dans la vraie vie. Trois formes, à
+écrire toutes les trois, en disant dans `arbitrage` laquelle tu vises :
 
-- **plusieurs faits ou relations** dans une capture : c'est géré, ils sortent en
-  tableau. Assert avec `facts_min`. « Marc est né le 3 mars, c'est le neveu de
-  Julie et il vit à Nantes » en est l'exemple.
-- **plusieurs projets** : géré aussi, chacun reçoit son entrée. Assert avec
-  `proj`.
-- **plusieurs SOUVENIRS de nature différente** — un épisode passé ET une tâche
-  future, une note ET un événement : **le schéma de sortie n'en accepte qu'un**,
-  « exactly ONE atomic_note per capture, or none ». Sur « J'ai appelé le
-  dentiste ce matin, il faut que je rappelle jeudi », le moteur garde la tâche
-  et perd l'appel déjà passé. Écris ces cas, ils sont utiles et attendus, mais
-  **n'asserte ni `note` ni `kind`** dessus : la bonne réponse n'est pas encore
-  exprimable, et une étiquette posée dessus mesurerait un choix arbitraire.
-  Assert ce qui SURVIT (`drop_guard`, `facts_min`), et dis dans `arbitrage` ce
-  que la capture aurait dû laisser en entier.
+- **plusieurs faits ou relations** sur les mêmes personnes : « Marc est né le
+  3 mars, c'est le neveu de Julie et il vit à Nantes » ;
+- **plusieurs projets** dans une même phrase ;
+- **plusieurs souvenirs de nature différente** — un épisode passé ET une tâche
+  future, une note ET un événement : « J'ai appelé le dentiste ce matin, il faut
+  que je rappelle jeudi ». Ceux-là sont les plus intéressants et les plus mal
+  couverts. Dis dans `arbitrage` ce que la capture devrait laisser **en
+  entier**, sans te demander si le moteur en est capable : ce n'est pas ta
+  question, et une capture écrite pour ménager le moteur ne mesure plus rien.
 
-**Le temps de référence est fourni**, et c'est un lundi. Toute date relative
-(« mardi », « hier », « le 12 ») se résout par rapport à lui, et ton étiquette
-doit porter la date absolue, jamais la relative.
+**Le temps de référence est fourni**, et c'est un lundi. Écris tes dates comme
+une personne les écrit, c'est-à-dire relatives : « mardi », « hier », « le 12 ».
+Les résoudre est le travail de l'étape suivante, pas le tien.
 
 **Pas de doublon.** On te donne les textes déjà présents. Une reformulation
 cosmétique d'un cas existant ne mesure rien de plus et coûte le même prix à
@@ -157,15 +138,20 @@ chaque passe.
 
 ## Ce que ton `arbitrage` doit dire
 
-Trois choses, en deux ou trois phrases, en français :
+C'est le seul endroit où tu parles, et il est lu deux fois : par celui qui
+étiquettera ta capture, et par l'humain qui arbitrera. Trois choses, en deux ou
+trois phrases, en français :
 
-1. **ce que le cas mesure** — quelle frontière, quel côté ;
-2. **pourquoi la réponse proposée est celle-là**, du point de vue de la personne
-   qui a écrit la capture, jamais du point de vue d'un extracteur ;
+1. **ce que le cas mesure** — quelle frontière, quel côté, quelle variable
+   change par rapport à son voisin ;
+2. **ce que la capture devrait laisser en mémoire**, du point de vue de la
+   personne qui l'a écrite, jamais du point de vue d'un extracteur. Dis-le en
+   français ordinaire, pas en noms de champs ;
 3. **ce dont tu n'es pas sûr**, s'il y a lieu, et ce qui trancherait.
 
 Le troisième point est celui qu'on lit en premier à la revue. Une incertitude
 nommée fait gagner du temps ; une incertitude tue en fait perdre.
 
-Ne justifie jamais une étiquette par « c'est ce que le classifieur ferait ».
-Cette phrase est la définition exacte de ce qu'on ne veut pas.
+Ne justifie jamais un cas par « c'est ce que le classifieur ferait ». Tu ne sais
+pas ce qu'il ferait, et cette phrase est la définition exacte de ce qu'on ne
+veut pas.

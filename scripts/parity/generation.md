@@ -20,6 +20,28 @@ Champs obligatoires : `id`, `text`, `frontiere`, `arbitrage`, et **au moins une
 assertion**. Un cas qui n'assertait rien passerait pour vert en n'ayant rien
 mesuré, ce qui est le pire état possible pour un corpus.
 
+Le vocabulaire des assertions est **fermé**. N'invente aucune valeur : un champ
+ou une valeur hors de cette liste ne lève pas d'erreur, il ne mesure simplement
+rien.
+
+| assertion | valeurs | ce qu'elle dit |
+|---|---|---|
+| `note` | `true` / `false` | la capture laisse-t-elle un souvenir |
+| `kind` | `note`, `task`, `event`, `episode` — **ces quatre-là et rien d'autre** | de quelle nature. Jamais sans `note: true` |
+| `event_date` | `AAAA-MM-JJ` | la date absolue, jamais la relative |
+| `recurring` | `true` / `false` | la date revient-elle chaque année |
+| `ephemeral` | `true` / `false` | rappel qui expire en 48 h |
+| `owner` | un prénom | à qui l'action appartient, quand ce n'est pas l'auteur |
+| `needs_review` | `true` / `false` | la capture doit-elle passer par « À valider » |
+| `language` | `fr`, `en`, `es`, … | la langue de la PHRASE, jamais des noms dedans |
+| `facts_min` | un entier | combien de faits ou relations durables au minimum |
+| `entity_expected` / `no_entity` | un nom | cette fiche doit naître / ne doit pas naître |
+| `forbidden_predicate` / `forbidden_value` | une chaîne | ceci ne doit PAS être écrit |
+| `drop_guard` | `true` | quelque chose de durable doit survivre, sans dire quoi |
+
+Il en existe d'autres, plus rares ; ne les utilise que si la frontière qu'on te
+donne les nomme.
+
 **N'écris jamais `valide`.** Ce champ n'est posé que par un humain, à travers
 l'outil de revue. Ton étiquette est une proposition, et `arbitrage` est
 l'endroit où tu expliques ce que tu as voulu mesurer et pourquoi.

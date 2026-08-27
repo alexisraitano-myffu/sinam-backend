@@ -32,7 +32,7 @@ pytest                             # whole suite
 pytest test_embeddings.py          # offline NR tests (no API key needed)
 pytest test_cycle.py::test_episodic_note_is_searchable   # a single test
 ```
-`test_embeddings.py`, `test_cycle.py` and `test_api.py` run fully offline (local embeddings, FastAPI TestClient). `test_dream_cycle.py` hits the live Claude API for the classify→route pipeline and is **skipped** unless `ANTHROPIC_API_KEY` is set. Shared fixture `isolated_db` lives in `conftest.py`.
+`test_embeddings.py`, `test_cycle.py`, `test_api.py` and `test_parity_harness.py` run fully offline (local embeddings, FastAPI TestClient; the last one touches neither, it only compares lists). `test_dream_cycle.py` hits the live Claude API for the classify→route pipeline and is **skipped** unless `ANTHROPIC_API_KEY` is set. Shared fixture `isolated_db` lives in `conftest.py`.
 
 **Re-embed** after changing the embedding model:
 ```bash

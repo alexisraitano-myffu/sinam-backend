@@ -81,6 +81,49 @@ def test_les_axes_de_score_sont_des_champs_declares():
     )
 
 
+_CORE_SCHEMA = (Path(__file__).resolve().parent.parent
+                / "sinam-core" / "crates" / "sinam-core" / "src" / "schema.rs")
+
+
+def test_types_semes_identiques_partout():
+    """Quatrième occurrence du même piège, trouvée le 27/08.
+
+    La liste des types d'entité est recopiée à la main à QUATRE endroits :
+    `schema.rs` la sème en base, `llm.rs::FALLBACK_TYPES` la répète pour le cas
+    dégradé, `api/app.py::EntityType` valide les éditions de fiche, et
+    `lang_harness._BUILTIN_TYPES` la fige pour le harnais. Le 26/08, `resource`
+    a été ajouté au premier et à aucun des autres : la fiche existait, et la
+    route d'édition refusait de la typer.
+
+    `schema.rs` fait foi, les autres doivent le suivre à l'identique.
+    """
+    if not _CORE_SCHEMA.is_file():
+        import pytest
+        pytest.skip(f"dépôt core absent ({_CORE_SCHEMA})")
+
+    source = _CORE_SCHEMA.read_text()
+    corps = source[source.index("for builtin in ["):]
+    semes = re.findall(r'"([a-z_]+)"', corps[:corps.index("]")])
+    assert semes, "la liste des builtins de schema.rs est introuvable"
+
+    from scripts import lang_harness
+    assert lang_harness._BUILTIN_TYPES == semes, (
+        "le contexte figé du harnais a décroché des types semés : "
+        f"{lang_harness._BUILTIN_TYPES} vs {semes}")
+
+    llm = (_CORE_SCHEMA.parent / "llm.rs").read_text()
+    repli = llm[llm.index("const FALLBACK_TYPES"):]
+    assert re.findall(r'"([a-z_]+)"', repli[:repli.index(";")]) == semes, (
+        "FALLBACK_TYPES a décroché des types semés : un core dégradé annoncerait "
+        "au modèle un vocabulaire plus étroit que le sien.")
+
+    app = (Path(__file__).resolve().parent / "api" / "app.py").read_text()
+    lit = app[app.index("EntityType = Literal["):]
+    assert re.findall(r'"([a-z_]+)"', lit[:lit.index("]")]) == semes, (
+        "EntityType a décroché des types semés : une fiche existerait sans qu'on "
+        "puisse la typer à la main.")
+
+
 def _cles_de_fusion_du_core() -> list[str]:
     """La liste `for key in [...]` de `llm.rs::merge_halves`."""
     source = _CORE_LLM.read_text()

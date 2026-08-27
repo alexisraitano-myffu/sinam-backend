@@ -5304,7 +5304,9 @@
                   "project",
                   "concept",
                   "organization",
-                  "animal"
+                  "animal",
+                  "resource",
+                  "tool"
                 ]
               },
               {

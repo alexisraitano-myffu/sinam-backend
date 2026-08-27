@@ -335,7 +335,9 @@ class ValidateIn(BaseModel):
     device_id: str | None = None
 
 
-EntityType = Literal["person", "place", "project", "concept", "organization", "animal"]
+# Miroir des types semés par `schema.rs`. `resource` y manquait le 26/08 : la
+# fiche existait mais on ne pouvait pas la typer à la main depuis l'app.
+EntityType = Literal["person", "place", "project", "concept", "organization", "animal", "resource", "tool"]
 
 
 class EntityUpdate(BaseModel):

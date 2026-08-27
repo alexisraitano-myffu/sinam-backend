@@ -84,7 +84,7 @@ def _parse_classify_text(text: str, content_len: int, stop_reason: str | None) -
 
 # Contexte statique — mime _load_active_types_block / _load_owner_block sans DB.
 _BUILTIN_TYPES = ["person", "place", "project", "concept", "organization", "animal",
-                  "resource"]
+                  "resource", "tool"]
 
 
 def _static_types_block() -> str:

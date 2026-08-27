@@ -10,6 +10,32 @@ Règle de lecture : une frontière n'est couverte que si **les deux côtés** so
 étiquetés. Un seul côté n'apprend rien, il autorise la règle paresseuse (« tout
 ce qui ressemble à X est X ») à passer pour la bonne réponse.
 
+## Comment lire un code
+
+Le code ne dit pas de quoi la frontière parle, il dit **où la décision se prend**
+dans les prompts. C'est la seule chose qu'il faut savoir pour lire ce document.
+
+| préfixe | où |
+|---|---|
+| `G-…` | **la porte**, testée AVANT tout le reste, et qui peut faire sortir la capture sans rien laisser |
+| `R<n><lettre>` | **la table de routage**. Le chiffre est la DESTINATION : `R0` projet · `R1` tâche · `R2` événement · `R3` épisode · `R4` note. La lettre n'est qu'un rang dans la ligne |
+| `X-…` | **les règles transverses**, qui s'appliquent quelle que soit la ligne atteinte |
+| `P-…` | **le prompt graphe**, l'autre appel, celui qui sort les fiches et les faits |
+| `PERS-` `NEG-` `PER-` `EMO` `RES-` | les familles thématiques ajoutées le 2026-08-24 : les personnes, les négations, la péremption, l'émotion, les ressources |
+
+`R1c` se lit donc « ligne 1, tâche, troisième règle », et `R3b` « ligne 3,
+épisode, deuxième règle ». Rien de plus.
+
+## La colonne « Verdict » est la cible, et elle se tient à jour
+
+C'est elle qui décide quoi écrire, pas le champ `frontiere` des cas. La plupart
+des cas qui couvrent une frontière ne le portent pas, donc les compter mène à
+générer pour du déjà-couvert. Constaté le 2026-08-27, sur cinq frontières d'un
+coup.
+
+Corollaire : **toute vague qui ajoute des cas met à jour cette colonne**, sinon
+la carte ment à la vague suivante.
+
 ## Ce que le corpus actuel est vraiment
 
 61 identifiants, mais **48 captures distinctes** : onze textes servent deux ou

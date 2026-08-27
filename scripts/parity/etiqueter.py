@@ -116,6 +116,153 @@ def lire_captures(source: Path | None) -> list[dict]:
     return captures
 
 
+# La question « que laisse cette capture » se pose en UN mot au modèle, et le
+# corpus la range en deux champs. La traduction est mécanique, donc elle vit
+# dans le code : posée au modèle, elle sortait fausse une fois sur six.
+SOUVENIRS = {"aucun": (False, None)}
+SOUVENIRS.update({k: (True, k) for k in score.VALID_NOTE_KINDS})
+
+
+# Le modèle a les prompts de PRODUCTION sous les yeux, et ils nomment leurs
+# sorties autrement que le corpus. Renommer sous son nez marche mieux que le lui
+# interdire : c'est le même geste que `souvenir`, et pour la même raison.
+_ALIAS_MOTEUR = {"event_recurring": "recurring", "is_ephemeral": "ephemeral",
+                 "atomic_note_owner": "owner", "event_date": "event_date"}
+
+
+def traduire_souvenir(cas: dict) -> int:
+    """`souvenir` → (`note`, `kind`). Rend le nombre d'avertissements."""
+    ident = cas.get("id", "?")
+    alertes = 0
+    for pose in ("note", "kind"):
+        if pose in cas:
+            print(f"⚠ {ident} : `{pose}` se déduit de `souvenir`, ne l'écris pas",
+                  file=sys.stderr)
+            del cas[pose]
+            alertes += 1
+    for moteur, ici in _ALIAS_MOTEUR.items():
+        if moteur in cas and moteur != ici:
+            cas.setdefault(ici, cas.pop(moteur))
+            cas.pop(moteur, None)
+    mot = cas.pop("souvenir", None)
+    if mot is None:
+        return alertes
+    if mot not in SOUVENIRS:
+        print(f"⚠ {ident} : souvenir={mot!r} n'existe pas "
+              f"(attendu : {', '.join(SOUVENIRS)})", file=sys.stderr)
+        return alertes + 1
+    note, kind = SOUVENIRS[mot]
+    cas["note"] = note
+    if kind:
+        cas["kind"] = kind
+    return alertes
+
+
+# Les marqueurs qui disent le SENS du temps sans ambiguïté. Volontairement
+# courts : un marqueur douteux ferait un avertissement douteux, et un contrôle
+# qu'on apprend à ignorer ne contrôle plus rien.
+_PASSE = re.compile(
+    r"\b(hier|avant-hier|j'étais|j'ai |on a |la semaine dernière|le mois dernier"
+    r"|dernier|dernière|yesterday|last (week|month|year)|i was|we were)\b")
+_FUTUR = re.compile(
+    r"\b(demain|après-demain|la semaine prochaine|le mois prochain|prochain"
+    r"|prochaine|tomorrow|next (week|month|year))\b")
+
+
+def sens_du_temps(cas: dict, capture: dict | None) -> int:
+    """Prévenir quand la date pointe à l'opposé du temps du verbe.
+
+    « J'étais au concert de Nadia le 28 » est sorti daté au 28 du mois PROCHAIN.
+    Le décalage du jour de semaine se recale tout seul ; celui-ci ne le peut
+    pas, parce que le sens appartient au temps du verbe et que le corriger
+    reviendrait à trancher à la place de la règle.
+
+    On ne parle donc que quand un seul des deux sens est présent : « j'avais
+    prévu de relancer Sophie, je vais le faire demain » en porte deux, et une
+    phrase qui porte les deux ne prouve rien.
+    """
+    texte = ((capture or {}).get("text") or "").lower()
+    date = cas.get("event_date")
+    if not isinstance(date, str):
+        return 0
+    passe, futur = bool(_PASSE.search(texte)), bool(_FUTUR.search(texte))
+    if passe == futur:
+        return 0
+    try:
+        posee = dt.date.fromisoformat(date)
+    except ValueError:
+        return 0
+    zero = dt.date.fromisoformat(context.TODAY)
+    if passe and posee > zero:
+        print(f"⚠ {cas.get('id', '?')} : la capture est au passé, "
+              f"l'étiquette pose {date}, après le {context.TODAY}", file=sys.stderr)
+        return 1
+    if futur and posee < zero:
+        print(f"⚠ {cas.get('id', '?')} : la capture est au futur, "
+              f"l'étiquette pose {date}, avant le {context.TODAY}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def corriger_jour(cas: dict, capture: dict | None) -> int:
+    """Recaler `event_date` sur le jour de semaine que la capture nomme.
+
+    Le calendrier est fourni jour par jour dans la demande et le modèle décale
+    quand même d'un jour, systématiquement dans le même sens : « jeudi » sort en
+    vendredi, « vendredi » en samedi. Trois passes, jamais dans l'autre sens.
+
+    On ne lui reprend que l'arithmétique. Le SENS de la résolution reste le
+    sien, parce que c'est le temps du verbe qui le décide et que ça, il le lit
+    bien : on garde sa date et on la fait glisser vers le jour nommé le plus
+    proche, ce qui ne peut pas franchir une semaine.
+    """
+    ident = cas.get("id", "?")
+    jour = jour_nomme((capture or {}).get("text") or "")
+    date = cas.get("event_date")
+    if jour is None or not isinstance(date, str):
+        return 0
+    try:
+        posee = dt.date.fromisoformat(date)
+    except ValueError:
+        print(f"⚠ {ident} : event_date={date!r} n'est pas une date", file=sys.stderr)
+        return 1
+    if posee.weekday() == jour:
+        return 0
+    ecart = (jour - posee.weekday()) % 7
+    glissement = ecart if ecart <= 3 else ecart - 7
+    cas["event_date"] = (posee + dt.timedelta(days=glissement)).isoformat()
+    print(f"↻ {ident} : la capture dit « {_JOURS[jour]} », l'étiquette posait "
+          f"{date} ({_JOURS[posee.weekday()]}) → {cas['event_date']}",
+          file=sys.stderr)
+    return 0
+
+
+def recoller_why(cas: dict, capture: dict | None) -> int:
+    """`why` de la capture + `regle` de l'étiquette, recollés par le code.
+
+    Demandé au modèle, ça ne marchait pas : il réécrivait le `why` de la capture
+    quinze fois sur quarante-deux, et ce qu'il perdait était justement ce que la
+    capture voulait mesurer — donc ce qu'on lit en premier à la revue. La
+    question et la réponse se lisent ensemble ou ne s'arbitrent pas.
+    """
+    ident = cas.get("id", "?")
+    regle = str(cas.pop("regle", "") or "").strip()
+    question = str((capture or {}).get("why") or "").strip()
+    if not regle:
+        print(f"⚠ {ident} : pas de `regle`, l'étiquette ne dit pas d'où elle vient",
+              file=sys.stderr)
+    morceaux = [m for m in (question, regle) if m]
+    if morceaux:
+        cas["why"] = " — ".join(morceaux)
+    return 0 if regle else 1
+
+
+# Un identifiant de ticket n'a rien à faire dans un dépôt public. Le modèle ne
+# les invente pas, il les recopie : la carte des frontières en porte encore
+# onze, et il reprend celui de la ligne qu'on lui donne.
+_INVENTE = re.compile(r"\b[A-Z]{2,4}-\d{1,4}\b")
+
+
 def valider(cas: dict, capture: dict | None) -> int:
     """Les avertissements d'un cas étiqueté. 0 = rien à signaler."""
     alertes = 0
@@ -137,40 +284,29 @@ def valider(cas: dict, capture: dict | None) -> int:
     if cas.get("kind") and not cas.get("note"):
         print(f"⚠ {ident} : un kind sans note ne veut rien dire", file=sys.stderr)
         alertes += 1
-    if "valide" in cas:
-        print(f"⚠ {ident} : `valide` est posé par un humain, jamais ici",
-              file=sys.stderr)
-        alertes += 1
+    # `valide` dit qu'un humain a validé ; `arbitrage` porte sa décision sur un
+    # cas qui coinçait et met le cas dans SA file d'attente. Écrits ici, le
+    # premier signe à sa place et le second remplit la file de bruit.
+    for reserve in ("valide", "arbitrage"):
+        if reserve in cas:
+            print(f"⚠ {ident} : `{reserve}` est posé par un humain, jamais ici",
+                  file=sys.stderr)
+            alertes += 1
     if not (set(cas) - corpus.META):
         print(f"⚠ {ident} : n'asserte rien, ne mesurerait rien", file=sys.stderr)
         alertes += 1
+    for reference in _INVENTE.findall(cas.get("why") or ""):
+        print(f"⚠ {ident} : référence de ticket « {reference} » dans `why`, "
+              f"elle vient de la carte et n'a rien à faire dans le corpus",
+              file=sys.stderr)
+        alertes += 1
 
-    # Le jour de la semaine se vérifie sans modèle, donc il se vérifie ici. Le
-    # calendrier est fourni dans la demande et « avant jeudi » est quand même
-    # sorti en 2026-07-17, un vendredi. Une consigne qui se contrôle pour rien
-    # ne mérite pas de rester une consigne.
-    jour = jour_nomme(capture["text"]) if capture else None
-    date = cas.get("event_date")
-    if jour is not None and isinstance(date, str):
-        try:
-            posee = dt.date.fromisoformat(date)
-        except ValueError:
-            print(f"⚠ {ident} : event_date={date!r} n'est pas une date",
-                  file=sys.stderr)
-            alertes += 1
-        else:
-            if posee.weekday() != jour:
-                print(f"⚠ {ident} : la capture dit « {_JOURS[jour]} », "
-                      f"l'étiquette pose {date}, un {_JOURS[posee.weekday()]}",
-                      file=sys.stderr)
-                alertes += 1
-
-    # Le texte est le cas. Une faute d'orthographe « corrigée » en passant fait
-    # mesurer autre chose que ce qui a été écrit, et rien ne le dirait.
     if capture is None:
         print(f"⚠ {ident} : n'était pas dans les captures envoyées", file=sys.stderr)
         alertes += 1
-    elif cas.get("text") != capture.get("text"):
+    # Le texte est le cas. Une faute d'orthographe « corrigée » en passant fait
+    # mesurer autre chose que ce qui a été écrit, et rien ne le dirait.
+    if capture is not None and cas.get("text") != capture.get("text"):
         print(f"⚠ {ident} : le texte a été modifié\n"
               f"    envoyé : {capture.get('text')!r}\n"
               f"    rendu  : {cas.get('text')!r}", file=sys.stderr)
@@ -199,6 +335,34 @@ def cout(spec: str, r: providers.Reply) -> str:
     return (f"coût     : ~{usd:.3f} $  ({nc/1000:.1f}k entrée · "
             f"{ecrit/1000:.1f}k cache écrit · {lu/1000:.1f}k relus · "
             f"{(r.output_tokens or 0)/1000:.1f}k sortie){alerte}")
+
+
+def un_seul_cote(cas: list[dict]) -> int:
+    """Prévenir quand tous les cas d'une frontière tombent du même côté.
+
+    Le prompt de génération demande des paires, et rien ne le vérifiait. Un
+    seul côté n'apprend rien : il autorise « tout ce qui ressemble à X est X »
+    à passer pour la bonne réponse, et c'est arrivé sur G-LINK, quatre captures
+    sans note sur quatre.
+
+    Le contrôle porte sur le LOT. Une frontière déjà couverte ailleurs dans le
+    corpus n'est pas concernée, donc l'avertissement se lit comme une question,
+    pas comme une faute.
+    """
+    par_frontiere: dict[str, set] = {}
+    for k in cas:
+        f = (k.get("frontiere") or "").strip()
+        if f:
+            par_frontiere.setdefault(f, set()).add(frozenset(
+                (c, str(v)) for c, v in k.items() if c not in corpus.META))
+    alertes = 0
+    for f, cotes in sorted(par_frontiere.items()):
+        if len(cotes) == 1 and sum(
+                1 for k in cas if (k.get("frontiere") or "").strip() == f) > 1:
+            print(f"⚠ {f} : tous les cas du lot portent la MÊME étiquette — "
+                  f"l'autre côté de la frontière manque", file=sys.stderr)
+            alertes += 1
+    return alertes
 
 
 def main() -> None:
@@ -234,7 +398,7 @@ def main() -> None:
         raise SystemExit(f"appel échoué : {r}")
 
     bons = mauvais = 0
-    rendus = set()
+    rendus, sortis = set(), []
     for brute in r.text.splitlines():
         brute = brute.strip().strip("`")
         if not brute.startswith("{"):
@@ -245,10 +409,17 @@ def main() -> None:
             print(f"⚠ ligne illisible ({e}) : {brute[:80]}", file=sys.stderr)
             mauvais += 1
             continue
+        mauvais += traduire_souvenir(cas)
+        mauvais += recoller_why(cas, par_id.get(cas.get("id")))
+        mauvais += corriger_jour(cas, par_id.get(cas.get("id")))
+        mauvais += sens_du_temps(cas, par_id.get(cas.get("id")))
+        sortis.append(cas)
         mauvais += valider(cas, par_id.get(cas.get("id")))
         rendus.add(cas.get("id"))
         bons += 1
         print(json.dumps(cas, ensure_ascii=False))
+
+    mauvais += un_seul_cote(sortis)
 
     # Une capture avalée sans être rendue est le pire cas : elle ne lève rien et
     # elle disparaît du lot sans que personne ne la cherche.

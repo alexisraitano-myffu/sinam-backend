@@ -30,7 +30,7 @@ tenue aujourd'hui.
 |---|---|---|---|
 | G-DATE | « une date annule la porte », dans les deux sens de formulation | `e4`, `x-birthday-bare`, les 5 scénarios | Couvert **sur l'anniversaire seulement**. La date qui annule une AUTRE ligne de la porte (progrès daté, statut daté, corvée datée) n'a aucun cas. |
 | G-ATTR | énoncé entièrement attributif (« X a / est / fait Y ») ⇒ pas de note | `f1`, `f2`, `g-type-fact`, `r1`, `r2` | Le miroir est écrit dans la porte depuis le 2026-08-26 : ENTIER est la condition, une prise de position sur l'attribut n'en fait pas partie, donc la capture garde sa note. `g-attr-with-stance` basculait une fois sur deux avant ça, et tient 3/3 après. L'attribut devient un fait dans les deux cas ; ce que l'auteur en pense est la part qu'aucun fait ne porte. |
-| G-LINK | lien nu sans prise de position | `u1`, `g-type-resource` | **Gelé**. Les deux assertions ont été retirées le 21/08, cible indécise jusqu'à SYN-186. Ne rien étiqueter ici tant que le ticket n'a pas tranché. |
+| G-LINK | lien nu sans prise de position | `u1`, `g-type-resource`, `res-bare-fr`, `res-place-fr`, `res-tool-fr` ; miroir `res-commented-en` | **Tranché le 2026-08-26**, en deux branches. On retire l'URL et on regarde ce qui reste : plus aucun mot ⇒ pas de note. Des mots restent ⇒ ce que le lien EST décide. S'il est la chose elle-même (article, vidéo, papier, fil), la note est gardée ; s'il pointe vers quelque chose qui a sa propre identité (lieu, boutique, outil, société), la ressource et la fiche portent tout, et il n'y a pas de note. Le gel du 21/08 est levé. |
 | G-PROGRESS | progrès sur un projet ⇒ pas de note | rien | **Trou complet.** Zéro cas. C'est pourtant la capture la plus fréquente d'un utilisateur qui tient un projet. |
 | G-STATUS | statut nu (« j'ai déjà mangé », « c'est envoyé ») ⇒ rien | `g-status-sent-fr`, `g-status-eaten-en` ; miroir `g-status-sent-named-fr` | **Tranché le 2026-08-26**, et Alexis a tranché contre la lecture que la mesure lui proposait : ce qui fait l'occurrence est le MOMENT, pas le nom. Les deux devis sortent en épisode daté. Un statut ne tombe donc plus que s'il n'est accroché à rien (« c'est envoyé », « j'ai déjà mangé »). Le risque assumé est le débordement sur la corvée : « J'ai acheté du pain ce matin » porte la même ancre et doit continuer de ne rien laisser, ce que seule la ligne G-ROUTINE retient désormais. Cette paire est le contrôle à surveiller à chaque passe. |
 | G-ROUTINE | activité routinière solitaire déjà faite | `ep2`, `g-type-episodic`, `x-past-errand` ; miroirs `ep1`, `x-pure-episode`, `x-episode-first-time` | Correctement couvert, sauf la sortie « lieu digne d'être nommé » (voir R3b). |
@@ -374,7 +374,6 @@ revue.
 |---|---|
 | NEG-d, événement annulé | SYN-189 phase 2 : demande de retrouver la note antérieure, donc un mécanisme de rappel, pas un champ |
 | NEG-e, correction d'une capture antérieure | idem, plus le fil de mémoire de travail (mode scénario) |
-| Assertion d'un prédicat nommé, `category` | SYN-190 |
-| G-LINK, lien commenté | SYN-186 |
+| Assertion d'un prédicat nommé, `category` | la file des prédicats proposés |
 
 Environ 120 des 150 cas restent écrivables sans rien attendre.

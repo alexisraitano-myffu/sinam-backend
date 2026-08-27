@@ -3,9 +3,9 @@
     python -m scripts.parity.generer R4b --combien 6
     python -m scripts.parity.generer R4b | python -m scripts.parity.etiqueter
 
-Ce script ne produit **que des captures** : `id`, `text`, `frontiere`,
-`arbitrage`. L'étiquette attendue est posée par `etiqueter.py`, dans un second
-appel qui, lui, voit tout.
+Ce script ne produit **que des captures** : `id`, `text`, `frontiere`, `why`.
+L'étiquette attendue est posée par `etiqueter.py`, dans un second appel qui,
+lui, voit tout.
 
 C'est la raison d'être des deux fichiers. Le générateur ne voit NI
 `classifier-note.md` NI `classifier-graph.md` : sans ça, écrire les cas depuis
@@ -38,7 +38,7 @@ _ICI = Path(__file__).resolve().parent
 
 # Ce qu'une capture a le droit de porter, et rien de plus. Tout le reste est une
 # assertion, donc le travail de l'étape suivante.
-CHAMPS_CAPTURE = {"id", "text", "frontiere", "arbitrage"}
+CHAMPS_CAPTURE = {"id", "text", "frontiere", "why"}
 
 
 def ligne_de_frontiere(code: str) -> str:
@@ -84,7 +84,7 @@ def valider(cas: dict) -> int:
         print(f"⚠ {cas.get('id')} : n'écrit pas les étiquettes {sorted(inconnus)}, "
               f"c'est le travail d'etiqueter.py", file=sys.stderr)
         alertes += 1
-    for champ in ("id", "text", "frontiere", "arbitrage"):
+    for champ in ("id", "text", "frontiere", "why"):
         if not str(cas.get(champ) or "").strip():
             print(f"⚠ {cas.get('id', '?')} : `{champ}` vide", file=sys.stderr)
             alertes += 1

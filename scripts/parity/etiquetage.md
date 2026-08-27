@@ -24,10 +24,10 @@ Trois conséquences :
 - Quand **rien** ne tranche, ne devine pas : pose `"ambigu": true` et dis dans
   `why` ce qui manque pour trancher. Un cas ambigu est joué, observé, et sorti
   du décompte d'échec. C'est une réponse valable, pas un échec.
-- Quand un prompt tranche **contre** ce que dit l'`arbitrage` de la capture,
-  étiquette selon le prompt, et signale la contradiction dans `why`. Ce
-  désaccord est précisément ce qu'on cherche : soit la règle est à changer, soit
-  la capture est à jeter, et c'est un humain qui le décide.
+- Quand un prompt tranche **contre** ce que le `why` de la capture annonçait,
+  étiquette selon le prompt, et dis la contradiction. Ce désaccord est
+  précisément ce qu'on cherche : soit la règle est à changer, soit la capture
+  est à jeter, et c'est un humain qui le décide.
 
 ---
 
@@ -38,8 +38,7 @@ vérifie simplement rien, et le cas passe pour vert en n'ayant rien mesuré.
 
 | assertion | valeurs | ce qu'elle dit |
 |---|---|---|
-| `note` | `true` / `false` | **un `atomic_note` est-il produit**, de n'importe quelle nature. ⚠ Le champ s'appelle `note` et `note` est aussi une valeur de `kind` : ce sont deux choses différentes. Une tâche, un événement et un épisode ont tous `note: true`. `note: false` veut dire que la capture ne laisse RIEN, pas qu'elle ne laisse pas un `kind: note`, et pas non plus qu'elle sort de la frontière visée |
-| `kind` | `note`, `task`, `event`, `episode` — **ces quatre-là et rien d'autre** | de quelle nature. Jamais sans `note: true` |
+| `souvenir` | `aucun`, `note`, `task`, `event`, `episode` — **ces cinq-là et rien d'autre** | ce que la capture laisse. `aucun` = elle ne laisse RIEN. Les quatre autres nomment la nature de ce qu'elle laisse |
 | `event_date` | `AAAA-MM-JJ`, ou `null` pour « doit rester vide » | la date absolue, jamais la relative |
 | `recurring` | `true` / `false` | la date revient-elle chaque année |
 | `ephemeral` | `true` / `false` | rappel qui expire en 48 h |
@@ -54,6 +53,20 @@ vérifie simplement rien, et le cas passe pour vert en n'ayant rien mesuré.
 | `obsoletes` / `no_obsolete` | `predicat` ou `predicat=valeur` / `true` | ce que la capture périme, ou qu'elle ne périme rien |
 | `renamed_to` / `no_rename` | un nom / `true` | le renommage déclaré, à proposer et jamais à appliquer |
 | `drop_guard` | `true` | quelque chose de durable doit survivre, sans dire quoi |
+
+**`souvenir` est la question la plus importante et la plus facile à rater.** Le
+corpus la range dans deux champs, `note` (y a-t-il un souvenir) et `kind` (de
+quelle nature) ; toi tu réponds en un seul mot, et la traduction est faite par
+le code. C'est délibéré : tant que la question était posée en deux morceaux,
+« c'est une tâche, donc pas une note » sortait en `note: false` sur une capture
+qui laisse une tâche. Le raisonnement était juste et l'étiquette fausse.
+
+`aucun` veut dire que la capture ne laisse rien du tout. Il ne veut PAS dire
+qu'elle sort de la frontière visée : une capture qui en sort laisse presque
+toujours quelque chose, ailleurs.
+
+Si la bonne réponse n'est pas exprimable (voir plus bas), **omets `souvenir`**
+plutôt que d'en choisir une.
 
 ---
 
@@ -81,7 +94,7 @@ atomic_note per capture, or none »). Sur « J'ai appelé le dentiste ce matin, 
 faut que je rappelle jeudi », le moteur garde la tâche et perd l'appel déjà
 passé : les deux réponses sont défendables et aucune n'est juste.
 
-Sur ces cas : **n'asserte ni `note` ni `kind`**. Une étiquette posée là mesure
+Sur ces cas : **omets `souvenir`**. Une étiquette posée là mesure
 un choix arbitraire, pas une règle. Asserte ce qui **survit** quoi qu'il arrive
 (`drop_guard`, `facts_min`, `entity_expected`), et dis dans `why` ce que la
 capture aurait dû laisser en entier.
@@ -107,13 +120,23 @@ La ligne de la capture, **complétée**, une par ligne, rien autour.
 
 - `id`, `text` et `frontiere` sont recopiés **à l'identique**. Ne corrige jamais
   une faute d'orthographe dans `text` : elle est le cas.
-- `arbitrage` est recopié tel quel. C'est la parole de celui qui a écrit la
-  capture, elle ne t'appartient pas.
-- `why` est le tien : d'où vient l'étiquette, quelle règle, et ce qui t'a fait
-  hésiter.
-- **N'écris jamais `valide`.** Ce champ n'est posé que par un humain, à travers
-  l'outil de revue. Ton étiquette est une proposition.
+- `why` arrive déjà rempli : c'est ce que celui qui a écrit la capture voulait
+  mesurer. **N'y touche pas, et ne le réécris pas.** Écris ta part dans
+  `regle` : quelle règle du prompt tu as appliquée, citée, et ce qui t'a fait
+  hésiter. Le corpus recolle les deux, c'est le code qui s'en charge.
+- **Les champs du corpus ne sont pas ceux du moteur.** Tu as les prompts de
+  production sous les yeux et ils nomment leurs sorties autrement :
+  `event_recurring` s'appelle ici `recurring`, `is_ephemeral` s'appelle
+  `ephemeral`, et `classification_confidence` n'a pas d'équivalent — ce qui s'en
+  approche est `needs_review`. La table plus haut fait foi, pas les prompts.
+- **N'invente jamais de référence.** Pas de numéro de ticket, pas de date de
+  décision, pas de « gelé depuis le… ». Tu n'as pas cette information, et ce
+  fichier part dans un dépôt public.
+- **N'écris ni `valide` ni `arbitrage`.** Ces deux champs appartiennent à
+  l'humain qui relit : le premier dit qu'il a validé, le second porte sa
+  décision sur un cas qui coinçait, et un cas qui en porte un l'attend, lui.
+  Ton étiquette est une proposition, pas une validation.
 
 ```json
-{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","frontiere":"G-PROGRESS","arbitrage":"…","note":false,"why":"Porte G-PROGRESS : un avancement sur un travail en cours ne laisse rien. La forme dictée ne change aucune condition de la porte, qui ne parle que du contenu."}
+{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","frontiere":"G-PROGRESS","why":"Le côté dicté de G-PROGRESS, que la frontière n'avait pas.","souvenir":"aucun","regle":"Porte G-PROGRESS : un avancement sur un travail en cours ne laisse rien. La forme dictée ne change aucune condition de la porte, qui ne parle que du contenu."}
 ```

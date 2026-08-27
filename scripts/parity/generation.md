@@ -15,7 +15,7 @@ Des **captures**, c'est-à-dire ce qu'une personne tape ou dicte dans son second
 cerveau. Une ligne JSON par cas, rien d'autre, aucun texte autour.
 
 ```json
-{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","frontiere":"G-PROGRESS","arbitrage":"Progrès sur un projet en cours, dicté et sans ponctuation. C'est le côté que G-PROGRESS n'a pas : tous ses cas existants sont ponctués. Je m'attends à ce que ça ne laisse aucun souvenir, comme les autres progrès, mais la forme dictée est ce qui est mesuré ici."}
+{"id":"g-progress-dicte-fr","text":"bon alors aujourd'hui j'ai bien avancé sur le déménagement, reste les cartons de la cave","frontiere":"G-PROGRESS","why":"Progrès sur un projet en cours, dicté et sans ponctuation. C'est le côté que G-PROGRESS n'a pas : tous ses cas existants sont ponctués. Je m'attends à ce que ça ne laisse aucun souvenir, comme les autres progrès, mais la forme dictée est ce qui est mesuré ici."}
 ```
 
 Quatre champs, exactement ceux-là :
@@ -25,11 +25,16 @@ Quatre champs, exactement ceux-là :
 | `id` | un identifiant en minuscules, mots séparés par des tirets, qui dit la frontière et la variante |
 | `text` | la capture elle-même, telle qu'une personne l'aurait écrite |
 | `frontiere` | le code qu'on t'a donné, recopié |
-| `arbitrage` | pourquoi ce cas existe (voir la dernière section) |
+| `why` | pourquoi ce cas existe (voir la dernière section) |
 
-**N'écris aucun autre champ.** Pas `note`, pas `kind`, pas `event_date`, pas
-`valide`. Ce n'est pas de la modestie : une étiquette écrite sans les règles est
-une étiquette fausse, et une étiquette fausse fait corriger ce qui marchait.
+**N'écris aucun autre champ.** Pas `note`, pas `kind`, pas `event_date`. Ce
+n'est pas de la modestie : une étiquette écrite sans les règles est une
+étiquette fausse, et une étiquette fausse fait corriger ce qui marchait.
+
+Deux champs te sont interdits pour une autre raison : `valide` et `arbitrage`
+appartiennent à l'humain qui relit. Le premier dit qu'il a validé, le second
+porte sa décision sur un cas qui coinçait, et un cas qui en porte un l'attend,
+lui. En écrire un reviendrait à signer à sa place.
 
 ---
 
@@ -49,7 +54,7 @@ Tu écris donc à partir de **deux choses seulement** :
 
 Quand les deux sont en tension, la personne réelle gagne. Si tu penses qu'un cas
 mérite une réponse que la frontière n'a pas l'air d'attendre, **écris-le quand
-même et dis-le dans `arbitrage`**. Un désaccord documenté est le signal le plus
+même et dis-le dans `why`**. Un désaccord documenté est le signal le plus
 précieux que tu puisses produire : il pointe soit une règle à changer, soit une
 frontière mal décrite. Le taire pour rendre une copie propre fait perdre les
 deux.
@@ -69,7 +74,7 @@ Pour chaque frontière, écris donc par paires :
 
 La bonne paire ne diffère que par ce qui compte. « Le devis pour Acme est parti
 ce matin » contre « Le devis est parti ce matin » vaut mieux que deux phrases
-sans rapport, parce qu'elle isole exactement une variable. Dis dans `arbitrage`
+sans rapport, parce qu'elle isole exactement une variable. Dis dans `why`
 de quel côté tu es et quelle est la variable.
 
 ---
@@ -114,7 +119,7 @@ ne sait pas laquelle a lâché.
 
 Mais la **capture qui porte plusieurs choses est elle-même une famille à
 couvrir**, et c'est une des plus fréquentes dans la vraie vie. Trois formes, à
-écrire toutes les trois, en disant dans `arbitrage` laquelle tu vises :
+écrire toutes les trois, en disant dans `why` laquelle tu vises :
 
 - **plusieurs faits ou relations** sur les mêmes personnes : « Marc est né le
   3 mars, c'est le neveu de Julie et il vit à Nantes » ;
@@ -122,7 +127,7 @@ couvrir**, et c'est une des plus fréquentes dans la vraie vie. Trois formes, à
 - **plusieurs souvenirs de nature différente** — un épisode passé ET une tâche
   future, une note ET un événement : « J'ai appelé le dentiste ce matin, il faut
   que je rappelle jeudi ». Ceux-là sont les plus intéressants et les plus mal
-  couverts. Dis dans `arbitrage` ce que la capture devrait laisser **en
+  couverts. Dis dans `why` ce que la capture devrait laisser **en
   entier**, sans te demander si le moteur en est capable : ce n'est pas ta
   question, et une capture écrite pour ménager le moteur ne mesure plus rien.
 
@@ -136,11 +141,12 @@ chaque passe.
 
 ---
 
-## Ce que ton `arbitrage` doit dire
+## Ce que ton `why` doit dire
 
 C'est le seul endroit où tu parles, et il est lu deux fois : par celui qui
-étiquettera ta capture, et par l'humain qui arbitrera. Trois choses, en deux ou
-trois phrases, en français :
+étiquettera ta capture, qui le complétera avec la règle qu'il a appliquée, et
+par l'humain qui relira les deux. Trois choses, en deux ou trois phrases, en
+français :
 
 1. **ce que le cas mesure** — quelle frontière, quel côté, quelle variable
    change par rapport à son voisin ;

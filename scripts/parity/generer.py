@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import unicodedata
 import sys
 from pathlib import Path
 
@@ -89,6 +90,21 @@ def textes_existants(code: str) -> tuple[list[str], list[str]]:
             cible = ici if (cas.get("frontiere") or "").strip() == code else ailleurs
             cible.append(cas["text"])
     return ici, ailleurs
+
+
+def normaliser_id(cas: dict) -> None:
+    """Un identifiant de corpus s'écrit en ascii, minuscules, tirets.
+
+    Le modèle écrit « g-date-progrès-daté-annulé » et le reste du corpus est en
+    ascii. Un identifiant sert à se citer entre fichiers, dans un ticket, dans
+    une commande `--cas` : les accents s'y perdent. On translittère plutôt que
+    de l'exiger dans le prompt, où ça n'a jamais tenu.
+    """
+    brut = unicodedata.normalize("NFD", str(cas.get("id") or ""))
+    sans = "".join(c for c in brut if unicodedata.category(c) != "Mn")
+    cas["id"] = "".join(c if c.isalnum() else "-" for c in sans.lower()).strip("-")
+    while "--" in cas["id"]:
+        cas["id"] = cas["id"].replace("--", "-")
 
 
 def valider(cas: dict) -> int:
@@ -167,6 +183,7 @@ def main() -> None:
             print(f"⚠ ligne illisible ({e}) : {brute[:80]}", file=sys.stderr)
             mauvais += 1
             continue
+        normaliser_id(cas)
         double = connus.get(nu(str(cas.get("text", ""))))
         if double is not None:
             print(f"⚠ {cas.get('id')} : doublon exact d'une capture existante, "

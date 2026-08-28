@@ -30,6 +30,8 @@ pas aux mesures d'hier ne vaut rien.
 """
 from __future__ import annotations
 
+import re
+
 import os
 import sys
 from pathlib import Path
@@ -82,6 +84,39 @@ NOTE_SCHEMA = _subschema(_NOTE_FIELDS)
 GRAPH_SCHEMA = _subschema(_GRAPH_FIELDS)
 
 
+_DATES = re.compile(r"<!-- DATES:DEBUT.*?<!-- DATES:FIN -->", re.S)
+
+
+def bloc_dates_identique() -> None:
+    """Les deux moitiés portent le MÊME bloc de dates, au caractère près.
+
+    Elles ne peuvent pas l'inclure, ce sont deux fichiers lus tels quels par le
+    core. Le recopier est donc obligatoire, et une liste recopiée dans deux
+    endroits dérive en silence : c'est le mode d'échec qui a déjà donné deux
+    moitiés datant le même « le 24 » à un mois d'écart, la moitié graphe
+    n'ayant qu'un rappel de deux lignes là où la note avait la règle entière.
+
+    On ne demande donc pas de faire attention, on vérifie. Le contrôle tourne
+    à chaque appel du harnais : il coûte deux lectures de fichier et il ferme
+    la dérive pour de bon.
+    """
+    vus = {}
+    for moitie in ("note.md", "graph.md"):
+        texte = context.load_prompt(_half_path(moitie))
+        m = _DATES.search(texte)
+        if m is None:
+            raise SystemExit(
+                f"le bloc DATES manque dans la moitié {moitie}. Les deux "
+                f"moitiés doivent le porter, sinon elles datent la même "
+                f"capture différemment.")
+        vus[moitie] = m.group(0)
+    if vus["note.md"] != vus["graph.md"]:
+        raise SystemExit(
+            "les deux moitiés portent des blocs DATES DIFFÉRENTS. Elles "
+            "vont dater la même capture de deux façons. Recopier l'un sur "
+            "l'autre, à l'identique.")
+
+
 def _system(prompt_file: str) -> list[str]:
     """Prompt de la moitié + l'échafaudage, dans l'ordre où le core l'assemble.
 
@@ -100,6 +135,7 @@ def _system(prompt_file: str) -> list[str]:
     appels, donc le surcoût est additif, ~+10 % ») portait sur cette assemblée
     fausse : à remesurer.
     """
+    bloc_dates_identique()
     prompt = context.load_prompt(_half_path(prompt_file))
     blocks = [prompt]
     # Une moitié ne lit que ce qu'elle peut écrire : `entities[].type`,

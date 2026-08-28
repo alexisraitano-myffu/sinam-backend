@@ -1,0 +1,320 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "52b53a7eaff6+838dc1e46319",
+  "label": "graphe-controle",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "r2a-salon-vivatech-info-vs-participation": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Vivatech le 24 juillet",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-24",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Vivatech a lieu le 24 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Vivatech",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Événement technologique.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "event_date",
+                "value": "2026-07-24",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "evenements",
+      "text": "Vivatech c'est le 24",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.19,
+      "prompt_tokens": 5415,
+      "input_tokens": 10360,
+      "uncached_tokens": 313,
+      "output_tokens": 328,
+      "confidence": 1.0,
+      "gaps": [
+        "entité 'Vivatech' : créée au lieu d'être proposée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date",
+        "entity_proposed",
+        "forbidden_value"
+      ]
+    },
+    "p-dur-action-ponctuelle-vs-durable": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "j'ai appelé le plombier ce matin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.78,
+      "prompt_tokens": 5417,
+      "input_tokens": 10364,
+      "uncached_tokens": 317,
+      "output_tokens": 162,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=None"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "p-projf-milestone-dicte": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Rénovation de l'appart : cuisine terminée, 12k dépensés",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a terminé la rénovation de la cuisine de l'appartement pour 12 000 euros.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Apartment renovation",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [
+              "rénovation de l'appart"
+            ],
+            "renamed_to": null,
+            "summary": "Rénovation de l'appartement, cuisine terminée pour 12 000 EUR.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "kitchen_renovation_cost",
+                "value": "12000 EUR",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "working_on",
+            "to": "Apartment renovation",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [
+          {
+            "project_canonical": "Apartment renovation",
+            "content": "Cuisine terminée : 12 000 EUR investis.",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 1,
+      "fields": 15,
+      "set": "graphe",
+      "text": "euh alors la rénovation de l'appart on vient de finir la cuisine on y a mis 12k",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.53,
+      "prompt_tokens": 5432,
+      "input_tokens": 10394,
+      "uncached_tokens": 347,
+      "output_tokens": 538,
+      "confidence": 1.0,
+      "gaps": [
+        "kind attendu=episode obtenu=note"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "proj",
+        "facts_min"
+      ]
+    },
+    "p-type-medicament-proposal": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'Advil marche mieux que le Doliprane pour les migraines, même si le Doliprane est moins cher.",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis préfère l'Advil au Doliprane pour traiter les migraines, malgré son coût plus élevé.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Doliprane",
+            "type": "tool",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Médicament analgésique bon marché.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "price_level",
+                "value": "low",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Advil",
+            "type": "tool",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Médicament analgésique efficace contre les migraines.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "effective_for",
+                "value": "migraines",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Le Doliprane c'est bon marché mais l'Advil marche mieux pour les migraines",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.49,
+      "prompt_tokens": 5431,
+      "input_tokens": 10392,
+      "uncached_tokens": 345,
+      "output_tokens": 511,
+      "confidence": 1.0,
+      "gaps": [
+        "type de 'Doliprane' asserté sans proposition, la validation humaine est contournée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "entity_expected",
+        "type_proposal"
+      ]
+    }
+  },
+  "ecarts": 4,
+  "par_frontiere": {
+    "P-PERS": [
+      "r2a-salon-vivatech-info-vs-participation"
+    ],
+    "routage": [
+      "p-dur-action-ponctuelle-vs-durable",
+      "p-projf-milestone-dicte"
+    ],
+    "R2d": [
+      "p-dur-action-ponctuelle-vs-durable"
+    ],
+    "autre": [
+      "p-type-medicament-proposal"
+    ]
+  },
+  "prompt_tokens_max": 5432
+}

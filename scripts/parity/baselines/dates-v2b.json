@@ -1,0 +1,398 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "ec76e115f1e8+b8badd0d47e9",
+  "label": "dates-v2b",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "conf-clear-task": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Envoyer le rapport à Nadia avant vendredi",
+        "atomic_note_kind": "task",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-17",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Envoyer le rapport à Nadia avant vendredi.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "confiance",
+      "text": "Envoyer le rapport à Nadia avant vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.7,
+      "prompt_tokens": 5488,
+      "input_tokens": 10506,
+      "uncached_tokens": 321,
+      "output_tokens": 269,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "needs_review",
+        "drop_guard"
+      ]
+    },
+    "r3d-plumber": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "J'ai appelé le plombier, il vient mardi",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-14",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Le plombier a été contacté et se présentera mardi.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "episodes",
+      "text": "J'ai appelé le plombier, il vient mardi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.06,
+      "prompt_tokens": 5489,
+      "input_tokens": 10508,
+      "uncached_tokens": 323,
+      "output_tokens": 271,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "drop_guard"
+      ]
+    },
+    "r2c-verb-event": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Alexis participe au forum des associations le 26 juillet.",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-26",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Participation au forum des associations le 26 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Forum des associations",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "participates_in",
+            "to": "Forum des associations",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "episodes",
+      "text": "Je participe au forum des associations le 26",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.61,
+      "prompt_tokens": 5484,
+      "input_tokens": 10498,
+      "uncached_tokens": 313,
+      "output_tokens": 385,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "r3f-episodic-meal": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Repas de pâtes avec Thomas jeudi soir.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-09",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a mangé des pâtes avec Thomas jeudi soir.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Thomas",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "episodes",
+      "text": "On a mangé des pâtes jeudi soir avec Thomas",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.79,
+      "prompt_tokens": 5488,
+      "input_tokens": 10506,
+      "uncached_tokens": 321,
+      "output_tokens": 268,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
+      ]
+    },
+    "p-dur-event-date-ponctuel": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Concert de Nadia au Bikini.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-28",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a assisté au concert de Nadia au Bikini le 28 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Bikini",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Lieu de concert.",
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Nadia",
+            "predicate": "performed_at",
+            "to": "Bikini",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Je suis allé au concert de Nadia au Bikini le 28",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.23,
+      "prompt_tokens": 5492,
+      "input_tokens": 10514,
+      "uncached_tokens": 329,
+      "output_tokens": 462,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-06-28 obtenu='2026-07-28'"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "r1e-reported-event": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "La réunion est mardi.",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-14",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Réunion prévue mardi.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Hugo",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "taches",
+      "text": "Hugo m'a dit que la réunion était mardi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.73,
+      "prompt_tokens": 5487,
+      "input_tokens": 10504,
+      "uncached_tokens": 319,
+      "output_tokens": 255,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    }
+  },
+  "ecarts": 1,
+  "par_frontiere": {
+    "R2d": [
+      "p-dur-event-date-ponctuel"
+    ]
+  },
+  "prompt_tokens_max": 5492
+}

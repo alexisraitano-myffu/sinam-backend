@@ -1,0 +1,2285 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "52b53a7eaff6+838dc1e46319",
+  "label": "dates-v3",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "date-task-deadline-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Appeler le dentiste avant jeudi",
+        "atomic_note_kind": "task",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-16",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis doit appeler le dentiste avant jeudi.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Appeler le dentiste avant jeudi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.88,
+      "prompt_tokens": 5414,
+      "input_tokens": 10358,
+      "uncached_tokens": 311,
+      "output_tokens": 191,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "drop_guard"
+      ]
+    },
+    "date-event-weekday-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Rendez-vous chez le notaire mardi",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-14",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Rendez-vous chez le notaire le mardi 14 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Rendez-vous chez le notaire mardi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.88,
+      "prompt_tokens": 5417,
+      "input_tokens": 10364,
+      "uncached_tokens": 317,
+      "output_tokens": 198,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-event-weekday-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Team offsite on Friday",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-17",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Team offsite scheduled for Friday, July 17.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Team offsite on Friday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.9,
+      "prompt_tokens": 5410,
+      "input_tokens": 10350,
+      "uncached_tokens": 303,
+      "output_tokens": 184,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-tomorrow-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Réunion budget demain",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-14",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Réunion budget prévue demain.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Réunion budget demain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.77,
+      "prompt_tokens": 5412,
+      "input_tokens": 10354,
+      "uncached_tokens": 307,
+      "output_tokens": 186,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-two-weeks-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Design review scheduled in two weeks",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-27",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Design review is happening on July 27th.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Design review in two weeks",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.73,
+      "prompt_tokens": 5410,
+      "input_tokens": 10350,
+      "uncached_tokens": 303,
+      "output_tokens": 244,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-day-only-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Concert de Nadia le 30 juillet",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-30",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Nadia a un concert le 30 juillet.",
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Concert de Nadia le 30",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.25,
+      "prompt_tokens": 5413,
+      "input_tokens": 10356,
+      "uncached_tokens": 309,
+      "output_tokens": 262,
+      "confidence": 0.85,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "date-absent-task": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Envoyer le devis au comptable",
+        "atomic_note_kind": "task",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis doit envoyer le devis au comptable.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Envoyer le devis au comptable",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.87,
+      "prompt_tokens": 5415,
+      "input_tokens": 10360,
+      "uncached_tokens": 313,
+      "output_tokens": 283,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "drop_guard"
+      ]
+    },
+    "date-absent-note": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Deadlines make Alexis write worse.",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis noticed that time pressure negatively affects the quality of their writing.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "writing_quality_affected_by_deadlines",
+                "value": "negative",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "preferences"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "I realized deadlines make me write worse",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.26,
+      "prompt_tokens": 5413,
+      "input_tokens": 10356,
+      "uncached_tokens": 309,
+      "output_tokens": 322,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-past-episode-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "J'ai dîné chez Nadia le 4 juillet",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-04",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Dîner chez Nadia le 4 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "J'ai dîné chez Nadia le 4 juillet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.57,
+      "prompt_tokens": 5421,
+      "input_tokens": 10372,
+      "uncached_tokens": 325,
+      "output_tokens": 340,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "date-past-recurring-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Alexis s'est marié le 12 juin",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2025-06-12",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de mariage d'Alexis, le 12 juin.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Marié(e) le 12 juin 2025.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "On s'est mariés le 12 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.2,
+      "prompt_tokens": 5416,
+      "input_tokens": 10362,
+      "uncached_tokens": 315,
+      "output_tokens": 343,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-06-12 obtenu='2025-06-12'"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-birthday-party-recurring": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-23",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Apéro d'anniversaire de Nadia le 23 juillet",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 23 juillet.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "July 23",
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.99,
+      "prompt_tokens": 5424,
+      "input_tokens": 10378,
+      "uncached_tokens": 331,
+      "output_tokens": 343,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date",
+        "needs_review",
+        "fact_proposed"
+      ]
+    },
+    "bday-party-no-fact": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "La fête de Thibault est le 20 juillet.",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-20",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Fête de Thibault le 20 juillet.",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Thibault",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "La fête de Thibault est le 20",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.38,
+      "prompt_tokens": 5417,
+      "input_tokens": 10364,
+      "uncached_tokens": 317,
+      "output_tokens": 269,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "bday-birth-stated": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Née le 5 février 1992.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "February 5",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Nadia est née le 5 février 1992",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.67,
+      "prompt_tokens": 5418,
+      "input_tokens": 10366,
+      "uncached_tokens": 319,
+      "output_tokens": 302,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "facts_min"
+      ]
+    },
+    "bday-bare-review-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Léa's birthday is on 16 June",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-06-16",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Léa's birthday occurs on 16 June.",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Léa",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Birthday on June 16.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 16",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "16 June is Léa's birthday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.86,
+      "prompt_tokens": 5415,
+      "input_tokens": 10360,
+      "uncached_tokens": 313,
+      "output_tokens": 326,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "language",
+        "needs_review"
+      ]
+    },
+    "bday-age-not-birthdate": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Tom a fêté ses 30 ans",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Tom a célébré son trentième anniversaire.",
+        "classification_confidence": 0.7,
+        "entities": [
+          {
+            "canonical_name": "Tom",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "age",
+                "value": "30",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Tom a fêté ses 30 ans",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.83,
+      "prompt_tokens": 5415,
+      "input_tokens": 10360,
+      "uncached_tokens": 313,
+      "output_tokens": 308,
+      "confidence": 0.7,
+      "gaps": [],
+      "axes": [
+        "facts_min",
+        "forbidden_predicate"
+      ]
+    },
+    "deduc-family-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Julie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Léna",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Yanis",
+            "predicate": "son_of",
+            "to": "Marc",
+            "confidence": 1.0
+          },
+          {
+            "from": "Yanis",
+            "predicate": "son_of",
+            "to": "Julie",
+            "confidence": 1.0
+          },
+          {
+            "from": "Yanis",
+            "predicate": "sibling_of",
+            "to": "Léna",
+            "confidence": 1.0
+          },
+          {
+            "from": "Léna",
+            "predicate": "daughter_of",
+            "to": "Marc",
+            "confidence": 0.6
+          },
+          {
+            "from": "Léna",
+            "predicate": "daughter_of",
+            "to": "Julie",
+            "confidence": 0.6
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 5,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Yanis is Marc and Julie's son and Léna's brother",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.38,
+      "prompt_tokens": 5420,
+      "input_tokens": 10370,
+      "uncached_tokens": 323,
+      "output_tokens": 770,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "rel",
+        "facts_min"
+      ]
+    },
+    "deduc-no-invention-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Léa",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Léa's dog",
+            "type": "animal",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Chien adopté par Léa.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "adopted_by",
+                "value": "Léa",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "relations"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Léa",
+            "predicate": "adopted",
+            "to": "Léa's dog",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Léa adopted a dog last week",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.37,
+      "prompt_tokens": 5413,
+      "input_tokens": 10356,
+      "uncached_tokens": 309,
+      "output_tokens": 421,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "forbidden_value"
+      ]
+    },
+    "pers-pet-owned-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Pixel",
+            "type": "animal",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Alexis's dog.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "species",
+                "value": "dog",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "identity"
+              },
+              {
+                "predicate": "owner",
+                "value": "Alexis",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "relations"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "owns",
+            "to": "Pixel",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "My dog is called Pixel",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.53,
+      "prompt_tokens": 5411,
+      "input_tokens": 10352,
+      "uncached_tokens": 305,
+      "output_tokens": 456,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "language",
+        "entity_expected"
+      ]
+    },
+    "pers-incidental-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Saw a parrot named Coco at the market.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-13",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis encountered a parrot called Coco at the market.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "I saw a parrot at the market called Coco",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.29,
+      "prompt_tokens": 5417,
+      "input_tokens": 10364,
+      "uncached_tokens": 317,
+      "output_tokens": 270,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "language",
+        "no_entity"
+      ]
+    },
+    "fr-relation-and-fact": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sofia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Sœur de Thibault, habite à Rennes.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "lives_in",
+                "value": "Rennes",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "places"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Thibault",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Sofia",
+            "predicate": "sibling_of",
+            "to": "Thibault",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Sofia est la sœur de Thibault et elle habite à Rennes",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.94,
+      "prompt_tokens": 5424,
+      "input_tokens": 10378,
+      "uncached_tokens": 331,
+      "output_tokens": 545,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "facts_min"
+      ]
+    },
+    "p-dur-fait-durable-relation": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Gipsy",
+            "type": "animal",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Chat de Marie.",
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Gipsy",
+            "predicate": "owned_by",
+            "to": "Marie",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Marie a un chat qui s'appelle Gipsy",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.97,
+      "prompt_tokens": 5418,
+      "input_tokens": 10366,
+      "uncached_tokens": 319,
+      "output_tokens": 353,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "rel",
+        "entity_expected"
+      ]
+    },
+    "p-dur-action-ponctuelle-vs-durable": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "j'ai appelé le plombier ce matin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.72,
+      "prompt_tokens": 5417,
+      "input_tokens": 10364,
+      "uncached_tokens": 317,
+      "output_tokens": 162,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=None"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "p-projf-budget-total": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sinam",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Projet avec un budget total de 150k.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "budget_total",
+                "value": "150000",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              },
+              {
+                "predicate": "budget_spent",
+                "value": "87000",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Sinam",
+            "content": "Budget total : 150k. Dépensé : 87k.",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 0,
+      "projects": 1,
+      "fields": 15,
+      "set": "graphe",
+      "text": "budget du projet Sinam : 150k, on en a dépensé 87k",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.29,
+      "prompt_tokens": 5426,
+      "input_tokens": 10382,
+      "uncached_tokens": 335,
+      "output_tokens": 407,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "proj",
+        "facts_min"
+      ]
+    },
+    "p-projf-milestone-reached": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Sinam a atteint 10k utilisateurs",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-12",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Sinam a franchi le cap des 10 000 utilisateurs.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sinam",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Projet ayant atteint 10 000 utilisateurs.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "user_count",
+                "value": "10000",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Sinam",
+            "content": "Atteint 10 000 utilisateurs.",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 1,
+      "fields": 15,
+      "set": "graphe",
+      "text": "on a atteint 10k utilisateurs sur Sinam hier",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.37,
+      "prompt_tokens": 5420,
+      "input_tokens": 10370,
+      "uncached_tokens": 323,
+      "output_tokens": 387,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "proj",
+        "facts_min"
+      ]
+    },
+    "p-projf-budget-without-entity": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "j'ai dépensé 200 euros pour acheter du matériel",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.96,
+      "prompt_tokens": 5423,
+      "input_tokens": 10376,
+      "uncached_tokens": 329,
+      "output_tokens": 162,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note"
+      ]
+    },
+    "p-projf-milestone-dicte": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Rénovation de l'appart : cuisine terminée, 12k dépensés",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a terminé la rénovation de la cuisine de l'appartement pour 12 000 euros.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Apartment renovation",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [
+              "rénovation de l'appart"
+            ],
+            "renamed_to": null,
+            "summary": "Rénovation de l'appartement, cuisine terminée pour 12 000 EUR.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "kitchen_renovation_cost",
+                "value": "12000 EUR",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "working_on",
+            "to": "Apartment renovation",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [
+          {
+            "project_canonical": "Apartment renovation",
+            "content": "Cuisine terminée : 12 000 EUR investis.",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 1,
+      "fields": 15,
+      "set": "graphe",
+      "text": "euh alors la rénovation de l'appart on vient de finir la cuisine on y a mis 12k",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.24,
+      "prompt_tokens": 5432,
+      "input_tokens": 10394,
+      "uncached_tokens": 347,
+      "output_tokens": 538,
+      "confidence": 1.0,
+      "gaps": [
+        "kind attendu=episode obtenu=note"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "proj",
+        "facts_min"
+      ]
+    },
+    "p-type-personne-builtin": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Marc est venu à la réunion hier",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-12",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Marc a participé à la réunion hier.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Directeur technique.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "job_title",
+                "value": "directeur technique",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Marc est venu à la réunion hier, c'est le directeur technique",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.83,
+      "prompt_tokens": 5423,
+      "input_tokens": 10376,
+      "uncached_tokens": 329,
+      "output_tokens": 321,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "p-type-concept-builtin": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Je me demande si c'est ce qu'on appelle l'effet Dunning-Kruger",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis s'interroge sur la possibilité que ce qu'il observe soit l'effet Dunning-Kruger.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Dunning-Kruger effect",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [
+              "effet Dunning-Kruger"
+            ],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Je me demande si c'est ce qu'on appelle l'effet Dunning-Kruger",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.6,
+      "prompt_tokens": 5429,
+      "input_tokens": 10388,
+      "uncached_tokens": 341,
+      "output_tokens": 302,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "p-type-organisation-builtin": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Entreprise de logiciels.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "sector",
+                "value": "software",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Je bosse pour Globex maintenant, c'est une boîte de soft vraiment cool",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.12,
+      "prompt_tokens": 5427,
+      "input_tokens": 10384,
+      "uncached_tokens": 337,
+      "output_tokens": 422,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "p-type-animal-builtin": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Pixel",
+            "type": "animal",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Chat d'Alexis.",
+            "attributes": {
+              "species": "cat"
+            },
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "owns",
+            "to": "Pixel",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Mon chat Pixel a mangé les croquettes ce matin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.64,
+      "prompt_tokens": 5419,
+      "input_tokens": 10368,
+      "uncached_tokens": 321,
+      "output_tokens": 290,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "p-dur-birthday-durable": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'anniversaire de Yanis est le 12 juin",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-06-12",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de Yanis le 12 juin",
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Yanis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 12 juin.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "L'anniversaire de Yanis c'est le 12 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.82,
+      "prompt_tokens": 5421,
+      "input_tokens": 10372,
+      "uncached_tokens": 325,
+      "output_tokens": 333,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "p-dur-event-date-ponctuel": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Alexis est allé au concert de Nadia au Bikini.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-28",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a assisté au concert de Nadia au Bikini le 28 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Bikini",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Lieu de concert.",
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "attended_concert",
+            "to": "Nadia",
+            "confidence": 1.0
+          },
+          {
+            "from": "Nadia",
+            "predicate": "performed_at",
+            "to": "Bikini",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 2,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Je suis allé au concert de Nadia au Bikini le 28",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.22,
+      "prompt_tokens": 5423,
+      "input_tokens": 10376,
+      "uncached_tokens": 329,
+      "output_tokens": 515,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-06-28 obtenu='2026-07-28'"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "p-type-personne-existant": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "J'ai croisé Sophie au supermarché.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-13",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Rencontre avec Sophie au supermarché.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sophie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Sophie",
+            "predicate": "works_at",
+            "to": "Globex",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "J'ai croisé Sophie au supermarché, elle travaille chez Globex maintenant",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.38,
+      "prompt_tokens": 5427,
+      "input_tokens": 10384,
+      "uncached_tokens": 337,
+      "output_tokens": 434,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "p-type-plat-proposal": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "J'ai mangé de la bouillabaisse chez Léon hier soir, c'était délicieux.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-12",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Repas savoureux chez Léon avec de la bouillabaisse.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "J'ai mangé du bouillabaisse hier soir chez Léon, c'était délicieux",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.2,
+      "prompt_tokens": 5431,
+      "input_tokens": 10392,
+      "uncached_tokens": 345,
+      "output_tokens": 215,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "no_entity"
+      ]
+    },
+    "p-type-medicament-proposal": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "L'Advil marche mieux que le Doliprane pour les migraines, même si le Doliprane est moins cher.",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis préfère l'Advil au Doliprane pour traiter les migraines, malgré son coût plus élevé.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Doliprane",
+            "type": "tool",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Médicament analgésique bon marché.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "price_level",
+                "value": "low",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Advil",
+            "type": "tool",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Médicament analgésique efficace contre les migraines.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "effective_for",
+                "value": "migraines",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Le Doliprane c'est bon marché mais l'Advil marche mieux pour les migraines",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.07,
+      "prompt_tokens": 5431,
+      "input_tokens": 10392,
+      "uncached_tokens": 345,
+      "output_tokens": 511,
+      "confidence": 1.0,
+      "gaps": [
+        "type de 'Doliprane' asserté sans proposition, la validation humaine est contournée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "entity_expected",
+        "type_proposal"
+      ]
+    }
+  },
+  "ecarts": 5,
+  "par_frontiere": {
+    "R2d": [
+      "date-past-recurring-fr",
+      "p-dur-action-ponctuelle-vs-durable",
+      "p-dur-event-date-ponctuel"
+    ],
+    "routage": [
+      "p-dur-action-ponctuelle-vs-durable",
+      "p-projf-milestone-dicte"
+    ],
+    "autre": [
+      "p-type-medicament-proposal"
+    ]
+  },
+  "prompt_tokens_max": 5432
+}

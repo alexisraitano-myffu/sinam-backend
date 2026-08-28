@@ -1,0 +1,286 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "52b53a7eaff6+838dc1e46319",
+  "label": "dates-sans-check",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "date-two-weeks-en": {
+      "parsed": {
+        "language": "en",
+        "atomic_note": "Design review scheduled in two weeks",
+        "atomic_note_kind": "event",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-27",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Design review is happening on July 27th.",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "Design review in two weeks",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.08,
+      "prompt_tokens": 5410,
+      "input_tokens": 10350,
+      "uncached_tokens": 303,
+      "output_tokens": 244,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-past-recurring-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Alexis s'est marié le 12 juin",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2025-06-12",
+        "event_recurring": true,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Anniversaire de mariage d'Alexis, le 12 juin.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Marié(e) le 12 juin 2025.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "dates",
+      "text": "On s'est mariés le 12 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.94,
+      "prompt_tokens": 5416,
+      "input_tokens": 10362,
+      "uncached_tokens": 315,
+      "output_tokens": 343,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-06-12 obtenu='2025-06-12'"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "r3f-episodic-meal": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Repas de pâtes avec Thomas jeudi soir.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-09",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a mangé des pâtes avec Thomas jeudi soir.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Thomas",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "episodes",
+      "text": "On a mangé des pâtes jeudi soir avec Thomas",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.91,
+      "prompt_tokens": 5419,
+      "input_tokens": 10368,
+      "uncached_tokens": 321,
+      "output_tokens": 337,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
+      ]
+    },
+    "p-dur-event-date-ponctuel": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Alexis est allé au concert de Nadia au Bikini.",
+        "atomic_note_kind": "episode",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-28",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a assisté au concert de Nadia au Bikini le 28 juillet.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Bikini",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Lieu de concert.",
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "attended_concert",
+            "to": "Nadia",
+            "confidence": 1.0
+          },
+          {
+            "from": "Nadia",
+            "predicate": "performed_at",
+            "to": "Bikini",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 2,
+      "projects": 0,
+      "fields": 15,
+      "set": "graphe",
+      "text": "Je suis allé au concert de Nadia au Bikini le 28",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.44,
+      "prompt_tokens": 5423,
+      "input_tokens": 10376,
+      "uncached_tokens": 329,
+      "output_tokens": 515,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-06-28 obtenu='2026-07-28'"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    }
+  },
+  "ecarts": 2,
+  "par_frontiere": {
+    "R2d": [
+      "date-past-recurring-fr",
+      "p-dur-event-date-ponctuel"
+    ]
+  },
+  "prompt_tokens_max": 5423
+}

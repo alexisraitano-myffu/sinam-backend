@@ -1,0 +1,67 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "7705ea79f684+05d913e2b02d",
+  "label": "tmp-c1",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "r1g-chore-dicte-fr": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "vider la poubelle de la cuisine",
+        "atomic_note_kind": "task",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-13",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Vider la poubelle de la cuisine ce soir.",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 16,
+      "set": "taches",
+      "text": "faut que je vide la poubelle de la cuisine ce soir",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.06,
+      "prompt_tokens": 5717,
+      "input_tokens": 11307,
+      "uncached_tokens": 325,
+      "output_tokens": 201,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=False obtenue=True",
+        "ephemeral attendu=True"
+      ],
+      "axes": [
+        "note",
+        "ephemeral"
+      ]
+    }
+  },
+  "ecarts": 1,
+  "par_frontiere": {
+    "routage": [
+      "r1g-chore-dicte-fr"
+    ],
+    "X-EPH": [
+      "r1g-chore-dicte-fr"
+    ]
+  },
+  "prompt_tokens_max": 5717
+}

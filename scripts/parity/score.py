@@ -58,6 +58,8 @@ AXES = {
     "entity_expected": "P-PERS",
     "no_entity": "P-PERS",
     "entity_proposed": "P-CREATE",
+    "type_proposal": "P-TYPE",
+    "no_type_proposal": "P-TYPE",
     "fact_proposed": "F-QUEUE",
     "resource_url": "RES",
     "resource_owner_type": "RES",
@@ -405,6 +407,32 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         vu = porte_du_fait(parsed, ent, pred)
         if vu != "proposé":
             out.append(f"fait '{pred}' sur '{ent}' : {vu} au lieu d'être proposé")
+
+    # P-TYPE — le type d'une entité ne s'invente pas : hors vocabulaire actif,
+    # le modèle sort `concept` et remplit `type_proposal`, un humain valide.
+    # Les deux axes vérifient l'APPARIEMENT, pas l'appartenance du type à la
+    # liste : la liste est dynamique et vit en base, le harness ne l'a pas. Or
+    # c'est bien l'appariement qui lâche — mesuré le 2026-08-20 sur E2B
+    # contraint, `type_proposal` était rempli là où le type était déjà actif,
+    # ce qui noie la file de validation sous des propositions inutiles.
+    if case.get("type_proposal"):
+        want = case["type_proposal"].strip().lower()
+        vus = {str(e.get("canonical_name") or "").strip().lower():
+               e.get("type_proposal")
+               for e in (parsed.get("entities") or []) if isinstance(e, dict)}
+        if want not in vus:
+            out.append(f"entité '{case['type_proposal']}' absente, donc son "
+                       f"type ne peut pas être proposé")
+        elif not vus[want]:
+            out.append(f"type de '{case['type_proposal']}' asserté sans "
+                       f"proposition, la validation humaine est contournée")
+
+    if case.get("no_type_proposal"):
+        vus = [e.get("canonical_name") for e in (parsed.get("entities") or [])
+               if isinstance(e, dict) and e.get("type_proposal")]
+        if vus:
+            out.append(f"type proposé de trop sur {vus}, alors que le type "
+                       f"attendu est déjà actif")
 
     if case.get("no_entity"):
         if case["no_entity"].strip().lower() in _entity_names(parsed):

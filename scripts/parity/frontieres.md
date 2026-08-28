@@ -87,7 +87,7 @@ tenue aujourd'hui.
 | G-DATE | « une date annule la porte », dans les deux sens de formulation | `e4`, `x-birthday-bare`, les 5 scénarios | Couvert **sur l'anniversaire seulement**. La date qui annule une AUTRE ligne de la porte (progrès daté, statut daté, corvée datée) n'a aucun cas. |
 | G-ATTR | énoncé entièrement attributif (« X a / est / fait Y ») ⇒ pas de note | `f1`, `f2`, `g-type-fact`, `r1`, `r2` | Le miroir est écrit dans la porte depuis le 2026-08-26 : ENTIER est la condition, une prise de position sur l'attribut n'en fait pas partie, donc la capture garde sa note. `g-attr-with-stance` basculait une fois sur deux avant ça, et tient 3/3 après. L'attribut devient un fait dans les deux cas ; ce que l'auteur en pense est la part qu'aucun fait ne porte. |
 | G-LINK | lien nu sans prise de position | `u1`, `g-type-resource`, `res-bare-fr`, `res-place-fr`, `res-tool-fr` ; miroir `res-commented-en` | **Tranché le 2026-08-26**, en deux branches. On retire l'URL et on regarde ce qui reste : plus aucun mot ⇒ pas de note. Des mots restent ⇒ ce que le lien EST décide. S'il est la chose elle-même (article, vidéo, papier, fil), la note est gardée ; s'il pointe vers quelque chose qui a sa propre identité (lieu, boutique, outil, société), la ressource et la fiche portent tout, et il n'y a pas de note. Le gel du 21/08 est levé. |
-| G-PROGRESS | progrès sur un projet ⇒ pas de note | rien | **Trou complet.** Zéro cas. C'est pourtant la capture la plus fréquente d'un utilisateur qui tient un projet. |
+| G-PROGRESS | progrès sur un projet ⇒ pas de note | `g-progress-fr`, `g-progress-en` | **Un seul côté** depuis le 26/08 : les deux cas assertent `note=False` et un projet existant. Manque le voisin qui bascule, un progrès qui laisse quand même quelque chose (un chiffre atteint, une décision prise en avançant). Sans lui, « tout ce qui ressemble à un progrès ne laisse rien » passe pour la bonne règle. |
 | G-STATUS | statut nu (« j'ai déjà mangé », « c'est envoyé ») ⇒ rien | `g-status-sent-fr`, `g-status-eaten-en` ; miroir `g-status-sent-named-fr` | **Tranché le 2026-08-26**, et Alexis a tranché contre la lecture que la mesure lui proposait : ce qui fait l'occurrence est le MOMENT, pas le nom. Les deux devis sortent en épisode daté. Un statut ne tombe donc plus que s'il n'est accroché à rien (« c'est envoyé », « j'ai déjà mangé »). Le risque assumé est le débordement sur la corvée : « J'ai acheté du pain ce matin » porte la même ancre et doit continuer de ne rien laisser, ce que seule la ligne G-ROUTINE retient désormais. Cette paire est le contrôle à surveiller à chaque passe. |
 | G-ROUTINE | activité routinière solitaire déjà faite | `ep2`, `g-type-episodic`, `x-past-errand` ; miroirs `ep1`, `x-pure-episode`, `x-episode-first-time` | Correctement couvert, sauf la sortie « lieu digne d'être nommé » (voir R3b). |
 | G-HABIT | habitude ou trait biographique sans moment situé | `x-habitual-past` | Un seul cas, un seul côté. Manque l'habitude AVEC moment situé, qui doit sortir en épisode. |
@@ -102,7 +102,7 @@ tenue aujourd'hui.
 | R0a | entreprise multi-étapes ⇒ projet, jamais simple tâche | `j1`, `j2`, `j3`, `g-project-new` | Un seul côté. Manque ce qui RESSEMBLE à un projet et n'en est pas. |
 | R0b | l'énoncé fondateur sort en `kind="note"` | `j2`, `j3` n'assertent que `proj` | **Assertion manquante** : aucun cas ne vérifie que la note fondatrice existe. |
 | R0c | nommer le projet par son DOMAINE durable, pas l'action ponctuelle | `j1` (implicite) | Jamais asserté. |
-| R0d | plusieurs projets dans une même capture ⇒ une entrée chacun | rien | **Trou complet.** |
+| R0d | plusieurs projets dans une même capture ⇒ une entrée chacun | `r0d-two-projects` | **Un seul côté** depuis le 26/08 : deux projets déjà existants, `note=False`. Manque le cas où l'un des deux est neuf, seul moyen de voir si chacun reçoit vraiment son entrée plutôt qu'un rattachement au premier nommé. |
 
 ### Ligne 1, tâche
 
@@ -110,7 +110,7 @@ tenue aujourd'hui.
 |---|---|---|---|
 | R1a | verbe d'action à l'infinitif ou impératif | `t1`..`t7` | Bien couvert. |
 | R1b | action adressée à une personne ou une organisation, démarche administrative | `t1`, `t2`, `t4`, `g-english-task` | Bien couvert. |
-| R1c | deux mots suffisent (impératif, 2ᵉ personne) | rien | **Trou.** Le cas le plus court du corpus fait cinq mots. C'est exactement la forme sur laquelle le bug historique portait. |
+| R1c | deux mots suffisent (impératif, 2ᵉ personne) | `r1c-two-words` | **Un seul côté** depuis le 26/08 : « Rappeler Nadia » sort bien une tâche. Manque le voisin de même longueur qui n'en est pas une, deux mots qui ne portent aucune action. Sans lui, « une capture courte est une tâche » reste plausible. |
 | R1d | tâche AVEC échéance : reste `task`, remplit `event_date` | `t6` | Un cas, et `event_date` n'est asserté nulle part. |
 | R1e | discours rapporté ⇒ `owner` = la personne | `x-reported-speech` | Un cas contre un miroir (`x-owner-is-author`). Manque le discours rapporté d'un ÉVÉNEMENT (pas d'une tâche), et le cas où deux personnes sont nommées. |
 | R1f | action annulée ⇒ ligne 4 | `x-negation` | Un seul cas. |
@@ -147,7 +147,7 @@ tenue aujourd'hui.
 | # | Frontière | Ce qui la couvre | Verdict |
 |---|---|---|---|
 | R4a | première personne réflexive | `n1`, `n3`, `g-note-reflexive` | Bien couvert. |
-| R4b | citation, ou œuvre / auteur / idée externe sur laquelle l'auteur prend position | rien | **Trou complet.** Zéro cas, alors que c'est une des quatre entrées de la ligne. |
+| R4b | citation, ou œuvre / auteur / idée externe sur laquelle l'auteur prend position | six cas `r4b-*` | **Couvert depuis le 26/08**, les deux côtés : la prise de position laisse une note (Descartes, le podcast, Sophie, le documentaire, le désaccord tronqué), et l'œuvre citée SANS position ne laisse qu'une tâche de lecture (`r4b-article-sans-critique`). C'est la position qui décide, pas la présence de l'œuvre. |
 | R4c | observation contemplative qui ne se réduit à aucun fait | `n2` | Un cas. |
 | R4d | une décision, y compris celle de renoncer | `x-negation` | Un cas. |
 | R4e | énoncé fondateur d'un projet | voir R0b | Non asserté. |
@@ -157,7 +157,7 @@ tenue aujourd'hui.
 | # | Frontière | Ce qui la couvre | Verdict |
 |---|---|---|---|
 | X-EPH | les QUATRE conditions d'`is_ephemeral`, une seule qui manque suffit | `p1`, `p2`, `x-past-errand`, `n1`..`n3` | Le mécanisme est couvert. La **coexistence** note + éphémère, autorisée aux seules lignes 1 et 2, n'a aucun cas. |
-| X-CONF | la confiance doit tomber sous 0,6 quand le modèle hésite vraiment | `x-birthday-bare` (non scoré), les scénarios | **Trou n°1 du ticket.** Aucune note ni aucun épisode étiqueté douteux. Mesuré le 21/08 : 0 sur ~90 épisodes et 0 sur ~200 notes sont jamais passés sous 0,7. La file « À valider » est décorative sur deux des quatre types. |
+| X-CONF | la confiance doit tomber sous 0,6 quand le modèle hésite vraiment | quatre cas `conf-*`, plus `x-birthday-bare` (non scoré) et les scénarios | **Les deux côtés existent depuis le 26/08** : `conf-cryptic` et `conf-minimal-action` attendent `needs_review=True`, `conf-clear-task` et `conf-clear-event` attendent False. Reste le défaut mesuré le 21/08, qui n'est pas un trou de corpus : 0 sur ~90 épisodes et 0 sur ~200 notes ne sont jamais passés sous 0,7, donc la file « À valider » reste décorative sur deux des quatre types. |
 | X-LANG | détecter la langue, écrire la note dans la MÊME langue, ne jamais traduire | 5 cas EN, 1 ES | `language` n'est asserté nulle part. Aucune capture à cheval sur deux langues, aucune mal orthographiée, aucune tronquée. |
 | X-ONE | exactement UNE note par capture, ou aucune | `a2`, `a3`, `g-atomicity-mixed` (implicite) | Jamais vérifié comme tel. |
 
@@ -171,7 +171,7 @@ tenue aujourd'hui.
 | P-PERS | l'échelle de persistance décide du nœud | `x-pet-owned`, `x-pet-incidental` | Les deux côtés existent, **mais aucun des deux n'est scoré** (`entity_expected`, `no_entity` sont inertes). |
 | P-HEDGE | `evidence_strength` : explicite / prudent / implicite | `h1`, `h2` | N'assertent que `note=False`. Le champ lui-même n'est jamais vérifié. |
 | P-BDAY | une date de naissance est un fait, et la FORMULATION dit à quel point elle est sûre | `x-birthday-birth`, `x-birthday-bare`, `bday-bare-review-en`, `e4` (énoncée) ; `x-birthday-party`, `date-birthday-party-recurring` (lue sur une fête, axe `fact_proposed`) ; `bday-party-no-fact`, `bday-age-not-birthdate` (`forbidden_predicate`) | **Complet depuis le 2026-08-26.** Échelle à trois marches arbitrée par Alexis : énoncée ⇒ assertée, lue sur une fête ⇒ **proposée** (la fête tombe souvent le jour même, pas toujours), ni l'un ni l'autre ⇒ aucun fait. Les trois marches sont mesurées, les deux extrêmes par les axes qui existaient, celle du milieu par `fact_proposed`. |
-| P-TYPE | type strictement dans la liste active, sinon `concept` + `type_proposal` | rien | **Trou complet.** Zéro cas. |
+| P-TYPE | le type d'une ENTITÉ nommée reste dans la liste active (personne, lieu, projet, concept, organisation, animal, plus les validés) ; une entité qui n'y rentre pas sort en `concept` avec un `type_proposal` que l'humain valide | rien | **Trou complet.** Zéro cas. La première vague du 28/08 est partie sur « type de note » : la ligne ne disait pas de quoi « type » était le type. La seconde a proposé un concept, qui rentre : le côté adverse demande une entité nommée qui n'est AUCUN des six, ni personne ni lieu ni projet ni concept ni organisation ni animal — un plat, un modèle de voiture, un médicament, une œuvre. Quatre cas écrits, tous du côté « le type existe déjà ». |
 | P-PROJF | fait de projet (total, budget, palier atteint) ⇒ le projet devient aussi une entité | rien | **Trou complet.** |
 
 ## 5. Les sept files de validation

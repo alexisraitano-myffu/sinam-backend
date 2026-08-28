@@ -58,6 +58,24 @@ def ligne_de_frontiere(code: str) -> str:
         f"Elle s'écrit exactement comme la première colonne du tableau.")
 
 
+def precisions(code: str) -> list[str]:
+    """Les paragraphes hors tableau qui nomment cette frontière.
+
+    Une ligne de tableau tient sur une ligne, et certaines frontières ne
+    tiennent pas dessus : la carte les développe en prose juste après, et ces
+    paragraphes-là ne partaient nulle part. P-TYPE l'a montré, sa ligne disait
+    « type strictement dans la liste active » sans dire de quoi c'était le
+    type, et la vague est partie sur le type d'une note. Le paragraphe qui le
+    disait existait, à trente lignes de là.
+
+    Ce n'est pas une fuite de règles : la carte décrit ce qu'une frontière
+    mesure, jamais comment le classifieur y répond.
+    """
+    blocs = (_ICI / "frontieres.md").read_text().split("\n\n")
+    return [b.strip() for b in blocs
+            if code in b and not b.lstrip().startswith("|")]
+
+
 def textes_existants(code: str) -> tuple[list[str], list[str]]:
     """Les captures déjà écrites : celles de cette frontière, puis les autres.
 
@@ -99,6 +117,7 @@ def main() -> None:
     args = ap.parse_args()
 
     ligne = ligne_de_frontiere(args.frontiere)
+    detail = precisions(args.frontiere)
     systeme = (_ICI / "generation.md").read_text()
     ici, ailleurs = textes_existants(args.frontiere)
 
@@ -108,6 +127,8 @@ def main() -> None:
         "Sa ligne dans la carte des frontières, telle quelle :",
         ligne,
         "",
+        ("Ce que la carte précise en plus sur cette frontière :\n\n"
+         + "\n\n".join(detail) + "\n") if detail else "",
         f"Le temps de référence est {TODAY}, un lundi. Écris tes dates en "
         f"relatif, comme une personne le fait ; les résoudre n'est pas ton "
         f"travail.",
@@ -127,8 +148,14 @@ def main() -> None:
     if not r.ok:
         raise SystemExit(f"appel échoué : {r}")
 
-    # On valide la forme ici plutôt que de laisser un JSON cassé arriver plus
-    # loin : une ligne mal formée coûte plus cher à trouver à l'étape suivante.
+    # La déduplication se fait ici et pas dans le prompt. On lui donne la liste
+    # des textes existants, et il en a recopié un au mot près : lui demander de
+    # comparer des chaînes est lui demander ce qu'on sait calculer.
+    def nu(s: str) -> str:
+        return "".join(c for c in s.lower() if c.isalnum())
+
+    connus = {nu(x): x for x in ici + ailleurs}
+
     bons = mauvais = 0
     for brute in r.text.splitlines():
         brute = brute.strip().strip("`")
@@ -138,6 +165,12 @@ def main() -> None:
             cas = json.loads(brute)
         except ValueError as e:
             print(f"⚠ ligne illisible ({e}) : {brute[:80]}", file=sys.stderr)
+            mauvais += 1
+            continue
+        double = connus.get(nu(str(cas.get("text", ""))))
+        if double is not None:
+            print(f"⚠ {cas.get('id')} : doublon exact d'une capture existante, "
+                  f"écarté — « {double} »", file=sys.stderr)
             mauvais += 1
             continue
         mauvais += valider(cas)

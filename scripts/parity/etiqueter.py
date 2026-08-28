@@ -161,12 +161,49 @@ def traduire_souvenir(cas: dict) -> int:
 # Les marqueurs qui disent le SENS du temps sans ambiguïté. Volontairement
 # courts : un marqueur douteux ferait un avertissement douteux, et un contrôle
 # qu'on apprend à ignorer ne contrôle plus rien.
+# Le passé composé avec « être » manquait, et il a laissé passer exactement le
+# cas pour lequel ce garde-fou existe : « Je suis allé au concert le 28 » a été
+# daté au 28 du mois PROCHAIN sans un mot. Les verbes qui prennent « être » sont
+# une liste fermée, on l'écrit plutôt que de deviner.
+_ETRE = (r"(allé|allée|allés|parti|partie|partis|resté|restée|restés|venu|venue"
+         r"|venus|revenu|revenue|sorti|sortie|sortis|rentré|rentrée|rentrés"
+         r"|arrivé|arrivée|arrivés|monté|montée|descendu|descendue|tombé|tombée)")
 _PASSE = re.compile(
     r"\b(hier|avant-hier|j'étais|j'ai |on a |la semaine dernière|le mois dernier"
-    r"|dernier|dernière|yesterday|last (week|month|year)|i was|we were)\b")
+    r"|dernier|dernière|yesterday|last (week|month|year)|i was|we were"
+    rf"|(je suis|on est|il est|elle est|nous sommes|ils sont|elles sont) {_ETRE}"
+    r"|i went|we went|i attended|we attended)\b")
 _FUTUR = re.compile(
     r"\b(demain|après-demain|la semaine prochaine|le mois prochain|prochain"
     r"|prochaine|tomorrow|next (week|month|year))\b")
+
+
+def normaliser_type(cas: dict) -> int:
+    """`type_proposal` veut un NOM d'entité, l'étiqueteur répond oui ou non.
+
+    Il raisonne juste — « ce type n'est pas dans la liste, il faut le proposer »
+    — et écrit `true`. Or l'axe doit dire DE QUI le type est proposé, sinon il
+    ne vérifie rien sur une capture qui porte deux entités. Le nom est déjà là,
+    dans `entity_expected` : lui redemander serait lui demander ce qu'on sait
+    recopier, et c'est le geste qui a déjà réglé `souvenir` et le jour de
+    semaine.
+    """
+    if "type_proposal" not in cas:
+        return 0
+    v = cas.get("type_proposal")
+    if isinstance(v, str) and v.strip():
+        return 0
+    cas.pop("type_proposal", None)
+    if v in (None, False):
+        cas["no_type_proposal"] = True
+        return 0
+    nom = cas.get("entity_expected")
+    if not nom:
+        print(f"⚠ {cas.get('id', '?')} : type_proposal={v!r} sans nom d'entité "
+              f"à qui l'attacher, axe retiré", file=sys.stderr)
+        return 1
+    cas["type_proposal"] = nom
+    return 0
 
 
 def sens_du_temps(cas: dict, capture: dict | None) -> int:
@@ -411,6 +448,7 @@ def main() -> None:
             continue
         mauvais += traduire_souvenir(cas)
         mauvais += recoller_why(cas, par_id.get(cas.get("id")))
+        mauvais += normaliser_type(cas)
         mauvais += corriger_jour(cas, par_id.get(cas.get("id")))
         mauvais += sens_du_temps(cas, par_id.get(cas.get("id")))
         sortis.append(cas)

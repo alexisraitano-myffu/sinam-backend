@@ -49,6 +49,7 @@ vérifie simplement rien, et le cas passe pour vert en n'ayant rien mesuré.
 | `rel` | un fragment de prédicat, ou une liste | quel lien doit naître |
 | `proj` | `new` / `existing` | une entrée projet est attendue |
 | `entity_expected` / `no_entity` | un nom | cette fiche doit naître / ne doit pas naître |
+| `type_proposal` / `no_type_proposal` | un nom / `true` | le type de cette entité doit être PROPOSÉ à un humain / aucune entité ne doit proposer son type, les types attendus sont déjà actifs |
 | `forbidden_predicate` / `forbidden_value` | une chaîne | ceci ne doit PAS être écrit |
 | `obsoletes` / `no_obsolete` | `predicat` ou `predicat=valeur` / `true` | ce que la capture périme, ou qu'elle ne périme rien |
 | `renamed_to` / `no_rename` | un nom / `true` | le renommage déclaré, à proposer et jamais à appliquer |

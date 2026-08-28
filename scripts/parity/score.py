@@ -143,6 +143,10 @@ def rien_garde(parsed: dict) -> bool:
         return False
     if parsed.get("is_ephemeral"):
         return False
+    # Le repêchage de l'annulation a déjà écrit la note côté core : sans cette
+    # ligne le harnais enverrait en file une capture que la production garde.
+    if (parsed.get("cancels_action") or "").strip():
+        return False
     for champ in ("relations", "project_entries", "resources", "obsoleted_facts"):
         if parsed.get(champ):
             return False
@@ -256,7 +260,12 @@ def porte_de_creation(parsed: dict, nom: str) -> str:
         # affirmé, pas ce qu'on sait de l'entité, et à 2 elle fabriquait une
         # fiche sur « Vivatech c'est le 24 ».
         palier = 4 if len(faits) <= 1 else 2
-        if forte >= palier:
+        # Un fait qui n'est QUE la date de l'occurrence ne dit rien de l'entité.
+        # Discriminant stable, contrairement à la persistance : le modèle sort
+        # 3 ou 4 sur la MÊME capture d'une passe à l'autre.
+        date_redite = len(faits) == 1 and str(
+            faits[0].get("predicate") or "").strip().lower() in ("event_date", "occurs_on")
+        if forte >= palier and not date_redite:
             return "créée"
 
     # Un ÉPISODE ancre autant qu'une tâche ou un événement : il asserte que

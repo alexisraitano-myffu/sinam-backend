@@ -3937,9 +3937,7 @@
       "uncached_tokens": 313,
       "output_tokens": 344,
       "confidence": 1.0,
-      "gaps": [
-        "valeur inventée : event_date='2026-06-24'"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -8345,7 +8343,7 @@
       ]
     }
   },
-  "ecarts": 6,
+  "ecarts": 5,
   "par_frontiere": {
     "routage": [
       "g-date-anniversary-cancels-other",
@@ -8357,12 +8355,10 @@
       "g-date-anniversary-cancels-other",
       "g-date-corvee-dated-cancelled-by-birthday"
     ],
-    "interdit": [
-      "r2a-salon-vivatech-info-vs-participation"
-    ],
     "X-EPH": [
       "r1c-two-words"
     ]
   },
-  "prompt_tokens_max": 5859
+  "prompt_tokens_max": 5859,
+  "rescored": "2026-08-28"
 }

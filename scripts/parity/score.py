@@ -35,6 +35,8 @@ from __future__ import annotations
 
 import re
 
+from scripts.parity.context import TODAY
+
 VALID_NOTE_KINDS = {"note", "task", "event", "episode"}
 
 # Miroir de `routing.rs:39` (REVIEW_CONFIDENCE_THRESHOLD_DEFAULT). Le prompt, lui,
@@ -287,6 +289,49 @@ def _entity_names(parsed: dict) -> set[str]:
     return names
 
 
+_MOIS = ("janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout",
+         "septembre", "octobre", "novembre", "decembre",
+         "january", "february", "march", "april", "may", "june", "july", "august",
+         "september", "october", "november", "december")
+
+
+def _sans_accents(texte: str) -> str:
+    table = str.maketrans("éèêëàâäûüùîïôö", "eeeeaaauuuiioo")
+    return texte.lower().translate(table)
+
+
+def jour_nu_recale(date: str, capture: str, kind: str | None) -> str:
+    """Miroir de `routing.rs::snap_bare_day`. Cinquième copie du core ici.
+
+    Un jour NU sans mois se range du côté qu'ouvre le kind : un `episode` est
+    déjà vécu, un `event` ou une `task` sont devant. Le temps du verbe ne sert
+    à rien, il ment (« j'ai réservé pour le 28 » est au passé et vise le
+    futur) ; le kind, lui, ne ment pas. Sans ce miroir, le harnais afficherait
+    en écart une date que la production corrige.
+    """
+    vers_le_passe = {"episode": True, "event": False, "task": False}.get(kind or "")
+    if vers_le_passe is None or len(date) < 10:
+        return date
+    if any(m in _sans_accents(capture) for m in _MOIS):
+        return date
+    tete = date[:10]
+    try:
+        y, m, d = int(tete[0:4]), int(tete[5:7]), int(tete[8:10])
+    except ValueError:
+        return date
+    if (tete <= TODAY) == vers_le_passe:
+        return date
+    m += -1 if vers_le_passe else 1
+    if m == 0:
+        m, y = 12, y - 1
+    elif m == 13:
+        m, y = 1, y + 1
+    import calendar
+    if d > calendar.monthrange(y, m)[1]:
+        return date
+    return f"{y:04d}-{m:02d}-{d:02d}{date[10:]}"
+
+
 def _all_facts(parsed: dict) -> list[dict]:
     out = []
     for e in parsed.get("entities") or []:
@@ -509,9 +554,9 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if case.get("forbidden_value"):
         needle = case["forbidden_value"].lower()
         for f in _all_facts(parsed):
-            if needle in str(f.get("value", "")).lower():
-                out.append(f"valeur inventée : {f.get('predicate')}="
-                           f"{f.get('value')!r}")
+            valeur = jour_nu_recale(str(f.get("value", "")), case["text"], kind)
+            if needle in valeur.lower():
+                out.append(f"valeur inventée : {f.get('predicate')}={valeur!r}")
                 break
 
     # PER-b — le renommage déclaré en capture. Le nom canonique titre la fiche

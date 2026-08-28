@@ -149,6 +149,13 @@ CLASSIFY_SCHEMA = {
         # littéral. Sur les 7 captures éphémères du corpus, il était rempli 0 fois,
         # et la fonctionnalité ne tenait que par le repli sur `summary`.
         "ephemeral_content": {"type": ["string", "null"]},
+        # Le pointeur en arrière : l'action que la capture ANNULE, dans ses
+        # propres mots. Le core y cherche une tâche vivante, l'archive si la
+        # cible est nette, demande sinon. Requis comme les autres, et pour la
+        # même raison mesurée : un champ facultatif est un champ que le modèle
+        # cesse d'émettre, et ici son absence se confondrait avec « rien à
+        # annuler », qui est la réponse normale.
+        "cancels_action": {"type": ["string", "null"]},
         "classification_confidence": {"type": "number"},
         "project_entries": {"type": "array", "items": _PROJECT_ENTRY},
         "entities": {"type": "array", "items": _ENTITY},
@@ -167,7 +174,7 @@ CLASSIFY_SCHEMA = {
     "required": [
         "language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
         "event_date", "event_recurring", "is_ephemeral", "ephemeral_content",
-        "classification_confidence", "project_entries", "entities", "relations",
+        "cancels_action", "classification_confidence", "project_entries", "entities", "relations",
         # Requis comme les autres, et pour la même raison mesurée : un champ
         # facultatif est un champ que le modèle cesse d'émettre. Le tableau vide
         # est ici la réponse NORMALE, il faut donc qu'il soit écrit, sans quoi

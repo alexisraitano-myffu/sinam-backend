@@ -235,7 +235,7 @@ retire une vérité, et personne ne remarque qu'un fait a disparu.
 | NEG-c | négation d'existence (« Marie n'a pas de chat ») | **débloqué** : asserter `no_obsolete=True` ET aucun fait. Une absence énoncée pour la première fois ne nie rien |
 | NEG-b′ | un REMPLACEMENT (« il a quitté Acme pour Globex ») | **tranché le 2026-08-26** : l'ancien passe en péremption ET le nouveau est créé avec la bonne valeur, les deux. L'étiquette du 25/08 disait le contraire (`no_obsolete`, le supersede faisant le reste) et comptait un succès comme un écart. Se mesure sur un sujet NOMMÉ : avec un pronom sans antécédent, rien ne s'attache, `entity_canonical` étant requis |
 | NEG-b″ | négation nuancée (« je crois qu'il a quitté Acme ») | **débloqué** : `no_obsolete=True`. Retirer une connaissance sur un peut-être est pire que la garder |
-| NEG-d | événement annulé (par opposition à la tâche annulée) | trou complet, TOUJOURS bloqué : annuler un événement demande de retrouver la note qui le porte, donc un rappel, pas un champ de sortie |
+| NEG-d | action annulée : la tâche déjà enregistrée doit partir | **débloquée le 2026-08-28** et couverte à moitié. Le POINTEUR (`cancels_action`, l'action annulée nommée dans les mots de la capture) se mesure ici : 7 cas, dont 3 sosies qui ne doivent PAS le remplir (une reprise en dictant, une tâche faite, une correction de fait) et un quatrième dans la table (le report, qui garde sa tâche). La RECHERCHE de la tâche visée ne se mesure pas ici : elle demande un état antérieur, que le contexte figé du harnais n'a pas. Elle est couverte par les tests du core. |
 | NEG-e | correction d'une capture antérieure (« en fait c'était mercredi ») | trou complet, toujours bloqué : même rappel, plus le fil de mémoire de travail (mode scénario) |
 
 ### PEREMPTION, ce qui remplace ce qui était vrai
@@ -350,7 +350,7 @@ détruire la calibration de la confiance.
 
 | Tranche | Cas | Ce que c'est |
 |---|---|---|
-| Trous complets | ~70 | G-PROGRESS, G-STATUS, R0d, R1c, R3b, R4b, P-TYPE (deux côtés), les 4 familles PERS, NEG-c et NEG-d, PER-a, les miroirs manquants de R3e et R2c, les 4 files assertables. |
+| Trous complets | ~70 | G-PROGRESS, G-STATUS, R0d, R1c, R3b, R4b, P-TYPE (deux côtés), les 4 familles PERS, NEG-c, PER-a, les miroirs manquants de R3e et R2c, les 4 files assertables. |
 | Frontières tenues par un seul cas | ~30 | R1f, R1g, R1h, R1i, R4c, R4d, G-HABIT, R2f, R3g : un deuxième et un troisième objet, une autre formulation. |
 | Doute étiqueté | ~15 | Notes et épisodes qui DOIVENT sortir sous 0,7. La tranche que rien ne remplace. |
 | Cas faciles, distribution réaliste | ~55 | Les quatre types dans leurs formes ordinaires, plus les captures qui ne laissent rien. |
@@ -428,7 +428,7 @@ revue.
 
 | Famille | Bloquée par |
 |---|---|
-| NEG-d, événement annulé | SYN-189 phase 2 : demande de retrouver la note antérieure, donc un mécanisme de rappel, pas un champ |
+| ~~NEG-d~~ | débloquée le 2026-08-28 : le pointeur se mesure sans état antérieur, seule la recherche de la cible reste hors du harnais |
 | NEG-e, correction d'une capture antérieure | idem, plus le fil de mémoire de travail (mode scénario) |
 | Assertion d'un prédicat nommé, `category` | la file des prédicats proposés |
 

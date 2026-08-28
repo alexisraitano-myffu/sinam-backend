@@ -14,6 +14,8 @@ sans lesquels les cas correspondants seraient inertes :
     no_rename             et n'est-il pas proposé quand rien ne le déclare
     obsoletes             la capture retire-t-elle bien le fait qu'elle nie
     no_obsolete           et ne retire-t-elle RIEN quand elle ne nie rien
+    cancels               l'action ANNULÉE est-elle nommée, dans les mots de la capture
+    no_cancel             et le champ reste-t-il vide quand rien n'est annulé
     needs_review          la confiance atteint-elle la file « À valider »
     event_date            le relatif a-t-il été résolu en absolu
     language              la langue détectée est-elle la bonne
@@ -71,6 +73,8 @@ AXES = {
     "forbidden_predicate": "interdit",
     "obsoletes": "NEG-b",
     "no_obsolete": "NEG-c",
+    "cancels": "NEG-d",
+    "no_cancel": "NEG-d",
     "renamed_to": "PER-b",
     "no_rename": "PER-b",
     "drop_guard": "perte",
@@ -79,7 +83,16 @@ AXES = {
 
 def has_note(parsed: dict) -> bool:
     note = parsed.get("atomic_note")
-    return bool(note) and str(note).strip().lower() not in ("", "null", "none")
+    if bool(note) and str(note).strip().lower() not in ("", "null", "none"):
+        return True
+    # Miroir de `routing.rs` : renoncer est une décision, et une décision se
+    # garde. Mesuré le 2026-08-28, le modèle cesse d'écrire la note dès qu'il
+    # remplit `cancels_action` — il traite la capture comme réglée par le
+    # pointeur. Quatre formulations et deux emplacements du prompt n'y ont rien
+    # changé, donc le core repêche la capture brute en note. Sans ce miroir, le
+    # harnais afficherait en perte des captures que la production garde.
+    cancels = parsed.get("cancels_action")
+    return bool(cancels) and str(cancels).strip().lower() not in ("", "null", "none")
 
 
 def kind_of(parsed: dict) -> str | None:
@@ -521,6 +534,25 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         if got:
             vu = ", ".join(f"{o.get('predicate')}={o.get('value')!r}" for o in got)
             out.append(f"négation de trop : {vu}")
+
+    # NEG-d — l'action annulée. On ne mesure ici que le POINTEUR : le core
+    # cherche ensuite la tâche visée, et cette moitié-là n'est pas mesurable
+    # dans un harnais au contexte figé, qui n'a aucun état antérieur.
+    if case.get("cancels"):
+        got = (parsed.get("cancels_action") or "").strip().lower()
+        if not got:
+            out.append(f"action annulée non nommée (attendu ~ {case['cancels']!r})")
+        else:
+            # Les mots de la capture, pas les nôtres : on demande que le noyau
+            # attendu s'y retrouve, pas une chaîne identique.
+            noyau = case["cancels"].strip().lower()
+            if noyau not in got and got not in noyau:
+                out.append(f"action annulée {got!r}, attendu ~ {noyau!r}")
+
+    if case.get("no_cancel"):
+        got = (parsed.get("cancels_action") or "").strip()
+        if got:
+            out.append(f"annulation de trop : {got!r}")
 
     if case.get("forbidden_predicate"):
         needle = case["forbidden_predicate"].lower()

@@ -298,12 +298,14 @@
       "confidence": 1.0,
       "gaps": [
         "note attendue=True obtenue=False",
-        "event_date attendu=2026-07-12 obtenu=None"
+        "event_date attendu=2026-07-12 obtenu=None",
+        "entité 'Bibliothèque Forney' : ignorée au lieu d'être proposée"
       ],
       "axes": [
         "note",
         "kind",
-        "event_date"
+        "event_date",
+        "entity_proposed"
       ]
     },
     "r3b-lieu-solo-dicte": {
@@ -443,14 +445,11 @@
       "output_tokens": 162,
       "confidence": 1.0,
       "gaps": [
-        "note attendue=True obtenue=False",
-        "event_date attendu=2026-07-12 obtenu=None"
+        "doit passer par « À valider » : confiance 1.0 (seuil 0.7)"
       ],
       "axes": [
         "note",
-        "kind",
-        "ephemeral",
-        "event_date"
+        "needs_review"
       ]
     },
     "r3f-episodic-past-action-voisin": {
@@ -491,11 +490,11 @@
       "output_tokens": 162,
       "confidence": 1.0,
       "gaps": [
-        "note attendue=True obtenue=False"
+        "doit passer par « À valider » : confiance 1.0 (seuil 0.7)"
       ],
       "axes": [
         "note",
-        "kind"
+        "needs_review"
       ]
     },
     "r3f-episodic-meal": {
@@ -693,13 +692,11 @@
       "output_tokens": 162,
       "confidence": 1.0,
       "gaps": [
-        "note attendue=True obtenue=False",
-        "event_date attendu=2026-07-13 obtenu=None"
+        "doit passer par « À valider » : confiance 1.0 (seuil 0.7)"
       ],
       "axes": [
         "note",
-        "kind",
-        "event_date"
+        "needs_review"
       ]
     },
     "r3g-projet-neuf-dicte": {
@@ -1633,16 +1630,13 @@
       ]
     }
   },
-  "ecarts": 10,
+  "ecarts": 9,
   "par_frontiere": {
     "routage": [
       "p-type-personne-builtin",
       "r3b-lieu-solo-pas-note",
       "r3e-piano-singular-past",
       "r3e-weekly-yoga-recurring",
-      "r3f-episodic-past-action",
-      "r3f-episodic-past-action-voisin",
-      "r3g-voisin-deja-vecu",
       "r3g-voisin-projet-ancien"
     ],
     "R2e/R3e": [
@@ -1651,12 +1645,15 @@
     "R2d": [
       "p-type-personne-builtin",
       "r3b-lieu-solo-pas-note",
-      "r3f-episodic-meal",
-      "r3f-episodic-past-action",
-      "r3g-voisin-deja-vecu"
+      "r3f-episodic-meal"
     ],
-    "autre": [
-      "p-type-concept-proposal"
+    "P-PERS": [
+      "r3b-lieu-solo-pas-note"
+    ],
+    "X-CONF": [
+      "r3f-episodic-past-action",
+      "r3f-episodic-past-action-voisin",
+      "r3g-voisin-deja-vecu"
     ]
   },
   "prompt_tokens_max": 5079,

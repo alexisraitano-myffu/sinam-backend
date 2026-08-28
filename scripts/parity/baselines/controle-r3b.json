@@ -54,11 +54,13 @@
       "uncached_tokens": 329,
       "output_tokens": 278,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "entité 'Jardin des Plantes' : ignorée au lieu d'être proposée"
+      ],
       "axes": [
         "note",
         "kind",
-        "entity_expected"
+        "entity_proposed"
       ]
     },
     "r3d-plumber": {
@@ -107,7 +109,12 @@
       ]
     }
   },
-  "ecarts": 0,
-  "par_frontiere": {},
-  "prompt_tokens_max": 5070
+  "ecarts": 1,
+  "par_frontiere": {
+    "P-PERS": [
+      "r3b-place-alone"
+    ]
+  },
+  "prompt_tokens_max": 5070,
+  "rescored": "2026-08-28"
 }

@@ -1,0 +1,75 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "bf6400c38649+25df455e88f2",
+  "label": "eph-2",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "r1c-two-words": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Rappeler Nadia",
+        "atomic_note_kind": "task",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": true,
+        "ephemeral_content": "Rappeler Nadia",
+        "summary": null,
+        "classification_confidence": 0.9,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "taches",
+      "text": "Rappeler Nadia",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.23,
+      "prompt_tokens": 5058,
+      "input_tokens": 9889,
+      "uncached_tokens": 305,
+      "output_tokens": 247,
+      "confidence": 0.9,
+      "gaps": [
+        "ephemeral attendu=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "drop_guard"
+      ]
+    }
+  },
+  "ecarts": 1,
+  "par_frontiere": {
+    "X-EPH": [
+      "r1c-two-words"
+    ]
+  },
+  "prompt_tokens_max": 5058
+}

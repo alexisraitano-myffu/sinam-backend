@@ -305,12 +305,11 @@
       "uncached_tokens": 363,
       "output_tokens": 389,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=True obtenue=False"
-      ],
+      "gaps": [],
       "axes": [
         "note",
-        "kind"
+        "proj",
+        "facts_min"
       ]
     },
     "g-progress-metric-en": {
@@ -1049,13 +1048,12 @@
       "uncached_tokens": 321,
       "output_tokens": 202,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=False obtenue=True",
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
-        "ephemeral"
+        "kind",
+        "ephemeral",
+        "event_date"
       ]
     },
     "r1g-chore-nested-project": {
@@ -1237,15 +1235,13 @@
       ]
     }
   },
-  "ecarts": 8,
+  "ecarts": 6,
   "par_frontiere": {
     "routage": [
       "g-habit-avec-moment-episode",
-      "g-progress-decision-fr",
       "g-svo-fait-triplet-opinion",
       "g-svo-mouvement-minimal-avec-triplet",
-      "r1c-negative-two-words-no-action",
-      "r1g-chore-trivial-neighbor"
+      "r1c-negative-two-words-no-action"
     ],
     "R2d": [
       "g-habit-avec-moment-episode"
@@ -1253,10 +1249,8 @@
     "R1e": [
       "r1e-event-rapporte-dicte-fr",
       "r1e-event-rapporte-fr"
-    ],
-    "X-EPH": [
-      "r1g-chore-trivial-neighbor"
     ]
   },
-  "prompt_tokens_max": 5087
+  "prompt_tokens_max": 5087,
+  "rescored": "2026-08-28"
 }

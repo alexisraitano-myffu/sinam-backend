@@ -72,7 +72,7 @@ CHAMPS = {
     "resource_url", "resource_owner_type", "resource_comment",
     "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",
-    "cancels", "no_cancel",
+    "cancels", "no_cancel", "memories",
     "wm", "repeat", "expect", "frontiere", "why",
     "ambigu", "valide", "arbitrage",
 }

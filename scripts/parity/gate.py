@@ -65,11 +65,12 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
     # décroissance et de l'affichage. Un modèle qui invente une valeur hors
     # énumération fait dégrader la note en "note" par le core (routing.rs:196) —
     # une tâche silencieusement perdue. La valeur n'a de sens qu'avec une note.
-    raw_kind = parsed.get("atomic_note_kind")
-    note = parsed.get("atomic_note")
-    if bool(note) and str(note).strip().lower() not in ("", "null", "none"):
-        if raw_kind not in VALID_NOTE_KINDS:
-            return f"atomic_note_kind hors énumération : {raw_kind!r}"
+    # SYN-207 — un kind par souvenir désormais : il suffit d'UN hors énumération
+    # pour que le core le dégrade en "note", donc pour perdre une tâche.
+    from scripts.parity.score import souvenirs
+    for m in souvenirs(parsed):
+        if m["kind"] not in VALID_NOTE_KINDS:
+            return f"kind hors énumération : {m['kind']!r}"
 
     # 4. Rien ne se perd — au sens DURABLE du terme.
     #
@@ -79,8 +80,7 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
     # arrivait à « Répondre à l'e-mail de Vincent » avant le durcissement de juin.
     # Une trace durable = note, entrée projet, fait ou relation.
     if case.get("drop_guard"):
-        note = parsed.get("atomic_note")
-        has_note = bool(note) and str(note).strip().lower() not in ("", "null", "none")
+        has_note = bool(souvenirs(parsed))
         facts = sum(len(e.get("facts") or []) for e in (parsed.get("entities") or []))
         kept = (has_note or bool(parsed.get("project_entries"))
                 or facts > 0 or bool(parsed.get("relations")))

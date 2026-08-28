@@ -24,18 +24,23 @@ def path_of(parsed: dict | None) -> dict:
     """Les branches prises. `None` = le modèle n'a rien produit d'exploitable."""
     if not parsed:
         return {"parsed": False}
-    note = parsed.get("atomic_note")
-    has_note = bool(note) and str(note).strip().lower() not in ("", "null", "none")
-    raw_kind = parsed.get("atomic_note_kind")
-    # Miroir de `routing.rs:196` — le core comble un kind manquant par "note".
+    # SYN-207 — la liste plutôt que le scalaire, avec le repli sur l'ancienne
+    # forme : une baseline enregistrée avant ce jour doit rester relisible.
+    from scripts.parity.score import souvenirs
+    liste = souvenirs(parsed)
+    has_note = bool(liste)
+    raw_kind = liste[0]["kind"] if liste else parsed.get("atomic_note_kind")
     kind = raw_kind if isinstance(raw_kind, str) and raw_kind else "note"
     facts = sum(len(e.get("facts") or []) for e in (parsed.get("entities") or []))
     return {
         "parsed": True,
-        "kind_valid": (not has_note) or raw_kind in VALID_NOTE_KINDS,
+        "kind_valid": (not has_note) or all(m["kind"] in VALID_NOTE_KINDS for m in liste),
         "has_note": has_note,
         "kind": kind if has_note else None,
-        "kind_defaulted": has_note and not (isinstance(raw_kind, str) and raw_kind),
+        # Combien la capture en a laissé : c'est le chiffre qui montre une
+        # sur-découpe, invisible sur tous les autres axes.
+        "memories": len(liste),
+        "kind_defaulted": False,
         "ephemeral": bool(parsed.get("is_ephemeral")),
         "facts": facts,
         "relations": len(parsed.get("relations") or []),

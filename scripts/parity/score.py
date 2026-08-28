@@ -77,15 +77,53 @@ AXES = {
     "no_obsolete": "NEG-c",
     "cancels": "NEG-d",
     "no_cancel": "NEG-d",
+    "memories": "X-ONE",
     "renamed_to": "PER-b",
     "no_rename": "PER-b",
     "drop_guard": "perte",
 }
 
 
+def souvenirs(parsed: dict) -> list[dict]:
+    """Miroir de `routing.rs::souvenirs`. Sixième copie du core dans ce fichier.
+
+    `memories` est la forme canonique depuis SYN-207 ; les champs au singulier
+    restent lus en repli, parce qu'ils sont la sortie de toutes les baselines
+    enregistrées avant ce jour. Un tableau à un élément se relit comme un
+    scalaire, donc les axes existants ne changent pas de sens.
+    """
+    def lire(v: dict) -> dict | None:
+        texte = str(v.get("note") or v.get("atomic_note") or "").strip()
+        if not texte or texte.lower() in ("null", "none"):
+            return None
+        kind = v.get("kind") or v.get("atomic_note_kind")
+        return {
+            "note": texte,
+            "kind": kind if isinstance(kind, str) and kind else "note",
+            "owner": _nullable_str(v.get("owner") if "owner" in v
+                                   else v.get("atomic_note_owner")),
+            "event_date": _nullable_str(v.get("event_date")),
+            "event_recurring": bool(v.get("event_recurring")),
+            "summary": v.get("summary"),
+        }
+
+    liste = parsed.get("memories")
+    if isinstance(liste, list) and liste:
+        vus, out = set(), []
+        for m in liste:
+            if not isinstance(m, dict):
+                continue
+            s = lire(m)
+            if s and s["note"].lower() not in vus:
+                vus.add(s["note"].lower())
+                out.append(s)
+        return out
+    un = lire(parsed)
+    return [un] if un else []
+
+
 def has_note(parsed: dict) -> bool:
-    note = parsed.get("atomic_note")
-    if bool(note) and str(note).strip().lower() not in ("", "null", "none"):
+    if souvenirs(parsed):
         return True
     # Miroir de `routing.rs` : renoncer est une décision, et une décision se
     # garde. Mesuré le 2026-08-28, le modèle cesse d'écrire la note dès qu'il
@@ -104,10 +142,11 @@ def kind_of(parsed: dict) -> str | None:
     et le masquerait là où « task » silencieusement dégradé en « note » fait
     vraiment perdre une tâche.
     """
-    if not has_note(parsed):
-        return None
-    raw = parsed.get("atomic_note_kind")
-    return raw if isinstance(raw, str) and raw else "note"
+    liste = souvenirs(parsed)
+    if liste:
+        return liste[0]["kind"]
+    # Repêché par le core depuis le pointeur d'annulation : c'est une note.
+    return "note" if has_note(parsed) else None
 
 
 def _nullable_str(value) -> str | None:
@@ -141,7 +180,7 @@ def rien_garde(parsed: dict) -> bool:
     Une fiche SANS fait, sans note et sans lien ne compte pas : un nom seul
     n'apprend rien.
     """
-    if (parsed.get("atomic_note") or "").strip():
+    if souvenirs(parsed):
         return False
     if parsed.get("is_ephemeral"):
         return False
@@ -273,8 +312,7 @@ def porte_de_creation(parsed: dict, nom: str) -> str:
     # Un ÉPISODE ancre autant qu'une tâche ou un événement : il asserte que
     # quelque chose a eu lieu. L'exclure faisait IGNORER « Bibliothèque
     # Forney », sans fiche et sans question.
-    note = parsed.get("atomic_note")
-    return "proposée" if bool(note and str(note).strip()) else "ignorée"
+    return "proposée" if souvenirs(parsed) else "ignorée"
 
 
 def _entity_names(parsed: dict) -> set[str]:
@@ -381,38 +419,53 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if "note" in case and note != case["note"]:
         out.append(f"note attendue={case['note']} obtenue={note}")
 
+    # SYN-207 — une capture peut laisser PLUSIEURS souvenirs, donc les axes qui
+    # portaient sur LE souvenir portent maintenant sur l'ENSEMBLE : ils passent
+    # si l'un d'eux satisfait l'attente. Sur une capture à un seul souvenir, qui
+    # est le cas normal, ça ne change rien du tout.
+    liste = souvenirs(parsed)
+
     if case.get("kind") and note:
-        raw = parsed.get("atomic_note_kind")
-        if kind != case["kind"]:
-            got = f"{kind} (brut={raw!r}, défaut du core)" if raw != kind else kind
-            out.append(f"kind attendu={case['kind']} obtenu={got}")
+        vus = [m["kind"] for m in liste] or [kind]
+        if case["kind"] not in vus:
+            out.append(f"kind attendu={case['kind']} obtenu={', '.join(map(str, vus))}")
 
     if "ephemeral" in case and bool(parsed.get("is_ephemeral")) != case["ephemeral"]:
         out.append(f"ephemeral attendu={case['ephemeral']}")
 
+    # Le NOMBRE de souvenirs, quand le cas le dit. C'est l'axe qui voit la
+    # sur-découpe : une capture hachée en trois passe tous les autres axes,
+    # parce que chacun se contente d'un souvenir qui satisfait l'attente.
+    if "memories" in case and len(liste) != case["memories"]:
+        textes = " | ".join(m["note"][:40] for m in liste) or "aucun"
+        out.append(f"souvenirs attendus={case['memories']} obtenus={len(liste)} ({textes})")
+
     # SYN-182 — le propriétaire de l'action. None = l'auteur ; un nom veut dire
     # que la capture rapportait l'action de quelqu'un d'autre.
     if "owner" in case:
-        got = _nullable_str(parsed.get("atomic_note_owner"))
-        if got != case["owner"]:
-            out.append(f"owner attendu={case['owner']!r} obtenu={got!r}")
+        vus = [m["owner"] for m in liste] or [None]
+        if case["owner"] not in vus:
+            out.append(f"owner attendu={case['owner']!r} obtenu={vus!r}")
 
-    if "recurring" in case and bool(parsed.get("event_recurring")) != case["recurring"]:
-        out.append(f"recurring attendu={case['recurring']} "
-                   f"obtenu={bool(parsed.get('event_recurring'))}")
+    if "recurring" in case:
+        vus = [m["event_recurring"] for m in liste] or [False]
+        if case["recurring"] not in vus:
+            out.append(f"recurring attendu={case['recurring']} obtenu={vus}")
 
     # R2d — la résolution du relatif à l'absolu. Un modèle qui rend « mardi »
     # passait jusqu'ici sans que rien ne le voie.
     if "event_date" in case:
-        got = _nullable_str(parsed.get("event_date"))
+        vus = [m["event_date"] for m in liste]
         want = case["event_date"]
         if want is None:
-            if got is not None:
-                out.append(f"event_date attendu absent, obtenu {got!r}")
-        elif got != want:
+            portees = [d for d in vus if d is not None]
+            if portees:
+                out.append(f"event_date attendu absent, obtenu {portees!r}")
+        elif want not in vus:
+            got = vus[0] if vus else None
             forme = "" if got is None or re.fullmatch(r"\d{4}-\d{2}-\d{2}", got) \
                 else " (pas au format YYYY-MM-DD)"
-            out.append(f"event_date attendu={want} obtenu={got!r}{forme}")
+            out.append(f"event_date attendu={want} obtenu={vus!r}{forme}")
 
     # X-LANG — la langue est le seul champ qui décide dans quelle langue la note
     # sera ÉCRITE. Se tromper là traduit les mots de l'utilisateur.

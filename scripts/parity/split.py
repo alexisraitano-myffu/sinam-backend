@@ -64,10 +64,8 @@ def _half_path(prompt_file: str) -> Path:
 
 # Découpe du schéma racine par appartenance, pas par recopie : les deux sous-schémas
 # se dérivent de CLASSIFY_SCHEMA, donc ils ne peuvent pas dériver de lui.
-_NOTE_FIELDS = ("language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
-                "event_date",
-                "event_recurring", "is_ephemeral", "ephemeral_content",
-                "cancels_action", "classification_confidence", "summary")
+_NOTE_FIELDS = ("language", "memories", "is_ephemeral", "ephemeral_content",
+                "cancels_action", "classification_confidence")
 _GRAPH_FIELDS = ("language", "entities", "relations", "project_entries",
                  "obsoleted_facts", "resources")
 

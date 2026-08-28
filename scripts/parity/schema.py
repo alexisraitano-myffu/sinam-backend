@@ -130,18 +130,37 @@ CLASSIFY_SCHEMA = {
     "type": "object",
     "properties": {
         "language": {"type": "string"},
-        "atomic_note": {"type": ["string", "null"]},
-        # Toujours une des trois valeurs, jamais null. Le core l'ignore de toute
-        # façon quand `atomic_note` est vide (`routing.rs:196` ne l'utilise que
-        # pour une note non vide), donc l'exiger ne coûte rien et ferme la porte
-        # au null qui, autorisé, dégradait une tâche en note.
-        "atomic_note_kind": {"type": "string", "enum": ["note", "task", "event", "episode"]},
-        # SYN-182 — null = l'auteur, un nom = l'action appartient à quelqu'un
-        # d'autre (discours rapporté). Le prompt promettait « jamais comme celle
-        # de l'auteur » depuis SYN-85 sans qu'aucun champ ne puisse le dire.
-        "atomic_note_owner": {"type": ["string", "null"]},
-        "event_date": {"type": ["string", "null"]},
-        "event_recurring": {"type": "boolean"},
+        # SYN-207 — une capture peut laisser PLUSIEURS souvenirs. Le champ
+        # était singulier, donc le moteur en jetait un : mesuré sur quatre
+        # captures, il gardait toujours le souvenir DATÉ et actionnable, et
+        # quand les deux étaient de même nature il les FUSIONNAIT, ce qui est
+        # pire qu'une perte parce que fermer la ligne les ferme toutes les deux.
+        #
+        # La liste VIDE est la réponse normale d'une capture qu'on ne garde pas.
+        # Chaque entrée porte ce qui pend à SON souvenir : le kind, à qui
+        # l'action appartient, sa date, sa récurrence, sa phrase de résumé.
+        "memories": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "note": {"type": "string"},
+                    # Toujours une des quatre valeurs, jamais null : le null,
+                    # autorisé, dégradait une tâche en note.
+                    "kind": {"type": "string",
+                             "enum": ["note", "task", "event", "episode"]},
+                    # SYN-182 — null = l'auteur, un nom = l'action appartient à
+                    # quelqu'un d'autre (discours rapporté).
+                    "owner": {"type": ["string", "null"]},
+                    "event_date": {"type": ["string", "null"]},
+                    "event_recurring": {"type": "boolean"},
+                    "summary": {"type": ["string", "null"]},
+                },
+                "required": ["note", "kind", "owner", "event_date",
+                             "event_recurring", "summary"],
+                "additionalProperties": False,
+            },
+        },
         "is_ephemeral": {"type": "boolean"},
         # Absent du schéma jusqu'au 2026-08-25, alors que `routing.rs` le lit en
         # PREMIER pour le texte du rappel à 48 h. Contraint, le modèle ne pouvait
@@ -162,7 +181,6 @@ CLASSIFY_SCHEMA = {
         "relations": {"type": "array", "items": _RELATION},
         "obsoleted_facts": {"type": "array", "items": _OBSOLETED_FACT},
         "resources": {"type": "array", "items": _RESOURCE},
-        "summary": {"type": ["string", "null"]},
     },
     # ⚠️ TOUS les champs déclarés sont requis, et ce n'est pas du zèle.
     # Mesuré le 2026-08-19 : avec seulement trois champs requis, Qwen contraint
@@ -172,8 +190,8 @@ CLASSIFY_SCHEMA = {
     # absences se lisaient ensuite comme des erreurs de jugement. Un schéma qui
     # n'exige pas la forme complète mesure autre chose que ce qu'on croit.
     "required": [
-        "language", "atomic_note", "atomic_note_kind", "atomic_note_owner",
-        "event_date", "event_recurring", "is_ephemeral", "ephemeral_content",
+        "language", "memories",
+        "is_ephemeral", "ephemeral_content",
         "cancels_action", "classification_confidence", "project_entries", "entities", "relations",
         # Requis comme les autres, et pour la même raison mesurée : un champ
         # facultatif est un champ que le modèle cesse d'émettre. Le tableau vide

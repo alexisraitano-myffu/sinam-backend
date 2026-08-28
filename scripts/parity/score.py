@@ -113,6 +113,32 @@ def _ressource(parsed: dict, url: str) -> dict | None:
     return None
 
 
+def rien_garde(parsed: dict) -> bool:
+    """Miroir de `routing.rs` : la capture n'a-t-elle RIEN laissé ?
+
+    Troisième copie manuelle du core dans ce fichier, et la raison est la même
+    que pour `confiance_du_fait` : sans elle, l'axe `needs_review` mesurerait
+    la confiance du modèle au lieu de mesurer ce qui arrive vraiment. Or le
+    modèle rend 1,0 sur un abandon évident, et il a raison — il note sa
+    confiance dans le ROUTAGE. C'est l'ABANDON qui part en file, et c'est le
+    core qui le décide, en comptant.
+
+    Une fiche SANS fait, sans note et sans lien ne compte pas : un nom seul
+    n'apprend rien.
+    """
+    if (parsed.get("atomic_note") or "").strip():
+        return False
+    if parsed.get("is_ephemeral"):
+        return False
+    for champ in ("relations", "project_entries", "resources", "obsoleted_facts"):
+        if parsed.get(champ):
+            return False
+    for e in parsed.get("entities") or []:
+        if isinstance(e, dict) and e.get("facts"):
+            return False
+    return True
+
+
 def confiance_du_fait(persistence: int, evidence: str, existing: bool = False,
                       mentions: int = 1) -> float:
     """Miroir de `routing.rs::compute_confidence`. Les deux doivent bouger ensemble.
@@ -321,11 +347,13 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if "needs_review" in case:
         conf = parsed.get("classification_confidence")
         conf = float(conf) if isinstance(conf, (int, float)) else 1.0
-        atteint = conf < REVIEW_THRESHOLD
+        vide = rien_garde(parsed)
+        atteint = conf < REVIEW_THRESHOLD or vide
         if atteint != case["needs_review"]:
             attendu = "doit passer par « À valider »" if case["needs_review"] \
                 else "ne doit PAS encombrer « À valider »"
-            out.append(f"{attendu} : confiance {conf} (seuil {REVIEW_THRESHOLD})")
+            out.append(f"{attendu} : confiance {conf} (seuil {REVIEW_THRESHOLD}), "
+                       f"trace laissée={'aucune' if vide else 'oui'}")
 
     # --- graphe ----------------------------------------------------------
     # Une chaîne, ou une LISTE de fragments. Ouvert le 2026-08-25 sur la revue

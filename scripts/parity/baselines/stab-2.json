@@ -1,0 +1,209 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "a01170282544+25df455e88f2",
+  "label": "stab-2",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "g-habit-avec-moment-episode": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Je suis matinal : j'ai réussi à être debout avant 6h.",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": "2026-07-12",
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a découvert qu'il est matinal en se levant avant 6h.",
+        "classification_confidence": 0.85,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "porte",
+      "text": "Hier j'ai remarqué que je suis matinal, j'ai réussi à être debout avant 6h",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.04,
+      "prompt_tokens": 5081,
+      "input_tokens": 9921,
+      "uncached_tokens": 351,
+      "output_tokens": 209,
+      "confidence": 0.85,
+      "gaps": [
+        "kind attendu=episode obtenu=note"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "g-svo-fait-triplet-opinion": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": null,
+        "atomic_note_kind": null,
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 15,
+      "set": "porte",
+      "text": "Marc devrait vraiment changer de poste, il n'est pas heureux chez Globex",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.25,
+      "prompt_tokens": 5076,
+      "input_tokens": 9911,
+      "uncached_tokens": 341,
+      "output_tokens": 539,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
+      "axes": [
+        "note",
+        "kind"
+      ]
+    },
+    "g-svo-mouvement-minimal-avec-triplet": {
+      "parsed": {
+        "language": "fr",
+        "atomic_note": "Sophie ne vient pas travailler chez nous, elle reste chez Globex",
+        "atomic_note_kind": "note",
+        "atomic_note_owner": null,
+        "event_date": null,
+        "event_recurring": false,
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "summary": "Alexis a changé d'avis : Sophie ne rejoindra pas l'équipe, elle demeure chez Globex.",
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sophie",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Sophie",
+            "predicate": "works_at",
+            "to": "Globex",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 15,
+      "set": "porte",
+      "text": "Alors finalement Sophie ne vient pas travailler chez nous, elle reste chez Globex",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.43,
+      "prompt_tokens": 5075,
+      "input_tokens": 9909,
+      "uncached_tokens": 339,
+      "output_tokens": 398,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind"
+      ]
+    }
+  },
+  "ecarts": 2,
+  "par_frontiere": {
+    "routage": [
+      "g-habit-avec-moment-episode",
+      "g-svo-fait-triplet-opinion"
+    ]
+  },
+  "prompt_tokens_max": 5081
+}

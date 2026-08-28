@@ -1906,9 +1906,7 @@
       "uncached_tokens": 329,
       "output_tokens": 293,
       "confidence": 1.0,
-      "gaps": [
-        "entité 'Jardin des Plantes' : ignorée au lieu d'être proposée"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -2323,9 +2321,7 @@
       "uncached_tokens": 327,
       "output_tokens": 362,
       "confidence": 1.0,
-      "gaps": [
-        "entité 'Bibliothèque Forney' : ignorée au lieu d'être proposée"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -2517,12 +2513,10 @@
       "output_tokens": 172,
       "confidence": 1.0,
       "gaps": [
-        "ephemeral attendu=True",
         "ne doit PAS encombrer « À valider » : confiance 1.0 (seuil 0.7), trace laissée=aucune"
       ],
       "axes": [
         "note",
-        "ephemeral",
         "needs_review"
       ]
     },
@@ -3922,9 +3916,7 @@
       "uncached_tokens": 313,
       "output_tokens": 336,
       "confidence": 1.0,
-      "gaps": [
-        "entité 'Vivatech' : créée au lieu d'être proposée"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -8340,7 +8332,7 @@
       ]
     }
   },
-  "ecarts": 11,
+  "ecarts": 8,
   "par_frontiere": {
     "routage": [
       "g-date-anniversary-cancels-other",
@@ -8356,18 +8348,12 @@
       "g-habit-avec-moment-episode",
       "g-link-article-with-text-fr"
     ],
-    "P-PERS": [
-      "r2a-salon-vivatech-info-vs-participation",
-      "r3b-lieu-solo-pas-note",
-      "r3b-place-alone"
+    "X-CONF": [
+      "r3f-episodic-past-action-voisin"
     ],
     "X-EPH": [
       "r1c-two-words",
-      "r1i-course-futur-rappel",
-      "r3f-episodic-past-action-voisin"
-    ],
-    "X-CONF": [
-      "r3f-episodic-past-action-voisin"
+      "r1i-course-futur-rappel"
     ]
   },
   "prompt_tokens_max": 5563,

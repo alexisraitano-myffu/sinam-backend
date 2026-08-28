@@ -234,6 +234,13 @@ def porte_de_creation(parsed: dict, nom: str) -> str:
             if (rel.get(bout) or "").strip().lower() == cible:
                 return "créée"
 
+    porteuse_de_lien = any(
+        (r.get("entity_canonical") or "").strip().lower() == cible
+        for r in (parsed.get("resources") or [])
+    )
+    if porteuse_de_lien:
+        return "créée"
+
     faits = entite.get("facts") or []
     # Le core ne retombe PAS sur le défaut 3 quand il n'y a aucun fait : il
     # force 0, et c'est ce qui rend la clause « nommée en passant » atteignable.
@@ -243,13 +250,20 @@ def porte_de_creation(parsed: dict, nom: str) -> str:
              else 3)
             for f in faits
         )
-        if forte >= 2:
+        # Le palier monte quand l'entité n'a RIEN d'autre pour elle : inconnue
+        # (toujours vrai ici, le harnais n'a pas de mémoire), hors lien, hors
+        # ressource, et UN seul fait. La persistance dit la nature de ce qui est
+        # affirmé, pas ce qu'on sait de l'entité, et à 2 elle fabriquait une
+        # fiche sur « Vivatech c'est le 24 ».
+        palier = 4 if len(faits) <= 1 else 2
+        if forte >= palier:
             return "créée"
 
+    # Un ÉPISODE ancre autant qu'une tâche ou un événement : il asserte que
+    # quelque chose a eu lieu. L'exclure faisait IGNORER « Bibliothèque
+    # Forney », sans fiche et sans question.
     note = parsed.get("atomic_note")
-    durable = bool(note and str(note).strip()) and \
-        parsed.get("atomic_note_kind") in ("task", "event")
-    return "proposée" if durable else "ignorée"
+    return "proposée" if bool(note and str(note).strip()) else "ignorée"
 
 
 def _entity_names(parsed: dict) -> set[str]:

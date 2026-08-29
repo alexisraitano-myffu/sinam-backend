@@ -590,6 +590,9 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     from api.sync_peers import claim_owner, ensure_space
     from core_store import get_store
 
+    from api import tls
+    tls.ensure_cert()  # le membre a son certificat avant de montrer le QR
+
     # Member founds a space + has a key; the request carries a bearer token.
     monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-secret")
@@ -624,6 +627,12 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     assert payload["token"] == "member-token"
     assert payload["space_id"]
     assert payload["anthropic_key"] == "sk-ant-secret"
+    # SYN-169 — l'empreinte du certificat ne peut voyager que par ce canal :
+    # c'est le seul qui soit authentifié par le QR. Le certificat existe depuis
+    # le début du test, donc c'est bien une empreinte et pas un champ vide.
+    from api import tls
+    assert payload["cert_sha256"] == tls.fingerprint()
+    assert len(payload["cert_sha256"]) == 64
 
     # 5. One-shot: a second poll no longer returns the secret.
     assert client.get(f"/pair/result/{request_id}").json()["status"] == "expired"

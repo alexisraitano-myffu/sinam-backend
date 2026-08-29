@@ -88,6 +88,13 @@ def _local_addrs() -> list[str]:
         ip = None
     addrs = []
     if ip:
+        # Le chiffré d'abord : un client à jour prend la première adresse qui
+        # répond, et c'est celle-là qu'on veut qu'il retienne. Le clair reste
+        # derrière pour l'appareil qui ne sait pas encore épingler.
+        from api.tls import cert_path, tls_port
+
+        if cert_path().exists() and not os.environ.get("SYNAPSE_TLS_DISABLE"):
+            addrs.append(f"https://{ip}:{tls_port()}")
         addrs.append(f"http://{ip}:{port}")
     return addrs
 
@@ -278,7 +285,15 @@ def _build_payload(include_key: bool) -> bytes:
     space_id = row["space_id"] if row else None
     space_name = (row["name"] if row else None) or "Ma mémoire"
     peers = [p["url"] for p in known_peers()] + _local_addrs()
+    from api.tls import fingerprint as _cert_fingerprint
+
     payload = {
+        # L'empreinte du certificat du lien local. Elle voyage ICI et nulle
+        # part ailleurs : la charge est scellée sous une clé que seul celui qui
+        # a scanné le QR (ou connu le code) peut dériver, donc c'est le seul
+        # canal où une empreinte veut dire quelque chose. Annoncée en mDNS elle
+        # ne prouverait rien, n'importe qui peut annoncer la sienne.
+        "cert_sha256": _cert_fingerprint(),
         "space_id": space_id,
         "space_name": space_name,
         "token": _access.resolve_token() or "",

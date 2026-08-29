@@ -1,0 +1,624 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "9c7e90f0601c+05d913e2b02d",
+  "label": "syn225-essai1",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "x2-episode-et-tache": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "J'ai vu le comptable ce matin",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Rencontre avec le comptable"
+          },
+          {
+            "note": "Renvoyer les justificatifs au comptable",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-18",
+            "event_recurring": false,
+            "summary": "Envoyer les justificatifs vendredi"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "J'ai vu le comptable ce matin, faut que je lui renvoie les justificatifs vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.97,
+      "prompt_tokens": 6182,
+      "input_tokens": 11784,
+      "uncached_tokens": 349,
+      "output_tokens": 358,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "memories",
+        "drop_guard"
+      ]
+    },
+    "x2-note-et-evenement": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Je devrais lever le pied cette année",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis envisage de ralentir le rythme cette année"
+          },
+          {
+            "note": "Mariage de Claire",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-09-12",
+            "event_recurring": false,
+            "summary": "Le mariage de Claire a lieu le 12 septembre"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Claire",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "September 12",
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Je me dis que je devrais lever le pied cette année, et sinon le mariage de Claire c'est le 12 septembre",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.12,
+      "prompt_tokens": 6185,
+      "input_tokens": 11790,
+      "uncached_tokens": 355,
+      "output_tokens": 408,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "memories",
+        "drop_guard"
+      ]
+    },
+    "x2-deux-taches-deux-personnes": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "rappeler Nadia pour le devis",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Appel à passer à Nadia concernant le devis"
+          },
+          {
+            "note": "envoyer le dossier à Laurent avant jeudi",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-16",
+            "event_recurring": false,
+            "summary": "Envoyer le dossier à Laurent avant jeudi"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Faut que je rappelle Nadia pour le devis et que j'envoie le dossier à Laurent avant jeudi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.18,
+      "prompt_tokens": 6184,
+      "input_tokens": 11788,
+      "uncached_tokens": 353,
+      "output_tokens": 286,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "memories",
+        "drop_guard"
+      ]
+    },
+    "x2-un-seul-moment": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Alexis a vu Marc hier et ils ont parlé du projet pendant deux heures.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-12",
+            "event_recurring": false,
+            "summary": "Rencontre avec Marc pour discuter du projet"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "met_with",
+            "to": "Marc",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "J'ai vu Marc hier et on a parlé du projet pendant deux heures",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.94,
+      "prompt_tokens": 6172,
+      "input_tokens": 11764,
+      "uncached_tokens": 329,
+      "output_tokens": 400,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "memories"
+      ]
+    },
+    "x2-une-seule-opinion": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Marc n'est pas heureux chez Globex, il devrait changer de poste",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Opinion d'Alexis : Marc devrait quitter son poste chez Globex"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Marc",
+            "predicate": "works_at",
+            "to": "Globex",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Marc devrait vraiment changer de poste, il n'est pas heureux chez Globex",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.79,
+      "prompt_tokens": 6178,
+      "input_tokens": 11776,
+      "uncached_tokens": 341,
+      "output_tokens": 464,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "memories"
+      ]
+    },
+    "x2-tache-simple-reste-une": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "envoyer le rapport à Nadia",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-17",
+            "event_recurring": false,
+            "summary": "Envoyer le rapport à Nadia avant vendredi"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Faut que j'envoie le rapport à Nadia avant vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.02,
+      "prompt_tokens": 6173,
+      "input_tokens": 11766,
+      "uncached_tokens": 331,
+      "output_tokens": 279,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "memories"
+      ]
+    },
+    "ord-en-household-ac-filter": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "AC filter in the living room needs replacing in October",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-10-01",
+            "event_recurring": false,
+            "summary": "Replace the AC filter in the living room"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Living room AC filter",
+            "type": "concept",
+            "type_proposal": {
+              "value": "household_item",
+              "reason": "A consumable household component with a maintenance schedule"
+            },
+            "aliases": [
+              "AC filter"
+            ],
+            "renamed_to": null,
+            "summary": "Air conditioning filter in the living room, replaced on 2026-07-13.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "last_replaced",
+                "value": "2026-07-13",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              },
+              {
+                "predicate": "next_replacement_due",
+                "value": "2026-10",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "maintains",
+            "to": "Living room AC filter",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "replaced the AC filter in the living room today, next replacement due in October",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.47,
+      "prompt_tokens": 6169,
+      "input_tokens": 11758,
+      "uncached_tokens": 323,
+      "output_tokens": 559,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "needs_review"
+      ]
+    },
+    "ord-1-boulangerie-bruit": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La rue sera fermée toute la semaine prochaine pour travaux.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Information du boulanger : fermeture de la rue la semaine prochaine."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.9,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "boulangerie (rue d'Alexis)",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [
+              "boulangerie du quartier"
+            ],
+            "renamed_to": null,
+            "summary": "Boulangerie où Alexis achète ses viennoiseries.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "street_closure_planned",
+                "value": "2026-07-20 to 2026-07-26",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit que la rue allait être fermée toute la semaine prochaine pour travaux",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.09,
+      "prompt_tokens": 6197,
+      "input_tokens": 11814,
+      "uncached_tokens": 379,
+      "output_tokens": 457,
+      "confidence": 0.9,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "facts_min"
+      ]
+    }
+  },
+  "ecarts": 0,
+  "par_frontiere": {},
+  "prompt_tokens_max": 6197
+}

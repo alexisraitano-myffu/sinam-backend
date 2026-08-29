@@ -1,0 +1,432 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "9c7e90f0601c+05d913e2b02d",
+  "label": "controle-225-seul",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "x2-tache-simple-reste-une": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "envoyer le rapport à Nadia",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-17",
+            "event_recurring": false,
+            "summary": "Envoyer le rapport à Nadia avant vendredi"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Faut que j'envoie le rapport à Nadia avant vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.95,
+      "prompt_tokens": 6173,
+      "input_tokens": 11766,
+      "uncached_tokens": 331,
+      "output_tokens": 279,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "memories"
+      ]
+    },
+    "bday-party-no-fact": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La fête de Thibault est le 20",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-20",
+            "event_recurring": false,
+            "summary": "Fête de Thibault le 20 juillet"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.55,
+        "entities": [
+          {
+            "canonical_name": "Thibault",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "graphe",
+      "text": "La fête de Thibault est le 20",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.95,
+      "prompt_tokens": 6166,
+      "input_tokens": 11752,
+      "uncached_tokens": 317,
+      "output_tokens": 282,
+      "confidence": 0.55,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "p-type-organisation-builtin": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Entreprise de logiciels.",
+            "attributes": {
+              "sector": "software"
+            },
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "graphe",
+      "text": "Je bosse pour Globex maintenant, c'est une boîte de soft vraiment cool",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.49,
+      "prompt_tokens": 6176,
+      "input_tokens": 11772,
+      "uncached_tokens": 337,
+      "output_tokens": 339,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "entity_expected",
+        "no_type_proposal"
+      ]
+    },
+    "r4b-film-anglais": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Alexis changed their mind about moon landing conspiracy theories after watching a documentary.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis reconsidered their stance on moon landing conspiracy theories."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "notes",
+      "text": "Just watched this documentary about the moon landing, totally changed my mind about conspiracy theories",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.94,
+      "prompt_tokens": 6170,
+      "input_tokens": 11760,
+      "uncached_tokens": 325,
+      "output_tokens": 374,
+      "confidence": 0.85,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "r0a-long-but-not-a-project": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Terminer le rapport annuel",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Action à accomplir : finaliser le rapport annuel"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Synapse",
+            "content": "Terminer le rapport annuel",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 11,
+      "set": "projets",
+      "text": "Terminer le rapport annuel",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.27,
+      "prompt_tokens": 6161,
+      "input_tokens": 11742,
+      "uncached_tokens": 307,
+      "output_tokens": 311,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral"
+      ]
+    },
+    "r1j-no-name": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Payer le loyer",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Action à faire : payer le loyer"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "Payer le loyer",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "Payer le loyer",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.2,
+      "prompt_tokens": 6160,
+      "input_tokens": 11740,
+      "uncached_tokens": 305,
+      "output_tokens": 199,
+      "confidence": 1.0,
+      "gaps": [
+        "ephemeral attendu=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "drop_guard"
+      ]
+    },
+    "r1j-payer-sans-objet": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "payer",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Action à faire : payer"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "faut que je paie",
+        "cancels_action": null,
+        "classification_confidence": 0.7,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "faut que je paie",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.29,
+      "prompt_tokens": 6160,
+      "input_tokens": 11740,
+      "uncached_tokens": 305,
+      "output_tokens": 192,
+      "confidence": 0.7,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind"
+      ]
+    }
+  },
+  "ecarts": 1,
+  "par_frontiere": {
+    "X-EPH": [
+      "r1j-no-name"
+    ]
+  },
+  "prompt_tokens_max": 6176
+}

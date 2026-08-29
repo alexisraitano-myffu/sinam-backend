@@ -1,0 +1,3084 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "078bbd8ccfe0+05d913e2b02d",
+  "label": "syn224-essai5",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "x2-un-seul-moment": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Vu Marc hier, on a parlé du projet pendant deux heures",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-12",
+            "event_recurring": false,
+            "summary": "Rencontre avec Marc pour discuter du projet"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "met_with",
+            "to": "Marc",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "J'ai vu Marc hier et on a parlé du projet pendant deux heures",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.77,
+      "prompt_tokens": 6631,
+      "input_tokens": 12223,
+      "uncached_tokens": 329,
+      "output_tokens": 397,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "memories"
+      ]
+    },
+    "x2-une-seule-opinion": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Marc n'est pas heureux chez Globex, il devrait changer de poste.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Opinion d'Alexis sur la situation professionnelle de Marc."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marc",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Globex",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Globex",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Marc",
+            "predicate": "works_at",
+            "to": "Globex",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Marc devrait vraiment changer de poste, il n'est pas heureux chez Globex",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.95,
+      "prompt_tokens": 6637,
+      "input_tokens": 12235,
+      "uncached_tokens": 341,
+      "output_tokens": 458,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "memories"
+      ]
+    },
+    "x2-tache-simple-reste-une": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "envoyer le rapport à Nadia",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-18",
+            "event_recurring": false,
+            "summary": "Envoyer le rapport à Nadia avant vendredi"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "atomicity",
+      "text": "Faut que j'envoie le rapport à Nadia avant vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.44,
+      "prompt_tokens": 6632,
+      "input_tokens": 12225,
+      "uncached_tokens": 331,
+      "output_tokens": 279,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-07-17 obtenu=['2026-07-18']"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "memories"
+      ]
+    },
+    "r3f-episodic-past-action-voisin": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Ma voiture a besoin d'un lavage",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "episodes",
+      "text": "Ma voiture a besoin d'un lavage",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.54,
+      "prompt_tokens": 6624,
+      "input_tokens": 12209,
+      "uncached_tokens": 315,
+      "output_tokens": 133,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral",
+        "needs_review"
+      ]
+    },
+    "g-ephemeral-trivial": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Acheter du pain",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "gate",
+      "text": "Acheter du pain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.48,
+      "prompt_tokens": 6618,
+      "input_tokens": 12197,
+      "uncached_tokens": 303,
+      "output_tokens": 127,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral"
+      ]
+    },
+    "p1": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Acheter du pain",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "hard",
+      "text": "Acheter du pain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.3,
+      "prompt_tokens": 6618,
+      "input_tokens": 12197,
+      "uncached_tokens": 303,
+      "output_tokens": 127,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral"
+      ]
+    },
+    "p3": {
+      "parsed": {
+        "language": "es",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Comprar pan",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "hard",
+      "text": "Comprar pan",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.38,
+      "prompt_tokens": 6617,
+      "input_tokens": 12195,
+      "uncached_tokens": 301,
+      "output_tokens": 126,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral"
+      ]
+    },
+    "ord-en-02": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "fix the squeaky bathroom door",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Repair the squeaky bathroom door this weekend"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "need to fix the squeaky bathroom door this weekend",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.4,
+      "prompt_tokens": 6623,
+      "input_tokens": 12207,
+      "uncached_tokens": 313,
+      "output_tokens": 266,
+      "confidence": 1.0,
+      "gaps": [
+        "ephemeral attendu=True",
+        "event_date attendu=2026-07-18 obtenu=[None]"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language"
+      ]
+    },
+    "ord-en-07": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "buy milk eggs coffee filters and dog food",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list of four items to buy",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "buy milk eggs coffee filters and dog food",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.96,
+      "prompt_tokens": 6621,
+      "input_tokens": 12203,
+      "uncached_tokens": 309,
+      "output_tokens": 203,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-006": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "pick up dry cleaning after work",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Retrieve dry cleaning after finishing work"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "pick up dry cleaning after work",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "pick up dry cleaning after work",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.83,
+      "prompt_tokens": 6619,
+      "input_tokens": 12199,
+      "uncached_tokens": 305,
+      "output_tokens": 197,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=False obtenue=True"
+      ],
+      "axes": [
+        "note",
+        "ephemeral",
+        "language",
+        "needs_review"
+      ]
+    },
+    "g-ord-panne-clim-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La clim de la chambre fait un bruit bizarre depuis deux jours",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Observation d'un dysfonctionnement de la climatisation"
+          },
+          {
+            "note": "vérifier le filtre de la clim de la chambre",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Tâche de maintenance : contrôler le filtre de la climatisation"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "la clim de la chambre fait un bruit bizarre depuis deux jours, faudra vérifier le filtre",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.17,
+      "prompt_tokens": 6639,
+      "input_tokens": 12239,
+      "uncached_tokens": 345,
+      "output_tokens": 364,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "owner",
+        "language",
+        "needs_review"
+      ]
+    },
+    "g-ord-liste-bricolage-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "vis 4x40, chevilles de 6, tournevis torx, peinture blanche mate",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Acheter du matériel : vis, chevilles, tournevis et peinture",
+            "is_ephemeral": true
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "vis 4x40 chevilles de 6 tournevis torx peinture blanche mate",
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Vis 4x40",
+            "type": "concept",
+            "type_proposal": {
+              "value": "hardware_item",
+              "reason": "A specific fastener type (screw) with standardized dimensions"
+            },
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "diameter": "4 mm",
+              "length": "40 mm"
+            },
+            "facts": []
+          },
+          {
+            "canonical_name": "Chevilles de 6",
+            "type": "concept",
+            "type_proposal": {
+              "value": "hardware_item",
+              "reason": "A wall anchor or plug (cheville) with a specific diameter"
+            },
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "diameter": "6 mm"
+            },
+            "facts": []
+          },
+          {
+            "canonical_name": "Tournevis Torx",
+            "type": "tool",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Tournevis à embout Torx pour vis à six branches étoilées.",
+            "attributes": {
+              "type_embout": "Torx"
+            },
+            "facts": []
+          },
+          {
+            "canonical_name": "Peinture blanche mate",
+            "type": "concept",
+            "type_proposal": {
+              "value": "material",
+              "reason": "A paint product with specific finish characteristics"
+            },
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "couleur": "blanche",
+              "finition": "mate"
+            },
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "vis 4x40 chevilles de 6 tournevis torx peinture blanche mate",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 7.35,
+      "prompt_tokens": 6636,
+      "input_tokens": 12233,
+      "uncached_tokens": 339,
+      "output_tokens": 729,
+      "confidence": 0.85,
+      "gaps": [
+        "ephemeral attendu=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "owner",
+        "language",
+        "needs_review"
+      ]
+    },
+    "ord-achat-bricolage-ampoules": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "ampoules LED culot E27 60W et un rouleau de scotch de peintre",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Acheter des ampoules LED et du scotch de peintre",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Ampoules LED culot E27 60W",
+            "type": "concept",
+            "type_proposal": {
+              "value": "product",
+              "reason": "A specific consumer product with technical specifications, not fitting existing types"
+            },
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "socket_type": "E27",
+              "power_equivalent": "60W",
+              "technology": "LED"
+            },
+            "facts": []
+          },
+          {
+            "canonical_name": "Rouleau de scotch de peintre",
+            "type": "concept",
+            "type_proposal": {
+              "value": "product",
+              "reason": "A specific consumer product for painting, not fitting existing types"
+            },
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "purpose": "painting",
+              "form": "roll"
+            },
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "ampoules LED culot E27 60W et un rouleau de scotch de peintre",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.39,
+      "prompt_tokens": 6636,
+      "input_tokens": 12233,
+      "uncached_tokens": 339,
+      "output_tokens": 494,
+      "confidence": 1.0,
+      "gaps": [
+        "ephemeral attendu=True"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "g-ord-04-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "changer le filtre de la carafe d'eau et racheter du café moulu",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Deux choses à faire : changer le filtre de la carafe et acheter du café moulu",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "changer le filtre de la caraf d'eau et racheter du café moulu",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.06,
+      "prompt_tokens": 6632,
+      "input_tokens": 12225,
+      "uncached_tokens": 331,
+      "output_tokens": 230,
+      "confidence": 1.0,
+      "gaps": [
+        "souvenirs attendus=2 obtenus=1 (changer le filtre de la carafe d'eau et )"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "memories"
+      ]
+    },
+    "o-liste-courses-maison": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "piles AA, sac poubelle 50L, liquide vaisselle et café en grain",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Acheter des articles pour la maison et la cuisine"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Piles AA",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Sac poubelle 50L",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Liquide vaisselle",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Café en grain",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "piles AA, sac poubelle 50L, liquide vaisselle et café en grain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.15,
+      "prompt_tokens": 6635,
+      "input_tokens": 12231,
+      "uncached_tokens": 337,
+      "output_tokens": 502,
+      "confidence": 1.0,
+      "gaps": [
+        "entité 'piles AA' créée alors qu'elle est sous le seuil de persistance"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "ord-en-002-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "check the roof gutters after the rain storm",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Check roof gutters once the rain storm passes"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "check the roof gutters after the rain storm",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "remember to check the roof gutters after the rain storm",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.22,
+      "prompt_tokens": 6624,
+      "input_tokens": 12209,
+      "uncached_tokens": 315,
+      "output_tokens": 278,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-010-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "shampoo paper towels olive oil aluminum foil trash bags",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list of five items to buy"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "shampoo paper towels olive oil aluminum foil trash bags",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.13,
+      "prompt_tokens": 6626,
+      "input_tokens": 12213,
+      "uncached_tokens": 319,
+      "output_tokens": 198,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "g-ord-en-004": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "groceries list: trash bags, oat milk, peanut butter, chicken breast and apples",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Buy groceries: trash bags, oat milk, peanut butter, chicken breast and apples",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "groceries list: trash bags, oat milk, peanut butter, chicken breast and apples",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.1,
+      "prompt_tokens": 6634,
+      "input_tokens": 12229,
+      "uncached_tokens": 335,
+      "output_tokens": 283,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "g-ord-en-006": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "pick up prescription at CVS before 6pm",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Pick up prescription at CVS before 6pm today"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "pick up prescription at CVS before 6pm",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "pick up prescription at CVS before 6pm",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.91,
+      "prompt_tokens": 6623,
+      "input_tokens": 12207,
+      "uncached_tokens": 313,
+      "output_tokens": 215,
+      "confidence": 1.0,
+      "gaps": [
+        "entité 'CVS' absente"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "entity_expected"
+      ]
+    },
+    "g-ord-en-008": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "replace the kitchen bulb and order a new mousepad",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Two things to do: replace kitchen bulb and order new mousepad"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "need to replace the kitchen bulb and order a new mousepad",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.86,
+      "prompt_tokens": 6626,
+      "input_tokens": 12213,
+      "uncached_tokens": 319,
+      "output_tokens": 203,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-002-4": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "buy coffee beans paper towels bananas and AA batteries",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list: four items to buy in one errand"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "buy coffee beans paper towels bananas and AA batteries",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.04,
+      "prompt_tokens": 6624,
+      "input_tokens": 12209,
+      "uncached_tokens": 315,
+      "output_tokens": 200,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-006-3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "car key battery is low, need to replace it before the weekend trip",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-17",
+            "event_recurring": false,
+            "summary": "Replace car key battery before weekend trip"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "car key battery is low, need to replace it before the weekend trip",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.4,
+      "prompt_tokens": 6627,
+      "input_tokens": 12215,
+      "uncached_tokens": 321,
+      "output_tokens": 293,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-en-groceries-dog": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "dog food, whole milk, ground turkey and ground coffee",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list of four items to buy",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Dog food",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Whole milk",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Ground turkey",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Ground coffee",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "dog food, whole milk, ground turkey and ground coffee",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.33,
+      "prompt_tokens": 6624,
+      "input_tokens": 12209,
+      "uncached_tokens": 315,
+      "output_tokens": 482,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-en-multi-car-mechanic": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "take the car to Joe's Auto",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-16",
+            "event_recurring": false,
+            "summary": "Car needs to be taken to Joe's Auto to diagnose check engine light",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Joe's Auto",
+            "type": "organization",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Auto repair shop.",
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_car_issue",
+                "value": "check engine light",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "The check engine light came on this afternoon, need to take the car to Joe's Auto on Thursday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.95,
+      "prompt_tokens": 6633,
+      "input_tokens": 12227,
+      "uncached_tokens": 333,
+      "output_tokens": 420,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "entity_expected"
+      ]
+    },
+    "o-en-travel-lisbon-budget": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "booked the hotel for Lisbon trip ($450 total)",
+            "kind": "episode",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Hotel booking completed for Lisbon trip at $450"
+          },
+          {
+            "note": "check airport shuttle options for Lisbon trip",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Research and decide on airport shuttle for Lisbon"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Lisbon trip",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Trip to Lisbon with hotel booked at $450.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "hotel_cost",
+                "value": "$450",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Lisbon trip",
+            "content": "Hotel booked for $450 total. Still need to check airport shuttle options.",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 1,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "booked the hotel for Lisbon trip ($450 total), still need to check airport shuttle options",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.5,
+      "prompt_tokens": 6634,
+      "input_tokens": 12229,
+      "uncached_tokens": 335,
+      "output_tokens": 468,
+      "confidence": 1.0,
+      "gaps": [
+        "entité 'Lisbon' absente"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "proj",
+        "entity_expected",
+        "memories"
+      ]
+    },
+    "ord-en-groceries-and-pickup": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "pick up dry cleaning on Main St",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Retrieve dry cleaning from Main St location"
+          },
+          {
+            "note": "buy extra strength trash bags, paper towels and lemons",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Purchase household items and groceries"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "pick up dry cleaning on Main St and buy extra strength trash bags, paper towels and lemons",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.16,
+      "prompt_tokens": 6633,
+      "input_tokens": 12227,
+      "uncached_tokens": 333,
+      "output_tokens": 264,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "needs_review"
+      ]
+    },
+    "ord-en-household-ac-filter": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "AC filter in the living room needs replacing in October",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-10-01",
+            "event_recurring": false,
+            "summary": "Replace the AC filter in the living room"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Living room AC filter",
+            "type": "concept",
+            "type_proposal": {
+              "value": "household_item",
+              "reason": "A consumable household component with a maintenance schedule"
+            },
+            "aliases": [
+              "AC filter"
+            ],
+            "renamed_to": null,
+            "summary": "Air conditioning filter in the living room, replaced on 2026-07-13.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "last_replaced",
+                "value": "2026-07-13",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              },
+              {
+                "predicate": "next_replacement_due",
+                "value": "2026-10",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "maintains",
+            "to": "Living room AC filter",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "replaced the AC filter in the living room today, next replacement due in October",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.03,
+      "prompt_tokens": 6628,
+      "input_tokens": 12217,
+      "uncached_tokens": 323,
+      "output_tokens": 559,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "needs_review"
+      ]
+    },
+    "ord-1-boulangerie-bruit": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La rue sera fermée toute la semaine prochaine pour travaux.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Information du boulanger : fermeture de la rue pour travaux la semaine prochaine"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.7,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "boulangerie (rue d'Alexis)",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [
+              "boulangerie du quartier"
+            ],
+            "renamed_to": null,
+            "summary": "Boulangerie où Alexis achète ses viennoiseries.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "street_closure_planned",
+                "value": "2026-07-20 to 2026-07-26",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit que la rue allait être fermée toute la semaine prochaine pour travaux",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.64,
+      "prompt_tokens": 6656,
+      "input_tokens": 12273,
+      "uncached_tokens": 379,
+      "output_tokens": 460,
+      "confidence": 0.7,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "facts_min"
+      ]
+    },
+    "ord-2-courses-bricolage": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "peinture, microfibre, rouleau de masquage, colle à bois, deux ampoules spot gu10",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Liste d'articles à acheter",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Peinture",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Microfibre",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Rouleau de masquage",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Colle à bois",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "Ampoule spot GU10",
+            "type": "concept",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {
+              "quantité": "2"
+            },
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "peinture microfibre rouleau de masquage colle à bois et deux ampoules spot gu10",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.84,
+      "prompt_tokens": 6640,
+      "input_tokens": 12241,
+      "uncached_tokens": 347,
+      "output_tokens": 594,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "g-ord-02": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "croquettes chat, filtre à eau, liquide vaisselle, ampoules E14",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Liste de courses : quatre articles à acheter"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "croquettes chat, filtre à eau, liquide vaisselle, ampoules E14",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.41,
+      "prompt_tokens": 6634,
+      "input_tokens": 12229,
+      "uncached_tokens": 335,
+      "output_tokens": 208,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "g-ord-01-shopping-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "beurre oeufs farine chocolat noir et du papier cuisson",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "beurre oeufs farine chocolat noir et du papier cuisson",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.75,
+      "prompt_tokens": 6630,
+      "input_tokens": 12221,
+      "uncached_tokens": 327,
+      "output_tokens": 139,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-04-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "groceries for weekend trip: bread, cheddar, apples, bottled water and instant coffee",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Buy groceries for the weekend trip"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "groceries for weekend trip: bread, cheddar, apples, bottled water and instant coffee",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.88,
+      "prompt_tokens": 6634,
+      "input_tokens": 12229,
+      "uncached_tokens": 335,
+      "output_tokens": 206,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-06-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "pick up dry cleaning",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Pick up dry cleaning"
+          },
+          {
+            "note": "check oil level in the car",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Check oil level in the car"
+          },
+          {
+            "note": "pay water bill",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Pay water bill"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 3,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "pick up dry cleaning, check oil level in the car, pay water bill",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.32,
+      "prompt_tokens": 6628,
+      "input_tokens": 12217,
+      "uncached_tokens": 323,
+      "output_tokens": 310,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "memories"
+      ]
+    },
+    "ord-en-04-3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "groceries for tonight: olive oil, sourdough bread, cherry tomatoes, garlic, parmesan",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Buy groceries for tonight's meal"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "groceries for tonight: olive oil, sourdough bread, cherry tomatoes, garlic, parmesan",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.94,
+      "prompt_tokens": 6636,
+      "input_tokens": 12233,
+      "uncached_tokens": 339,
+      "output_tokens": 208,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-en-004": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "groceries for tonight: ground beef, taco shells, avocado, sour cream, cilantro",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Buy groceries for tonight's meal",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "groceries for tonight: ground beef, taco shells, avocado, sour cream, cilantro",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.93,
+      "prompt_tokens": 6636,
+      "input_tokens": 12233,
+      "uncached_tokens": 339,
+      "output_tokens": 224,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-en-5": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "cat food, 3 pinot noir bottles, heavy cream, garlic, trash bags",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list of five items to buy"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "cat food, 3 pinot noir bottles, heavy cream, garlic, trash bags",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.24,
+      "prompt_tokens": 6632,
+      "input_tokens": 12225,
+      "uncached_tokens": 331,
+      "output_tokens": 204,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-en-4-8": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "almond milk, Greek yogurt, blueberries, granola, chicken thighs",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Shopping list of five items to buy",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "almond milk, Greek yogurt, blueberries, granola and chicken thighs",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.74,
+      "prompt_tokens": 6633,
+      "input_tokens": 12227,
+      "uncached_tokens": 333,
+      "output_tokens": 290,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "penser-couper-eau-jardin": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "couper l'eau du jardin avant de partir en vacances",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Couper l'eau du jardin avant le départ en vacances"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "couper l'eau du jardin avant de partir en vacances",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "penser à couper l'eau du jardin avant de partir en vacances",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.27,
+      "prompt_tokens": 6630,
+      "input_tokens": 12221,
+      "uncached_tokens": 327,
+      "output_tokens": 222,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "liste-courses-diner-marcel": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "sacs poubelle, sopalin, eau gazeuse et des pâtes pour le dîner avec Marcel",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Faire les courses : sacs poubelle, sopalin, eau gazeuse et pâtes",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "sacs poubelle, sopalin, eau gazeuse et des pates pour le diner avec marcel",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.48,
+      "prompt_tokens": 6637,
+      "input_tokens": 12235,
+      "uncached_tokens": 341,
+      "output_tokens": 237,
+      "confidence": 1.0,
+      "gaps": [
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
+        "entité 'Marcel' absente"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "facts_min",
+        "entity_expected",
+        "memories"
+      ]
+    },
+    "o-fr-court-brico": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "joint silicone pour la salle de bain",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "joint silicone pour salle de bain",
+            "type": "concept",
+            "type_proposal": {
+              "value": "product",
+              "reason": "Un produit de construction/rénovation spécifique, matériau de finition"
+            },
+            "aliases": [
+              "silicone salle de bain",
+              "joint silicone"
+            ],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "joint silicone pour la salle de bain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.66,
+      "prompt_tokens": 6624,
+      "input_tokens": 12209,
+      "uncached_tokens": 315,
+      "output_tokens": 264,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "entité 'joint silicone' créée alors qu'elle est sous le seuil de persistance"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "needs_review",
+        "no_entity"
+      ]
+    },
+    "ord-boite-lettres-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "changer la pile de la sonnette et racheter du timbre",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Deux choses à faire : remplacer la pile de la sonnette et acheter des timbres",
+            "is_ephemeral": false
+          }
+        ],
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 10,
+      "set": "ordinaire",
+      "text": "changer la pile de la sonnette et racheter du timbre",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.09,
+      "prompt_tokens": 6627,
+      "input_tokens": 12215,
+      "uncached_tokens": 321,
+      "output_tokens": 214,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "needs_review"
+      ]
+    },
+    "o-fr-liste-courte-sec": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "changer l'ampoule du couloir et vider le lave-vaisselle",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Deux chores à faire : remplacer l'ampoule du couloir et vider le lave-vaisselle",
+            "is_ephemeral": false
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "changer l'ampoule du couloir et vider le lave-vaisselle",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.02,
+      "prompt_tokens": 6633,
+      "input_tokens": 12227,
+      "uncached_tokens": 333,
+      "output_tokens": 236,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ordinary-courses-liste": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "boisson d'avoine pain de mie bananes et du sopalin",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Liste de courses : boisson d'avoine, pain de mie, bananes et sopalin"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "boisson d'avoine pain de mie bananes et du sopalin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.85,
+      "prompt_tokens": 6630,
+      "input_tokens": 12221,
+      "uncached_tokens": 327,
+      "output_tokens": 217,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "o-hotte-ampoule-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "nettoyer le filtre de la hotte et changer l'ampoule du buffet",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Deux tâches ménagères à faire : nettoyer le filtre de la hotte et changer l'ampoule du buffet"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "nettoyer le filtre de la hotte et changer l'ampoule du buffet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.98,
+      "prompt_tokens": 6634,
+      "input_tokens": 12229,
+      "uncached_tokens": 335,
+      "output_tokens": 232,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "o-barbecue-courses-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "acheter du charbon de bois et des saucisses pour le barbecue chez Thomas",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-18",
+            "event_recurring": false,
+            "summary": "Faire les courses pour le barbecue de samedi chez Thomas"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Thomas",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "faut que j'achète du charbon de bois et des saucisses pour le barbecue chez Thomas ce samedi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.53,
+      "prompt_tokens": 6643,
+      "input_tokens": 12247,
+      "uncached_tokens": 353,
+      "output_tokens": 291,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "entity_expected"
+      ]
+    },
+    "g-routine-courses-tronque": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "pain beurre oeufs",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "porte",
+      "text": "pain beurre oeufs",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.33,
+      "prompt_tokens": 6620,
+      "input_tokens": 12201,
+      "uncached_tokens": 307,
+      "output_tokens": 129,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "r1g-chore-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Sortir les poubelles",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "Sortir les poubelles",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.38,
+      "prompt_tokens": 6620,
+      "input_tokens": 12201,
+      "uncached_tokens": 307,
+      "output_tokens": 129,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral"
+      ]
+    },
+    "r1g-chore-en": {
+      "parsed": {
+        "language": "en",
+        "memories": [],
+        "is_ephemeral": true,
+        "ephemeral_content": "Take the bins out",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "Take the bins out",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.69,
+      "prompt_tokens": 6617,
+      "input_tokens": 12195,
+      "uncached_tokens": 301,
+      "output_tokens": 196,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "r1i-course-futur-rappel": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Aller faire les courses",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-14",
+            "event_recurring": false,
+            "summary": "Faire les courses demain"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "Faut que j'aille faire les courses demain",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "Faut que j'aille faire les courses demain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 2.81,
+      "prompt_tokens": 6626,
+      "input_tokens": 12213,
+      "uncached_tokens": 319,
+      "output_tokens": 209,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
+      ]
+    },
+    "r1g-chore-dicte-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "vider la poubelle de la cuisine ce soir",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Vider la poubelle de la cuisine avant la fin de la journée"
+          }
+        ],
+        "is_ephemeral": true,
+        "ephemeral_content": "vider la poubelle de la cuisine ce soir",
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": true,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "taches",
+      "text": "faut que je vide la poubelle de la cuisine ce soir",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.02,
+      "prompt_tokens": 6629,
+      "input_tokens": 12219,
+      "uncached_tokens": 325,
+      "output_tokens": 225,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
+      ]
+    }
+  },
+  "ecarts": 12,
+  "par_frontiere": {
+    "R2d": [
+      "ord-en-02",
+      "x2-tache-simple-reste-une"
+    ],
+    "X-EPH": [
+      "g-ord-01-shopping-fr",
+      "g-ord-liste-bricolage-fr",
+      "ord-achat-bricolage-ampoules",
+      "ord-en-02"
+    ],
+    "routage": [
+      "g-ord-01-shopping-fr",
+      "o-fr-court-brico",
+      "ord-en-006"
+    ],
+    "autre": [
+      "g-ord-04-fr"
+    ],
+    "P-PERS": [
+      "g-ord-en-006",
+      "liste-courses-diner-marcel",
+      "o-en-travel-lisbon-budget",
+      "o-fr-court-brico",
+      "o-liste-courses-maison"
+    ],
+    "X-ONE": [
+      "liste-courses-diner-marcel"
+    ]
+  },
+  "prompt_tokens_max": 6656
+}

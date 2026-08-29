@@ -1,10 +1,15 @@
 """Entry point for the PyInstaller-bundled backend.
 
 Runs uvicorn on 127.0.0.1:8765 so the desktop app can talk to the LaunchAgent
-without exposing the API to the LAN. The app's mobile clients still reach the
-backend over the LAN through mDNS-advertised port 8000 (handled by `api/app.py`
-when launched the dev way) — for the bundled tester build we only do desktop
-loopback for now.
+without exposing the API to the LAN.
+
+Le défaut mDNS posé plus bas ne décrit PAS ce que font les installs réelles :
+l'installeur pose `SYNAPSE_DISABLE_MDNS` à la chaîne vide dans le LaunchAgent,
+ce qui l'écrase et rallume l'annonce. C'est voulu, c'est ce qui permet au
+téléphone de trouver l'ordinateur sans qu'on tape une IP. Ce qui cloisonne deux
+mémoires voisines n'est pas l'invisibilité sur le réseau, c'est l'identifiant
+d'espace comparé avant toute fusion. Le défaut ci-dessous ne vaut donc que pour
+le binaire lancé à la main, sans l'environnement de l'installeur.
 """
 import os
 import sys
@@ -15,7 +20,8 @@ from pathlib import Path
 # both in the binary and during `python backend_entry.py`.
 if getattr(sys, "frozen", False):
     sys.path.insert(0, str(Path(sys._MEIPASS)))  # noqa: SLF001
-    # Bundled tester build is loopback-only — no LAN advertising.
+    # Défaut prudent du binaire lancé sans environnement ; l'installeur
+    # l'écrase délibérément (voir l'en-tête du module).
     os.environ.setdefault("SYNAPSE_DISABLE_MDNS", "1")
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent))

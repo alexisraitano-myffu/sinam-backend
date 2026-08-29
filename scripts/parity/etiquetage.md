@@ -188,6 +188,29 @@ la frontière que tu testes, et ajoute `"memories": N`** avec leur nombre. Sans
 ce compte, une capture hachée en trois morceaux et une capture rendue en un
 seul passent toutes les deux pour vertes.
 
+**UNE CORVÉE NE DOIT PAS AVALER LA SUITE DE LA PHRASE.** Arbitré le
+2026-08-29. Une corvée déjà faite ne laisse rien, c'est la règle, et elle est
+presque toujours écrite en PREMIER — donc c'est elle qu'on lit d'abord, et
+c'est exactement pour ça qu'il faut se forcer à lire la suite. Quand la même
+capture ajoute une seconde chose datée ou durable, cette seconde chose vit sa
+vie :
+ · « replaced the AC filter in the living room today, next replacement due in
+   October » → une TÂCHE datée d'octobre. Le remplacement fait ne laisse rien,
+   l'échéance à venir oui.
+ · « je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit
+   que la rue allait être fermée toute la semaine prochaine » → une NOTE sur la
+   rue fermée. La course ne laisse rien, l'information oui.
+Les deux étaient étiquetées `aucun` avant cet arbitrage, et perdaient tout.
+
+**UNE LISTE DE COURSES EST UNE TÂCHE PERMANENTE**, pas un rappel qui expire en
+48 h. Arbitré le 2026-08-29 (SYN-224). Un article unique reste une course
+triviale qui ne laisse rien : « buy bread », « sortir les poubelles ». Une
+ÉNUMÉRATION de plusieurs articles se prépare et se coche article par article,
+elle survit largement à deux jours : `souvenir: task`, et `ephemeral: false`.
+⚠ Le prompt de production ne le fait PAS encore, il les rend éphémères ou
+vides. C'est voulu : l'étiquette dit ce qui DOIT arriver, le rouge qui en
+résulte est la mesure du défaut, pas une erreur d'étiquetage.
+
 Un second souvenir n'est dû que si la capture demanderait deux LIGNES dans un
 carnet : parce que l'une est faite et l'autre pas, parce qu'elles sont dues à
 deux personnes différentes, ou parce que clôturer l'une ne dirait rien de

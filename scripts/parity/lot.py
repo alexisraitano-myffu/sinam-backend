@@ -40,7 +40,12 @@ CIBLE_TOTALE = 500
 CIBLE_ANGLAIS = 0.30
 # Par appel. Au-delà, la sortie se fait tronquer : le budget couvre la
 # réflexion du modèle en plus du texte, et ça ne lève aucune erreur.
-PAR_APPEL = 10
+#
+# ⚠ Ce nombre baisse quand le guide d'étiquetage grossit, et il a déjà mordu :
+# à 10, l'ajout de deux arbitrages dans le guide a fait perdre 20 captures sur
+# 70 SANS erreur, la troncature ne se voyant que dans le décompte final. Le
+# contrôle ci-dessous existe pour que ça ne repasse plus jamais en silence.
+PAR_APPEL = 6
 
 
 def _langue(texte: str) -> str:
@@ -156,10 +161,12 @@ def main() -> None:
         sys.stderr.write(r.stderr)
         if r.returncode != 0:
             raise SystemExit(f"étiquetage échoué sur la tranche {i}")
+        rendus = 0
         with etiq.open("a") as f:
             for ligne in r.stdout.splitlines():
                 if not ligne.strip():
                     continue
+                rendus += 1
                 cas = json.loads(ligne)
                 # L'étiqueteur ignore le mode et colle un code de frontière à
                 # presque tout : 49 captures sur 69 au premier paquet. Une
@@ -170,6 +177,11 @@ def main() -> None:
                 # que c'est ici qu'on sait dans quel mode on est.
                 cas.pop("frontiere", None)
                 f.write(json.dumps(cas, ensure_ascii=False) + "\n")
+        if rendus != len(bout):
+            print(f"⚠ tranche {i//PAR_APPEL + 1} : {rendus} étiquettes pour "
+                  f"{len(bout)} captures envoyées. Baisser PAR_APPEL — la "
+                  f"réflexion du modèle mange le budget de sortie et la "
+                  f"troncature ne lève aucune erreur.", file=sys.stderr)
         tmp.unlink(missing_ok=True)
 
     n_etiq = sum(1 for l in etiq.read_text().splitlines() if l.strip())

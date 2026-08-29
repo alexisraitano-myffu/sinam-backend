@@ -494,15 +494,43 @@ def dedup_after_pull() -> dict:
 # ── Peer assembly + periodic loop ────────────────────────────────────────────
 
 def known_peers() -> list[dict]:
-    """Static peers (SYNAPSE_SYNC_PEERS=url,url) + mDNS-discovered ones."""
+    """Static peers (SYNAPSE_SYNC_PEERS=url,url) + mDNS-discovered ones.
+
+    Filtrés sur l'espace annoncé en mDNS, et c'est un contrôle d'une autre
+    nature que celui du tir : celui-là empêche la FUSION, celui-ci empêche le
+    CONTACT. La différence est notre jeton, qui part dès la première requête
+    (`/sync/status`) et se retrouverait donc chez n'importe quelle instance du
+    réseau qui s'annonce. Une instance d'un autre espace n'est plus contactée
+    du tout.
+
+    Une instance qui n'annonce aucun espace (version antérieure) reste
+    contactée, comme le serveur tolère un appelant muet ; `SYNAPSE_SYNC_STRICT_SPACE=1`
+    ferme les deux tolérances d'un coup. Un pair statique, lui, est une adresse
+    posée à la main : on la respecte, le tir vérifiera l'espace.
+    """
     peers: list[dict] = []
     static = os.environ.get("SYNAPSE_SYNC_PEERS", "")
     for u in (s.strip() for s in static.split(",")):
         if u:
             peers.append({"url": u.rstrip("/"), "source": "static"})
+    conn = get_connection()
+    try:
+        ours = expected_space_id(conn)
+    finally:
+        conn.close()
+    strict = bool(os.environ.get("SYNAPSE_SYNC_STRICT_SPACE"))
     try:
         from api.discovery import discovered_peers
         for p in discovered_peers():
+            theirs = p.get("space_id")
+            if ours and theirs and theirs != ours:
+                log.info("sync: %s ignoré (espace %s, le nôtre est %s)",
+                         p.get("url"), theirs, ours)
+                continue
+            if ours and theirs is None and strict:
+                log.info("sync: %s ignoré (n'annonce aucun espace, mode strict)",
+                         p.get("url"))
+                continue
             peers.append({**p, "source": "mdns"})
     except Exception:  # noqa: BLE001 — zeroconf optional/disabled
         pass

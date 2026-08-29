@@ -299,6 +299,39 @@ def test_virgin_install_bootstraps_the_space_then_forgets_the_hint(client, peer,
     clear_joining_space_id()
 
 
+def test_known_peers_ignores_another_space_before_any_contact(client, monkeypatch):
+    """Le jeton part dès la première requête : un pair d'un autre espace ne
+    doit pas être contacté du tout, pas seulement refusé après coup."""
+    from api import discovery, sync_peers
+    _found_space("le-mien")
+    monkeypatch.setattr(discovery, "_PEERS", {
+        "moi": {"name": "moi", "url": "http://ami.test:8000",
+                "device_id": "d1", "space_id": "le-mien"},
+        "autre": {"name": "autre", "url": "http://etranger.test:8000",
+                  "device_id": "d2", "space_id": "le-sien"},
+        "muet": {"name": "muet", "url": "http://ancien.test:8000",
+                 "device_id": "d3", "space_id": None},
+    })
+    urls = {p["url"] for p in sync_peers.known_peers()}
+    assert "http://ami.test:8000" in urls
+    assert "http://etranger.test:8000" not in urls
+    # Un pair muet (version antérieure) reste contacté, comme le serveur
+    # tolère un appelant muet.
+    assert "http://ancien.test:8000" in urls
+
+    # Le mode strict ferme les deux tolérances d'un coup.
+    monkeypatch.setenv("SYNAPSE_SYNC_STRICT_SPACE", "1")
+    urls = {p["url"] for p in sync_peers.known_peers()}
+    assert urls == {"http://ami.test:8000"}
+
+
+def test_mdns_advert_carries_the_space(client):
+    from api import discovery
+    _found_space("annoncé")
+    discovery._SELF_SPACE_ID = None      # vider le cache du module
+    assert discovery._self_space_id() == "annoncé"
+
+
 def test_sync_changes_refuses_a_caller_from_another_space(client):
     _found_space("le-mien")
     assert client.get("/sync/changes", params={"since": 0},

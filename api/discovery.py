@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 # Live registry of sibling instances, maintained by the browser.
 _PEERS: dict[str, dict] = {}
 _SELF_DEVICE_ID: str | None = None
+_SELF_SPACE_ID: str | None = None
 
 
 def _local_ip() -> str:
@@ -36,6 +37,25 @@ def _local_ip() -> str:
         return "127.0.0.1"
     finally:
         s.close()
+
+
+def _self_space_id() -> str | None:
+    """L'espace de cette instance, annoncé pour que les pairs sachent AVANT de
+    nous contacter s'ils ont affaire à la bonne mémoire. Sans ça le premier
+    contact porte déjà notre jeton d'accès, et il le porte à un inconnu."""
+    global _SELF_SPACE_ID
+    if _SELF_SPACE_ID is None:
+        try:
+            from api.sync_peers import expected_space_id
+            from db import get_connection
+            conn = get_connection()
+            try:
+                _SELF_SPACE_ID = expected_space_id(conn) or ""
+            finally:
+                conn.close()
+        except Exception:  # noqa: BLE001 — ne jamais bloquer l'annonce là-dessus
+            _SELF_SPACE_ID = ""
+    return _SELF_SPACE_ID or None
 
 
 def _self_device_id() -> str | None:
@@ -59,6 +79,9 @@ async def start_advertising(port: int | None = None) -> AsyncZeroconf | None:
     dev = _self_device_id()
     if dev:
         props["device_id"] = dev
+    space = _self_space_id()
+    if space:
+        props["space_id"] = space
     info = AsyncServiceInfo(
         type_=SERVICE_TYPE,
         name=f"sinam on {hostname}.{SERVICE_TYPE}",
@@ -108,6 +131,7 @@ async def _resolve_peer(zc, service_type: str, name: str) -> None:
         "name": name,
         "url": f"http://{addresses[0]}:{info.port}",
         "device_id": dev,
+        "space_id": props.get("space_id") or None,
         "host": props.get("host"),
     }
     log.info("mDNS peer discovered: %s → %s", name, _PEERS[name]["url"])

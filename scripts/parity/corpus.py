@@ -73,6 +73,9 @@ CHAMPS = {
     "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",
     "cancels", "no_cancel", "memories",
+    # Ouverts le 2026-08-29 sur la revue d'Alexis : où un fait s'accroche, et
+    # une relation qui doit passer par la validation au lieu de naître seule.
+    "facts_on", "relation_proposed",
     "wm", "repeat", "expect", "frontiere", "why",
     "ambigu", "valide", "arbitrage",
 }

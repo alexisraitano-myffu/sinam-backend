@@ -524,6 +524,39 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
             if not any(v in p for v in variantes for p in preds):
                 out.append(f"relation '{attendu}' absente (vu : {preds or 'aucune'})")
 
+    # PER-c — À QUELLE FICHE un fait s'accroche. Ouvert le 2026-08-29 sur la revue
+    # d'Alexis : « les faits service lent et poisson frais doivent être ajoutés à
+    # la brasserie du port ». `facts_min` compte les faits et ne dit pas où ils
+    # vont ; un modèle qui accroche tout à l'auteur passait l'axe sans que la
+    # fiche du lieu apprenne quoi que ce soit, ce qui est précisément le défaut.
+    # Forme : {"la brasserie du port": 2} — au moins 2 faits SUR cette fiche.
+    for nom, mini in (case.get("facts_on") or {}).items():
+        cible = nom.strip().lower()
+        n = 0
+        for e in parsed.get("entities") or []:
+            if str(e.get("canonical_name", "")).strip().lower() == cible:
+                n += len([f for f in (e.get("facts") or []) if isinstance(f, dict)])
+        if n < mini:
+            out.append(f"fiche '{nom}' porte {n} fait(s) pour {mini} attendu(s)")
+
+    # PER-d — une relation qui ne peut PAS se deviner doit partir en validation.
+    # Ouvert le 2026-08-29 : « la relation ne peut pas être devinée, elle doit
+    # être validée ». Une soirée à trois ne prouve pas que Julie et Romain sont
+    # un couple. L'axe échoue des DEUX côtés : relation absente, ou posée avec
+    # une confiance qui la fait naître sans que personne ne l'ait confirmée.
+    for attendu in _liste(case.get("relation_proposed")):
+        variantes = [v.strip().lower() for v in str(attendu).split("|") if v.strip()]
+        vue = None
+        for r in parsed.get("relations") or []:
+            if any(v in str(r.get("predicate", "")).lower() for v in variantes):
+                vue = r
+                break
+        if vue is None:
+            out.append(f"relation '{attendu}' absente, elle devait partir en validation")
+        elif float(vue.get("confidence") or 1.0) >= REVIEW_THRESHOLD:
+            out.append(f"relation '{attendu}' posée à {vue.get('confidence')} "
+                       f"(seuil {REVIEW_THRESHOLD}) : elle naît sans validation")
+
     if case.get("proj") and not (parsed.get("project_entries") or []):
         out.append("entrée projet absente")
 

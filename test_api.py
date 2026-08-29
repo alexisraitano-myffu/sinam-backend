@@ -15,7 +15,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 @pytest.fixture
 def client(isolated_db, monkeypatch):
-    monkeypatch.delenv("SYNAPSE_API_TOKEN", raising=False)  # auth off by default
+    # Auth coupée pour les tests, mais EXPLICITEMENT : sans ce drapeau le
+    # backend se fabrique désormais un jeton plutôt que de servir ouvert.
+    monkeypatch.delenv("SYNAPSE_API_TOKEN", raising=False)
+    monkeypatch.setenv("SYNAPSE_DEV_NO_AUTH", "1")
     from fastapi.testclient import TestClient
     from api.app import app
     return TestClient(app)

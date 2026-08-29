@@ -16,7 +16,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 @pytest.fixture
 def client(isolated_db, monkeypatch):
+    # Auth coupée EXPLICITEMENT : sans ce drapeau le backend se fabrique un
+    # jeton plutôt que de servir ouvert. Un test qui pose SYNAPSE_API_TOKEN
+    # rallume l'auth, le jeton d'environnement l'emportant sur le drapeau.
     monkeypatch.delenv("SYNAPSE_API_TOKEN", raising=False)
+    monkeypatch.setenv("SYNAPSE_DEV_NO_AUTH", "1")
     monkeypatch.delenv("SYNAPSE_SYNC_PEERS", raising=False)
     from fastapi.testclient import TestClient
     from api.app import app

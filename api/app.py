@@ -1,9 +1,11 @@
 """
 sinam HTTP API (FastAPI) — capture, retrieval, validation, sync.
 
-Runs on the "brain" Mac. Auth = bearer token (`SYNAPSE_API_TOKEN`); if that env
-var is unset, auth is DISABLED (dev mode) with a warning. Designed for LAN /
-Tailscale, no cloud. Response shapes are frozen on the target spec (fields like
+Runs on the "brain" Mac. Auth = bearer token, résolu par `api/access.py` :
+`SYNAPSE_API_TOKEN`, sinon celui persisté dans `SYNAPSE_HOME/api_token`, sinon
+un jeton fabriqué au démarrage. Il n'y a plus de repli « pas de jeton, pas
+d'authentification » : le couper demande `SYNAPSE_DEV_NO_AUTH=1`. Designed for
+LAN / Tailscale, no cloud. Response shapes are frozen on the target spec (fields like
 `memory_strength` are present even when not yet populated).
 
 Run:  python -m api   (uvicorn on 0.0.0.0:8000)
@@ -244,6 +246,8 @@ def _recover_interrupted_runs() -> None:
 
 @contextlib.asynccontextmanager
 async def lifespan(_app):
+    from api.access import warn_if_open
+    warn_if_open(os.environ.get("SYNAPSE_API_HOST", "0.0.0.0"))
     _recover_interrupted_runs()
     # Le réglage « aller chercher les pages » vit dans config.json et se pose
     # dans l'environnement, que l'hôte partage avec le core.
@@ -287,13 +291,16 @@ app.add_middleware(
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
 def require_auth(authorization: str | None = Header(default=None)) -> None:
+    from api.access import resolve_token
     from api.sync_peers import get_mesh_token
 
     # SYN-137: a joined desktop accepts BOTH its per-install token (its own
     # app) and the mesh token adopted at join time (the peers).
-    accepted = {t for t in (os.environ.get("SYNAPSE_API_TOKEN"), get_mesh_token()) if t}
+    accepted = {t for t in (resolve_token(), get_mesh_token()) if t}
     if not accepted:
-        return  # dev mode — auth disabled
+        # Seulement en mode développement explicite : hors de là,
+        # `resolve_token` fabrique un jeton plutôt que de rendre None.
+        return
     if authorization not in {f"Bearer {t}" for t in accepted}:
         raise HTTPException(status_code=401, detail="invalid or missing bearer token")
 

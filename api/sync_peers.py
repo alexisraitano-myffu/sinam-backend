@@ -7,8 +7,10 @@ core's per-column LWW (`Storage.sync_apply`), re-embeds the notes the merge
 touched, dedups double-routed derived rows, and advances a per-peer cursor.
 
 Trust model: same as the rest of the API — LAN/Tailscale peers sharing ONE
-`SYNAPSE_API_TOKEN` (each side presents its own token when pulling; without
-a token, auth is dev-disabled everywhere).
+bearer token (each side presents its own when pulling). Le jeton dit qu'on a le
+droit d'entrer, pas QUI entre : c'est l'identifiant d'espace, comparé avant
+toute fusion, qui empêche deux mémoires étrangères de se mélanger parce
+qu'elles partagent un Wi-Fi.
 
 Owner-lock: `sync_owner` is a REPLICATED singleton row (it travels with the
 sync itself) naming the one device allowed to run the Dream Cycle — the
@@ -45,7 +47,9 @@ SPACE_HEADER = "X-Sinam-Space"
 
 
 def _headers() -> dict:
-    token = get_mesh_token() or os.environ.get("SYNAPSE_API_TOKEN")
+    from api.access import resolve_token
+
+    token = get_mesh_token() or resolve_token()
     h = {"Authorization": f"Bearer {token}"} if token else {}
     conn = get_connection()
     try:

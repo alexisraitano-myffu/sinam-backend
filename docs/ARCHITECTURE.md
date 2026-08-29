@@ -30,7 +30,7 @@ Règles :
 - Les **captures** remontent de partout, append-only, **clé = UUID** → conflit-free.
 - L'**état dérivé** redescend en lecture seule → flux à sens unique, rien à fusionner.
 - Chaque appareil garde une **copie locale complète** → consultation **hors-ligne, partout**. Seule la *transformation* des nouvelles captures attend de joindre le cerveau.
-- **Isolation LAN** : chaque installation porte un bearer token propre (`SYNAPSE_API_TOKEN`) ; le backend n'est joignable qu'avec lui (auth désactivée = dev seulement).
+- **Isolation LAN** : chaque installation porte un bearer token propre (`SYNAPSE_API_TOKEN`, sinon celui persisté dans `SYNAPSE_HOME/api_token`, sinon un jeton fabriqué au démarrage) ; le backend n'est joignable qu'avec lui, et le couper demande `SYNAPSE_DEV_NO_AUTH=1`. Le jeton dit qu'on a le droit d'entrer, pas qui entre : le cloisonnement entre deux mémoires voisines vient de l'identifiant d'espace, comparé avant toute fusion.
 
 ---
 
@@ -357,7 +357,7 @@ flowchart TD
 
 ## 11. API HTTP (`api/app.py`, `python -m api`)
 
-Sur le cerveau (FastAPI, port 8000), auth **bearer token** (`SYNAPSE_API_TOKEN` ; auth désactivée si non défini = dev), LAN/Tailscale. **68 endpoints** ; le contrat gelé est [`openapi.json`](../openapi.json) (à régénérer via `app.openapi()` quand il change : l'app code contre lui).
+Sur le cerveau (FastAPI, port 8000), auth **bearer token** (`SYNAPSE_API_TOKEN`, sinon `SYNAPSE_HOME/api_token`, sinon fabriqué au démarrage ; `SYNAPSE_DEV_NO_AUTH=1` pour la couper), LAN/Tailscale. **68 endpoints** ; le contrat gelé est [`openapi.json`](../openapi.json) (à régénérer via `app.openapi()` quand il change : l'app code contre lui).
 
 Familles principales :
 

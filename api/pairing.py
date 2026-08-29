@@ -21,6 +21,8 @@ pairing is a one-shot in-person action, nothing here is persisted.
 from __future__ import annotations
 
 import os
+
+from api import access as _access
 import socket
 import threading
 import time
@@ -279,7 +281,7 @@ def _build_payload(include_key: bool) -> bytes:
     payload = {
         "space_id": space_id,
         "space_name": space_name,
-        "token": os.environ.get("SYNAPSE_API_TOKEN", ""),
+        "token": _access.resolve_token() or "",
         "peers": sorted(set(peers)),
     }
     if include_key:

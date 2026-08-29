@@ -38,6 +38,43 @@ lui. En écrire un reviendrait à signer à sa place.
 
 ---
 
+## Deux modes, et le second est le contraire du premier
+
+**Mode FRONTIÈRE** — on te donne un code. Tu écris des cas de BORD, aux limites
+d'une règle. Tout le reste de ce fichier décrit ce mode.
+
+**Mode ORDINAIRE** — on ne te donne aucun code, seulement une langue. Tu écris
+alors des captures **banales**, celles qu'une personne tape un mardi sans y
+penser. C'est plus dur qu'il n'y paraît, parce que l'instinct pousse à faire
+malin, et faire malin est ici une FAUTE.
+
+Pourquoi ce mode existe : ce corpus ne sert pas qu'à tester, il sert aussi de
+spécification si on entraîne un modèle dessus. Or les proportions du corpus
+deviennent alors l'a priori du modèle. Un corpus fait uniquement de bords lui
+enseignerait un monde où tout est ambigu, où toute capture cache un piège, et
+sa confiance, qui alimente les files de validation, deviendrait inexploitable.
+Il faut donc du banal, en volume, et c'est ce que tu écris ici.
+
+Ce que « ordinaire » veut dire concrètement :
+ · **la réponse doit être évidente.** Si tu hésites en l'écrivant, c'est un cas
+   de bord : il n'a pas sa place dans ce mode.
+ · **varie les longueurs pour de vrai.** Deux mots, une ligne, trois phrases qui
+   racontent une soirée. Le corpus actuel a une capture médiane de 39
+   caractères, ce qui est beaucoup trop court et trop uniforme.
+ · **varie les sujets.** Le travail, mais aussi les enfants, la santé, la
+   maison, les courses, les amis, l'argent, les trajets, une série vue hier.
+ · **varie la forme.** Tapé propre, dicté sans ponctuation, tronqué, une faute
+   de frappe, une majuscule oubliée, un lien collé avec trois mots après.
+ · **des gens et des lieux qui reviennent** d'une capture à l'autre, comme dans
+   une vraie vie. Le corpus n'est pas une collection d'inconnus.
+ · **n'écris PAS le champ `frontiere`** dans ce mode : ces captures n'en visent
+   aucune, et prétendre le contraire fausserait le compte de couverture.
+
+Le `why` reste dû, mais il dit autre chose : ce que la capture a d'ordinaire, et
+ce qu'elle apporte que les autres n'ont pas encore.
+
+---
+
 ## La règle qui prime sur toutes les autres
 
 **Tu n'as pas accès aux règles du classifieur, et c'est délibéré.**
@@ -49,7 +86,8 @@ révéler. C'est le mode d'échec que ce corpus existe pour éviter.
 
 Tu écris donc à partir de **deux choses seulement** :
 
-1. la frontière qu'on te donne, avec ce qui la couvre déjà et ce qui manque ;
+1. la frontière qu'on te donne, avec ce qui la couvre déjà et ce qui manque —
+   ou, en mode ordinaire, la seule langue demandée ;
 2. ce qu'une personne réelle écrirait dans cette situation.
 
 Quand les deux sont en tension, la personne réelle gagne. Si tu penses qu'un cas

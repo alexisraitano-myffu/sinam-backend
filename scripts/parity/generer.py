@@ -107,7 +107,7 @@ def normaliser_id(cas: dict) -> None:
         cas["id"] = cas["id"].replace("--", "-")
 
 
-def valider(cas: dict) -> int:
+def valider(cas: dict, ordinaire: bool = False) -> int:
     """Les avertissements d'une capture. 0 = rien à signaler."""
     alertes = 0
     inconnus = set(cas) - CHAMPS_CAPTURE
@@ -118,7 +118,12 @@ def valider(cas: dict) -> int:
         print(f"⚠ {cas.get('id')} : n'écrit pas les étiquettes {sorted(inconnus)}, "
               f"c'est le travail d'etiqueter.py", file=sys.stderr)
         alertes += 1
-    for champ in ("id", "text", "frontiere", "why"):
+    # En mode ordinaire une capture ne vise AUCUNE frontière, et en réclamer
+    # une pousserait le modèle à en inventer, ce qui fausserait le compte de
+    # couverture au lieu de le remplir.
+    obligatoires = ("id", "text", "why") if ordinaire \
+        else ("id", "text", "frontiere", "why")
+    for champ in obligatoires:
         if not str(cas.get(champ) or "").strip():
             print(f"⚠ {cas.get('id', '?')} : `{champ}` vide", file=sys.stderr)
             alertes += 1
@@ -127,24 +132,59 @@ def valider(cas: dict) -> int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("frontiere", help="le code exact, ex. R4b, G-SVO, P-TYPE")
+    ap.add_argument("frontiere", nargs="?",
+                    help="le code exact, ex. R4b, G-SVO, P-TYPE. Omis avec "
+                         "--ordinaire, qui ne vise aucune frontière.")
     ap.add_argument("--combien", type=int, default=6)
     ap.add_argument("--modele", default="anthropic:claude-haiku-4-5-20251001")
+    ap.add_argument("--ordinaire", action="store_true",
+                    help="écrire du volume BANAL au lieu de cas de bord. Le "
+                         "corpus sert aussi de spécification si on entraîne un "
+                         "modèle dessus, et ses proportions deviennent alors "
+                         "l'a priori du modèle : un corpus fait uniquement de "
+                         "bords enseignerait un monde où tout est ambigu.")
+    ap.add_argument("--langue", default="fr",
+                    help="fr, en, … La cible du corpus est 30 %% d'anglais, et "
+                         "il en portait 11 %% au 2026-08-29 : la proportion "
+                         "n'a aucune importance pour une suite de tests et "
+                         "enseignerait « le français est le défaut » à un "
+                         "modèle entraîné.")
     args = ap.parse_args()
 
-    ligne = ligne_de_frontiere(args.frontiere)
-    detail = precisions(args.frontiere)
+    if args.ordinaire == bool(args.frontiere):
+        raise SystemExit(
+            "Choisir l'un des deux : un code de frontière pour des cas de "
+            "bord, ou --ordinaire pour du volume banal. Les deux ensemble "
+            "n'ont pas de sens, aucun des deux non plus.")
+
     systeme = (_ICI / "generation.md").read_text()
-    ici, ailleurs = textes_existants(args.frontiere)
+    if args.ordinaire:
+        # Tout le corpus sert de garde anti-doublon : sans frontière visée, il
+        # n'y a plus de « ici » et « ailleurs », il n'y a qu'un seul tas.
+        ici, ailleurs = [], [c["text"] for jeu in corpus.SETS.values() for c in jeu]
+        entete = [
+            f"Mode ORDINAIRE. Aucune frontière à viser. Langue : {args.langue}.",
+            "",
+            "Écris des captures BANALES, celles qu'une personne tape sans y "
+            "penser. Si tu hésites en écrivant l'une d'elles, c'est un cas de "
+            "bord et il n'a pas sa place ici. N'écris pas le champ `frontiere`.",
+            "",
+        ]
+    else:
+        ici, ailleurs = textes_existants(args.frontiere)
+        detail = precisions(args.frontiere)
+        entete = [
+            f"Frontière à couvrir : {args.frontiere}",
+            "",
+            "Sa ligne dans la carte des frontières, telle quelle :",
+            ligne_de_frontiere(args.frontiere),
+            "",
+            ("Ce que la carte précise en plus sur cette frontière :\n\n"
+             + "\n\n".join(detail) + "\n") if detail else "",
+        ]
 
     demande = "\n".join([
-        f"Frontière à couvrir : {args.frontiere}",
-        "",
-        "Sa ligne dans la carte des frontières, telle quelle :",
-        ligne,
-        "",
-        ("Ce que la carte précise en plus sur cette frontière :\n\n"
-         + "\n\n".join(detail) + "\n") if detail else "",
+        *entete,
         f"Le temps de référence est {TODAY}, un lundi. Écris tes dates en "
         f"relatif, comme une personne le fait ; les résoudre n'est pas ton "
         f"travail.",
@@ -190,7 +230,7 @@ def main() -> None:
                   f"écarté — « {double} »", file=sys.stderr)
             mauvais += 1
             continue
-        mauvais += valider(cas)
+        mauvais += valider(cas, args.ordinaire)
         bons += 1
         print(json.dumps(cas, ensure_ascii=False))
 

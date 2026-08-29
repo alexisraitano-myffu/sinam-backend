@@ -33,6 +33,13 @@ OLLAMA_URL = "http://localhost:11434/api/chat"
 # compare à un cas mesuré sur Haiku sans traduction au milieu.
 GEMINI_URL = ("https://generativelanguage.googleapis.com/v1beta/openai/"
               "chat/completions")
+# Borne la réflexion de Gemini 3.x. Sans elle, un lot de 12 captures à
+# étiqueter a rendu 319 jetons visibles sur un budget de 8000 et un
+# `finish_reason=length` : tout le reste est parti en raisonnement, qui compte
+# dans `max_tokens` sans apparaître dans `completion_tokens`. Mesuré le
+# 2026-08-29. "none" éteindrait tout mais 3.6-flash le refuse en HTTP 400, donc
+# "low" est le seul réglage qui vaille pour les deux modèles à la fois.
+GEMINI_REASONING = "low"
 # Assez large pour le classifieur (~4 500 tokens) + la capture + la sortie JSON.
 # Volontairement pas énorme : un num_ctx géant réserve du KV-cache pour rien et
 # fausse la mesure d'empreinte mémoire (leçon SYN-154, cf. maxNumTokens 8192→6144).
@@ -238,6 +245,7 @@ def _call_gemini(model: str, system_blocks: list[str], user: str, max_tokens: in
                      {"role": "user", "content": user}],
         "max_tokens": max_tokens,
         "temperature": temperature,
+        "reasoning_effort": GEMINI_REASONING,
     }
     if schema is not None:
         # Décodage contraint, même intention que le `format` d'Ollama : les

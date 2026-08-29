@@ -81,6 +81,22 @@ Ne remplis donc que ce que tu sais **dériver d'une règle écrite**. Sur une
 capture qui ne parle pas de dates, n'écris pas `event_date`. Sur une capture
 sans personne nommée, n'écris pas `owner`.
 
+**`facts_min` est celle que tu oublieras**, mesuré le 2026-08-29 : les deux
+modèles essayés l'ont omise trois fois sur huit captures, plus que tout autre
+champ. Elle se pose dès qu'une capture énonce quelque chose de DURABLE sur
+quelqu'un ou quelque chose — un métier, un lien de famille, une ville, une
+condition qui dure — et elle compte les faits ET les relations. Un lien entre
+deux entités nommées compte pour UN, jamais deux : « Sofia est la sœur de
+Thibault et elle habite à Rennes » vaut `facts_min: 2`, la relation plus la
+ville. Une capture qui n'enseigne rien de durable ne la porte pas ; c'est le
+seul cas où l'omettre est juste.
+
+C'est un **plancher**, pas un compte exact : pose le nombre dont tu es SÛR, pas
+celui que tu espères. Sur une capture dense qui pourrait rendre quatre faits,
+`facts_min: 2` passe dès que le moteur en rend deux ou plus, tandis que
+`facts_min: 4` le fait échouer pour une réponse défendable. Un plancher trop
+haut n'exige pas mieux, il invente une régression.
+
 Il te faut malgré tout **au moins une assertion** par cas. Un cas qui n'asserte
 rien passerait pour vert en n'ayant rien mesuré, ce qui est le pire état
 possible pour un corpus. Si vraiment aucune assertion ne tient, c'est que la
@@ -88,17 +104,25 @@ capture ne sert à rien : dis-le dans `why` et pose `"ambigu": true`.
 
 ---
 
-## Les cas où la bonne réponse n'est pas exprimable
+## Une capture peut laisser PLUSIEURS souvenirs
 
-Le schéma de sortie n'accepte **qu'un seul souvenir par capture** (« exactly ONE
-atomic_note per capture, or none »). Sur « J'ai appelé le dentiste ce matin, il
-faut que je rappelle jeudi », le moteur garde la tâche et perd l'appel déjà
-passé : les deux réponses sont défendables et aucune n'est juste.
+⚠ **Cette section disait le contraire jusqu'au 2026-08-28**, et si tu tiens
+encore de mémoire qu'« un seul souvenir par capture » est la règle, c'est
+périmé. Le schéma rend désormais une LISTE. Sur « J'ai appelé le dentiste ce
+matin, il faut que je rappelle jeudi », le moteur garde les DEUX : l'épisode
+déjà vécu et la tâche encore à faire. Il n'y a plus de choix arbitraire à
+esquiver, donc plus de raison d'omettre `souvenir`.
 
-Sur ces cas : **omets `souvenir`**. Une étiquette posée là mesure
-un choix arbitraire, pas une règle. Asserte ce qui **survit** quoi qu'il arrive
-(`drop_guard`, `facts_min`, `entity_expected`), et dis dans `why` ce que la
-capture aurait dû laisser en entier.
+Quand une capture en laisse plusieurs, **nomme dans `souvenir` celui qui porte
+la frontière que tu testes, et ajoute `"memories": N`** avec leur nombre. Sans
+ce compte, une capture hachée en trois morceaux et une capture rendue en un
+seul passent toutes les deux pour vertes.
+
+Un second souvenir n'est dû que si la capture demanderait deux LIGNES dans un
+carnet : parce que l'une est faite et l'autre pas, parce qu'elles sont dues à
+deux personnes différentes, ou parce que clôturer l'une ne dirait rien de
+l'autre. Une seconde phrase qui ne fait que DÉCRIRE la première n'en fait pas
+deux. Trois souvenirs n'est presque jamais juste.
 
 ---
 

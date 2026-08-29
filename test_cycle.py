@@ -37,7 +37,7 @@ def test_atomic_notes_has_episodic_columns(isolated_db):
 
 
 # ── Episodic note writer ─────────────────────────────────────────────────────
-# SYN-111: episodic notes flow through the core's routing (_process_entry with
+# episodic notes flow through the core's routing (_process_entry with
 # the classifier's atomic_note), like production — the legacy writer is gone.
 
 def _process(classified: dict, entry_id: int = 1, content: str = "capture de test"):
@@ -104,7 +104,7 @@ def test_episodic_note_is_searchable(isolated_db):
 
 
 # ── Entity creation (decoupled from fact confidence) ─────────────────────────
-# SYN-111: routing lives in the core — the hand-built `resolved` dicts become
+# routing lives in the core — the hand-built `resolved` dicts become
 # classifier-shaped `classified` dicts driven through `_process_entry` (the
 # core resolves entities itself against the database).
 
@@ -288,7 +288,7 @@ def test_nameless_entity_skipped(isolated_db):
     assert _entities() == []
 
 
-# ── Intentions (SYN-78) ──────────────────────────────────────────────────────
+# ── Intentions ───────────────────────────────────────────────────────────────
 
 def test_intention_object_content_is_coerced_to_text(isolated_db):
     """Haiku sometimes returns ephemeral_content as an object ({'text': …}) or
@@ -330,7 +330,7 @@ def _ancre_de_note_durable():
 def test_durable_note_anchor_proposes_the_entity(isolated_db):
     """L'ancre d'une note durable PROPOSE la fiche, elle ne la crée plus.
 
-    SYN-86 avait ouvert cette quatrième condition parce qu'une entité sans fait
+    Cette quatrième condition avait été ouverte parce qu'une entité sans fait
     tombait sous le garde-fou anti-bruit : la date d'un salon vit dans la note
     de l'événement, pas dans un fait. La raison tient toujours, et l'ancre est
     conservée telle quelle — c'est sa CONSÉQUENCE qui change. Une fiche est
@@ -374,7 +374,7 @@ def test_le_repli_remet_la_creation_directe(isolated_db, monkeypatch):
 
 
 def test_validation_resolves_entity_by_alias(isolated_db):
-    """SYN-87: confirming a pending fact whose entity_canonical is an ALIAS must
+    """Confirming a pending fact whose entity_canonical is an ALIAS must
     land on the canonical entity, not spawn a duplicate shell."""
     import json as _json
     from db import get_connection
@@ -399,7 +399,7 @@ def test_validation_resolves_entity_by_alias(isolated_db):
     assert owner == "e-ch"          # fact landed on the canonical entity
 
 
-# ── Re-summary (SYN-89) ──────────────────────────────────────────────────────
+# ── Re-summary ───────────────────────────────────────────────────────────────
 
 def test_fact_writes_flag_summary_stale(isolated_db):
     """Any fact write (insert via facts_store, lifecycle via API helper) must

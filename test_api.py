@@ -136,7 +136,7 @@ def test_graph_ego(client):
 
 
 def test_graph_default_is_entities_only(client):
-    """SYN-68 — the legacy shape is preserved: no notes, no cluster pass."""
+    """The legacy shape is preserved: no notes, no cluster pass."""
     _seed_graph()
     g = client.get("/graph").json()
     assert {n["kind"] for n in g["nodes"]} == {"entity"}
@@ -144,7 +144,7 @@ def test_graph_default_is_entities_only(client):
 
 
 def test_graph_map_adds_notes_and_clusters(client):
-    """SYN-68 — include_notes adds atomic_notes as a 2nd node kind with mention
+    """include_notes adds atomic_notes as a 2nd node kind with mention
     edges; cluster tags every node with a community_id."""
     _seed_graph()
     conn = _conn()
@@ -264,7 +264,7 @@ def test_semantic_edges_group_entities_without_a_relation(client):
 
 
 def test_graph_layout_is_deterministic_and_free_to_move(client):
-    """Positions are no longer persisted (that was SYN-69's `node_positions`).
+    """Positions are no longer persisted (that was the `node_positions` table).
     The solver is deterministic instead: the same graph always draws the same
     map. Adding an entity is allowed to move the others, by decision — a memory
     that grows redraws itself."""
@@ -292,7 +292,7 @@ def test_graph_layout_is_deterministic_and_free_to_move(client):
 
 
 def test_graph_anti_hairball_filters(client):
-    """SYN-71 — the five filters compose and a hard node cap always applies."""
+    """The five filters compose and a hard node cap always applies."""
     _seed_graph()  # e1 Marie + e2 Alexis (ms default 1.0) with a relation
     conn = _conn()
     try:
@@ -333,13 +333,13 @@ def test_graph_anti_hairball_filters(client):
 
 
 def test_graph_clusters_section(client, monkeypatch):
-    """SYN-70 — clusters=true adds labelled regions with a hull. Force the
+    """clusters=true adds labelled regions with a hull. Force the
     fallback (factory → None) so the test stays offline and deterministic
     regardless of whether an Anthropic key is configured."""
     import api.app as appmod
     monkeypatch.setattr(appmod, "_anthropic_client_factory", lambda: None)
     _seed_graph()
-    # A region needs ≥3 nodes (SYN-70 MIN_CLUSTER_SIZE), so add a third entity
+    # A region needs ≥3 nodes (MIN_CLUSTER_SIZE), so add a third entity
     # tied into the e1–e2 pair to form one community of three.
     conn = _conn()
     try:
@@ -371,7 +371,7 @@ def test_entity_detail(client):
     assert any(r["entity_to"] == "Alexis" for r in d["relations"])
 
 
-# ── Semantic suggestions (SYN-62) ─────────────────────────────────────────────
+# ── Semantic suggestions ──────────────────────────────────────────────────────
 
 def _seed_similar():
     """Insert vectorized entities so /similar has something to score."""
@@ -435,7 +435,7 @@ def test_entity_similar_404_unknown(client):
     assert client.get("/entity/does-not-exist/similar").status_code == 404
 
 
-# ── Entity-type proposals (SYN-58) ────────────────────────────────────────────
+# ── Entity-type proposals ─────────────────────────────────────────────────────
 
 def _seed_type_proposal():
     """A pending entity + its type proposal, as the cycle would create them."""
@@ -523,7 +523,7 @@ def test_pending_entity_hidden_from_graph(client):
     assert all(n["id"] != eid for n in g["nodes"]), "pending entity must not leak into graph"
 
 
-# ── Lifecycle: archive / obsolete (SYN-59) ────────────────────────────────────
+# ── Lifecycle: archive / obsolete ─────────────────────────────────────────────
 
 def _seed_entity_with_fact(name="Michel", predicate="works_at", value="Mistral"):
     import uuid as _uuid
@@ -581,7 +581,7 @@ def test_lifecycle_404_on_unknown(client):
 
 
 def test_supersede_visible_through_entity_endpoint(client):
-    """SYN-37 end-to-end through the API: a second works_at hides the first."""
+    """Supersede end-to-end through the API: a second works_at hides the first."""
     eid, fid1 = _seed_entity_with_fact(value="Stripe")
     from facts_store import insert_fact
     conn = _conn()
@@ -669,7 +669,7 @@ def test_changes_returns_derived_state(client):
 
 def test_changes_excludes_embedding_blob(client):
     """An entity with an embedding (the normal case) must not 500 /changes —
-    the BLOB is dropped before JSON encoding (SYN-10)."""
+    the BLOB is dropped before JSON encoding."""
     import struct
     conn = _conn()
     try:
@@ -685,7 +685,7 @@ def test_changes_excludes_embedding_blob(client):
     assert all("embedding" not in e for e in r.json()["entities"])
 
 
-# ── Atomic note detail (SYN-64) ──────────────────────────────────────────────
+# ── Atomic note detail ───────────────────────────────────────────────────────
 
 def test_atomic_note_detail(client):
     conn = _conn()
@@ -723,7 +723,7 @@ def test_auth_enforced_when_token_set(client, monkeypatch):
     assert client.get("/health").status_code == 200
 
 
-# ── Fiche edits (SYN-82) ─────────────────────────────────────────────────────
+# ── Fiche edits ──────────────────────────────────────────────────────────────
 
 def test_entity_rename_keeps_old_name_as_alias(client):
     conn = _conn()
@@ -778,7 +778,7 @@ def test_fact_user_edit_sets_confidence_to_one(client):
     assert client.patch("/fact/nope", json={"value": "x"}).status_code == 404
 
 
-# ── Relations (SYN-84) ───────────────────────────────────────────────────────
+# ── Relations ────────────────────────────────────────────────────────────────
 
 def test_relation_create_update_delete(client):
     conn = _conn()
@@ -816,7 +816,7 @@ def test_relation_create_update_delete(client):
     assert client.delete("/relation/rel-x").status_code == 404
 
 
-# ── Note kinds (SYN-85) ──────────────────────────────────────────────────────
+# ── Note kinds ───────────────────────────────────────────────────────────────
 
 def test_note_kinds_filter_and_archive(client):
     conn = _conn()
@@ -955,7 +955,7 @@ def test_pending_relations_queue_and_confirm(client):
     assert client.delete("/relation/r-sure").status_code == 200
 
 
-# ── Fact categories (SYN-88) ─────────────────────────────────────────────────
+# ── Fact categories ──────────────────────────────────────────────────────────
 
 def test_entity_facts_expose_category(client):
     conn = _conn()
@@ -973,7 +973,7 @@ def test_entity_facts_expose_category(client):
     assert facts[0]["category"] == "work"
 
 
-# ── SYN-23 — reinforce + dated tasks ─────────────────────────────────────────
+# ── reinforce + dated tasks ──────────────────────────────────────────────────
 
 def test_reinforce_resets_memory_strength(client):
     conn = _conn()
@@ -1049,7 +1049,7 @@ def test_digest_gather_includes_dated_task_in_upcoming(isolated_db):
     assert all(t["title"] != "rappeler le dentiste" for t in week["open_tasks"])  # not double-counted
 
 
-# ── Code pairing, Mac↔Mac (SYN-137) ──────────────────────────────────────────
+# ── Code pairing, Mac↔Mac ────────────────────────────────────────────────────
 
 def _fresh_pairing_state():
     from api import join, pairing

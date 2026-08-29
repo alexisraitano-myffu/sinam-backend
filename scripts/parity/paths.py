@@ -1,4 +1,4 @@
-"""SYN-171 — extraire le CHEMIN DE DÉCISION pris par chaque modèle, cas par cas.
+"""Extraire le CHEMIN DE DÉCISION pris par chaque modèle, cas par cas.
 
 Le score dit « 10 sur 12 ». Il ne dit pas *où* le modèle a bifurqué. Or les trois
 axes que `classifier.md` déclare ORTHOGONAUX — `atomic_note`,
@@ -24,7 +24,7 @@ def path_of(parsed: dict | None) -> dict:
     """Les branches prises. `None` = le modèle n'a rien produit d'exploitable."""
     if not parsed:
         return {"parsed": False}
-    # SYN-207 — la liste plutôt que le scalaire, avec le repli sur l'ancienne
+    # la liste plutôt que le scalaire, avec le repli sur l'ancienne
     # forme : une baseline enregistrée avant ce jour doit rester relisible.
     from scripts.parity.score import souvenirs
     liste = souvenirs(parsed)

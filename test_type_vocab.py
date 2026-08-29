@@ -1,5 +1,5 @@
 """
-Offline tests for SYN-58 — extensible entity-type vocabulary via pending.
+Offline tests for extensible entity-type vocabulary via pending.
 
 No ANTHROPIC_API_KEY: we drive the core's routing through `_process_entry`
 with hand-built classified dicts (the classify step that emits type_proposal
@@ -96,7 +96,7 @@ def test_project_shell_guard_downgrades_to_concept(isolated_db):
 
 
 def test_ephemeral_with_entities_still_captures_them(isolated_db, monkeypatch):
-    """SYN-58: an ephemeral capture that ALSO names a durable entity must not
+    """An ephemeral capture that ALSO names a durable entity must not
     discard it. The recipe entity (+ type proposal) is created and the expiring
     intention is recorded; the atomic_note is suppressed (no double-store)."""
     import dream_cycle.cycle as cyc

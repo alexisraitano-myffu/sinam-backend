@@ -1,5 +1,5 @@
 """
-SYN-70 — cluster labels (Haiku) + hulls for the living map.
+cluster labels (Haiku) + hulls for the living map.
 
 Each community on the map is a named, shaded region. Two pieces:
 

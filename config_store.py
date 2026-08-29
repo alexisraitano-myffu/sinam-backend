@@ -69,7 +69,7 @@ def set_owner_entity_id(entity_id: str | None) -> None:
 
 
 def get_instance_id() -> str:
-    """Stable identity of THIS backend's database (SYN-73). Generated once and
+    """Stable identity of THIS backend's database. Generated once and
     persisted, so a replica can detect it's now talking to a different master /
     a fresh DB (instance_id changed → its sync cursor is invalid → full resync)."""
     data = _load()

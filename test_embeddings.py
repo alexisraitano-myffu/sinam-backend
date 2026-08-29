@@ -141,7 +141,7 @@ def test_search_memory_text_fallback_when_no_vectors(isolated_db, monkeypatch):
 
 
 
-# ── SYN-118 : chunking des textes longs ──────────────────────────────────────
+# ── chunking des textes longs ────────────────────────────────────────────────
 
 def test_long_note_searchable_by_its_tail(isolated_db, monkeypatch):
     """A ~450-token note (a weekly digest) used to be vectorized on its first

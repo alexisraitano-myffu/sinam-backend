@@ -1,4 +1,4 @@
-# Harnais de parité modèles (SYN-171)
+# Harnais de parité modèles
 
 Valider un modèle candidat **avant** de l'intégrer, et pouvoir rejouer la mesure
 d'une commande. Trois fois de suite — Gemma E4B, le `.litertlm` mobile, E2B — la
@@ -92,7 +92,7 @@ Le code de sortie vaut 1 en cas de NO-GO : utilisable en CI.
 * **`num_ctx` d'Ollama vaut 2048 par défaut** selon les modèles : il tronque le
   début du prompt sans rien dire. On le fixe explicitement (8192) *et* on relit
   `prompt_eval_count` pour vérifier ce que le modèle a réellement reçu.
-* **Ne pas conclure sur la latence depuis une machine 8 Go.** SYN-124 a mesuré
+* **Ne pas conclure sur la latence depuis une machine 8 Go.** Le harnais de juillet 2026 a mesuré
   76 s/capture dominées par 6,2 Go de swap. La justesse, elle, se mesure sans
   réserve.
 * **Un modèle à raisonnement** consomme son budget de sortie en `thinking` avant
@@ -122,9 +122,9 @@ Le code de sortie vaut 1 en cas de NO-GO : utilisable en CI.
 restent accessibles en local, jamais versionnées.
 
 * `GATE_CASES` — 12 cas, un par mode de défaillance.
-* `HARD_CASES` — les 29 cas durs de SYN-124, portés depuis le document Linear où
+* `HARD_CASES` — les 29 cas durs de juillet 2026, portés depuis le document externe où
   ils ne survivaient que recopiés.
-* `ATOMICITY_CASES` — la règle SYN-98 (extraction **par information**), qu'aucun
+* `ATOMICITY_CASES` — la règle d'extraction **par information**, qu'aucun
   test ne couvrait.
 * `AMBIGUOUS` — les cas que le prompt lui-même ne tranche pas. Observés, exclus
   du décompte d'échec. Aujourd'hui : `e4`, raté par tous les modèles mesurés,
@@ -138,7 +138,7 @@ tranche pas n'est pas un échec du modèle : c'est un défaut du prompt.
 `python -m scripts.parity.scenario <modèle>`
 
 Les étages 1 et 2 classent une capture **dans le vide**. La production, elle,
-ajoute la mémoire de travail (SYN-93) : le fil des captures récentes, précédé de
+ajoute la mémoire de travail : le fil des captures récentes, précédé de
 « ⚠ n'extrais rien de ce bloc ». Cette consigne est respectée — rien n'est extrait
 du bloc — et pourtant **le bloc déplace la décision prise sur la capture
 courante**.
@@ -215,4 +215,4 @@ l'échafaudage des messages (« Projet : », « Synthèse actuelle : », « Enti
 « Titre : ») était en français. Haiku s'en sortait par bon sens ; E2B traduisait
 une matière anglaise en français. La cause n'était d'ailleurs pas le prompt mais
 l'ÉCHAFAUDAGE — vérifié en changeant l'un puis l'autre. Squelette repassé EN-base
-(SYN-119 était resté à moitié fait), et le cas est vert sur E2B.
+(la bascule EN-base des prompts était restée à moitié faite), et le cas est vert sur E2B.

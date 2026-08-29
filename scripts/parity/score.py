@@ -1,4 +1,4 @@
-"""SYN-184 — le scoring, en un seul endroit.
+"""Le scoring, en un seul endroit.
 
 Jusqu'ici il vivait dans `gate.py::_quality_notes`, donc il ne servait qu'aux 12
 cas de l'étage 1 : les 49 autres étaient ENREGISTRÉS et jamais jugés. C'est
@@ -103,7 +103,7 @@ AXES = {
 def souvenirs(parsed: dict) -> list[dict]:
     """Miroir de `routing.rs::souvenirs`. Sixième copie du core dans ce fichier.
 
-    `memories` est la forme canonique depuis SYN-207 ; les champs au singulier
+    `memories` est la forme canonique depuis le passage aux souvenirs multiples ; les champs au singulier
     restent lus en repli, parce qu'ils sont la sortie de toutes les baselines
     enregistrées avant ce jour. Un tableau à un élément se relit comme un
     scalaire, donc les axes existants ne changent pas de sens.
@@ -394,7 +394,7 @@ def _all_facts(parsed: dict) -> list[dict]:
 
 
 def _count_durable(parsed: dict) -> int:
-    """Faits + relations. L'atomicité (SYN-98) se mesure sur les deux : un lien
+    """Faits + relations. L'atomicité se mesure sur les deux : un lien
     entre deux entités nommées sort en relation, jamais en fait, et compter les
     seuls faits sanctionnerait le modèle qui a raison."""
     return len(_all_facts(parsed)) + len(parsed.get("relations") or [])
@@ -435,7 +435,7 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
     if "note" in case and note != case["note"]:
         out.append(f"note attendue={case['note']} obtenue={note}")
 
-    # SYN-207 — une capture peut laisser PLUSIEURS souvenirs, donc les axes qui
+    # une capture peut laisser PLUSIEURS souvenirs, donc les axes qui
     # portaient sur LE souvenir portent maintenant sur l'ENSEMBLE : ils passent
     # si l'un d'eux satisfait l'attente. Sur une capture à un seul souvenir, qui
     # est le cas normal, ça ne change rien du tout.
@@ -456,7 +456,7 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         textes = " | ".join(m["note"][:40] for m in liste) or "aucun"
         out.append(f"souvenirs attendus={case['memories']} obtenus={len(liste)} ({textes})")
 
-    # SYN-182 — le propriétaire de l'action. None = l'auteur ; un nom veut dire
+    # le propriétaire de l'action. None = l'auteur; un nom veut dire
     # que la capture rapportait l'action de quelqu'un d'autre.
     if "owner" in case:
         vus = [m["owner"] for m in liste] or [None]

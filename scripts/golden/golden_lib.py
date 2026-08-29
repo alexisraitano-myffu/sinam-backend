@@ -1,5 +1,5 @@
 """
-Golden-parity helpers (SYN-111 / T2).
+Golden-parity helpers.
 
 Normalizes a sinam database into a comparable structure so two routing
 implementations (current Python vs Rust core) can be diffed on a frozen
@@ -130,7 +130,7 @@ def normalize_db(db_path) -> dict:
 
     notes = rows("SELECT n.*, (SELECT COUNT(*) FROM atomic_notes_vec v WHERE v.note_id = n.id)"
                  " AS has_vec FROM atomic_notes n")
-    # SYN-112: note ids are random uuid4 — sort/tokenize on natural keys.
+    # note ids are random uuid4 — sort/tokenize on natural keys.
     notes.sort(key=lambda n: (n["content"], n.get("kind") or "", str(n.get("provenance_capture_id"))))
     note_token = {n["id"]: f"N{i + 1}" for i, n in enumerate(notes)}
     out["atomic_notes"] = [

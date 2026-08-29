@@ -46,7 +46,7 @@ def _format_result(row: dict, search_type: str) -> dict:
 def _search_entities(query_vec: bytes, limit: int, conn) -> list[dict]:
     """
     Semantic search over the entity graph (thin adapter over the shared
-    `entity_search` scan — see SYN-60) mapped to the MCP result shape.
+    `entity_search` scan) mapped to the MCP result shape.
     """
     return [
         {
@@ -62,7 +62,7 @@ def _search_entities(query_vec: bytes, limit: int, conn) -> list[dict]:
 
 
 def _search_resources(query_vec: bytes, limit: int, conn) -> list[dict]:
-    """SYN-21: semantic search over stored resources, mapped to the MCP shape."""
+    """Semantic search over stored resources, mapped to the MCP shape."""
     return [
         {
             "id": r["id"],
@@ -137,7 +137,7 @@ def search_memory(query: str, limit: int = 5) -> str:
     # ── Step 1: vector search over notes + entities (local, no API key required)
     try:
         query_vec = embed_text(query)
-        # SYN-110: the KNN runs in the Rust core; the note rows themselves are
+        # the KNN runs in the Rust core; the note rows themselves are
         # fetched by id afterwards (hit order preserved, orphan vectors skipped).
         knn_hits = get_store().search_notes(query_vec, limit)
         conn = get_connection()
@@ -157,7 +157,7 @@ def search_memory(query: str, limit: int = 5) -> str:
                 ]
             entity_results = _search_entities(query_vec, limit, conn)
             resource_results = _search_resources(query_vec, limit, conn)
-            # SYN-19: a search hit is a light reactivation of the surfaced notes.
+            # a search hit is a light reactivation of the surfaced notes.
             hit_ids = [r["id"] for r in note_results if r.get("id") is not None]
             if hit_ids:
                 with conn:

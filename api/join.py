@@ -1,4 +1,4 @@
-"""SYN-137 — joiner-side orchestration of the code pairing (Mac↔Mac).
+"""Joiner-side orchestration of the code pairing (Mac↔Mac).
 
 The joiner is a VIRGIN install (no captures, no entities — enforced): it runs
 the SPAKE2 handshake against the member found on the LAN (mDNS, or an explicit

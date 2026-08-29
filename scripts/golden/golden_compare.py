@@ -1,5 +1,5 @@
 """
-SYN-111 golden parity: Rust routing vs the frozen Python reference.
+Golden parity: Rust routing vs the frozen Python reference.
 
 Runs the core's `golden_replay` example on the frozen corpus, normalizes its
 output database with the SAME normalizer as the Python reference, and diffs.

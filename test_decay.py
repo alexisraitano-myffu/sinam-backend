@@ -1,5 +1,5 @@
 """
-Offline tests for SYN-19 — Ebbinghaus memory_strength decay + reactivation.
+Offline tests for Ebbinghaus memory_strength decay + reactivation.
 
 Time is injected via the `now` parameter so the math is deterministic.
 """
@@ -78,7 +78,7 @@ def test_reactivation_only_targets_mentioned_notes(isolated_db):
 
 
 def test_entity_decay_old_vs_recent(isolated_db):
-    """SYN-68 — entities decay from last_mentioned like notes decay from
+    """Entities decay from last_mentioned like notes decay from
     last_reactivated_at."""
     from db import get_connection
     from dream_cycle.decay import apply_entity_decay

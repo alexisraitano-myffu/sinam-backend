@@ -1,5 +1,5 @@
 """
-SYN-23 — Weekly digest.
+Weekly digest.
 
 A cron-driven job (Monday 08h via launchd, see CLAUDE.md) that condenses the
 past week AND the week ahead into one durable note (`kind="digest"`). The API
@@ -10,10 +10,10 @@ hourly check once the machine is awake — so it never silently goes missing.
 - Retrospective: new entities, new facts, new notes, and the entities most
   reactivated over the window ("tendances").
 - Forward-looking: dated events in the next 7 days (incl. recurring birthdays,
-  both as event notes and as `has_birthday` facts — SYN-97) + open tasks — the
-  data SYN-85 made available, so the digest doubles as a Sunday review.
+  both as event notes and as `has_birthday` facts) + open tasks — the
+  data the dated-note work made available, so the digest doubles as a Sunday review.
 
-T5 (SYN-114): the logic lives in the core (`digest.rs`). `gather_week` is pure
+T5: the logic lives in the core (`digest.rs`). `gather_week` is pure
 SQL on the caller's connection (offline-testable); the French markdown is
 rendered by Haiku through the core's HTTP path with the prompt as DATA
 (`prompts/digest.md`, timeless rule — absolute dates only); the note write +
@@ -76,7 +76,7 @@ def has_content(week: dict) -> bool:
 
 # ── 2. Render to markdown (Haiku via the core) ────────────────────────────────────
 
-# SYN-23 : le prompt du digest est de la donnée (prompts/digest.md, repo
+# le prompt du digest est de la donnée (prompts/digest.md, repo
 # sinam-core, déployé dans ~/.synapse/prompts) — lu par le core.
 
 def summarize_digest(week: dict, *, client=None) -> str:
@@ -146,7 +146,7 @@ def generate_weekly_digest(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Génère le digest hebdomadaire (SYN-23).")
+    parser = argparse.ArgumentParser(description="Génère le digest hebdomadaire.")
     parser.add_argument("--dry-run", action="store_true", help="Affiche sans écrire en base.")
     parser.add_argument("--days", type=int, default=7, help="Fenêtre en jours (défaut 7).")
     parser.add_argument("--verbose", action="store_true", help="Logs détaillés.")

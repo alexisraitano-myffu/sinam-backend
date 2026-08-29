@@ -4,7 +4,7 @@ anthropic>=0.50.0
 # MCP server
 mcp>=1.9.0
 
-# Storage substrate (SYN-110): SQLite + sqlite-vec now live inside the Rust
+# Storage substrate: SQLite + sqlite-vec now live inside the Rust
 # core. The `sinam_core` wheel is built from the sinam-core repo
 # (crates/sinam-core-py, `maturin build --release`) and installed by hand —
 # it is not on PyPI yet. It must be the ONLY SQLite library in the process
@@ -30,7 +30,7 @@ uvicorn[standard]>=0.34.0
 # LAN auto-discovery (mDNS) — phones find the brain Mac without typing an IP
 zeroconf>=0.131.0
 
-# Mac<->Mac sync transport (SYN-112): the pull loop in api/sync_peers.py.
+# Mac<->Mac sync transport: the pull loop in api/sync_peers.py.
 # Was missing from a fresh install (prod venv had it transitively) — a clean
 # `pip install -r requirements.txt` could not start the API.
 requests>=2.31.0

@@ -1,4 +1,4 @@
-# SYN-184 — carte des frontières de décision
+# carte des frontières de décision
 
 À quoi ça sert : le ticket demande de couvrir **les arêtes**, pas d'être exhaustif
 sur ce que les gens écriront. Encore faut-il savoir où elles sont. Ce document
@@ -215,14 +215,14 @@ parasite coûte le plus cher : il crée une fiche.
 | P-CREATE′ | un LIEN vaut-il preuve de naissance ? | **tranché le 2026-08-26 : oui, il la fait naître sans demander.** Un lien ne s'écrit que si ses DEUX bouts existent : proposer l'un des deux ferait perdre le lien. Le choix était entre une fiche de trop et un lien perdu. Mesuré sur les 155 cas : 27 entités naissent par un fait durable, 27 par un lien seul, 18 passent en file |
 | PERS-b | personne désignée par un rôle et non par un nom (« ma mère », « mon dentiste ») | `f2` existe et n'asserte que `note=False` : personne ne dit si « ma mère » mérite un nœud |
 | PERS-c | homonymes : deux Marie dans la même mémoire | trou complet |
-| PERS-d | `aliases` : nom partiel puis nom complet | jamais asserté, et **jamais gouverné** (voir SYN-190) |
+| PERS-d | `aliases` : nom partiel puis nom complet | jamais asserté, et **jamais gouverné** (voir la gouvernance des prédicats) |
 
 ### NEG, les négations
 
 `x-negation` couvre l'action annulée et c'est tout. C'est une famille, pas une
 frontière.
 
-SYN-189 a ouvert `obsoleted_facts` dans la moitié graphe, et avec lui les deux
+Les propositions de négation ont ouvert `obsoleted_facts` dans la moitié graphe, et avec lui les deux
 axes `obsoletes` et `no_obsolete` de `score.py`. NEG-b et NEG-c sont donc
 écrivables. Les deux se valent en importance et doivent être écrits ENSEMBLE :
 une négation manquée laisse un faux durable sur la fiche, une négation de trop
@@ -231,7 +231,7 @@ retire une vérité, et personne ne remarque qu'un fait a disparu.
 | # | Frontière | Verdict |
 |---|---|---|
 | NEG-a | action annulée ⇒ la décision se garde, la tâche non | couvert, 1 cas |
-| NEG-b | négation d'un FAIT (« Pierre ne travaille plus chez Acme ») | **débloqué** (SYN-189) : asserter `obsoletes="works_at=Acme"`. Trou complet, écrivable dès maintenant |
+| NEG-b | négation d'un FAIT (« Pierre ne travaille plus chez Acme ») | **débloqué** : asserter `obsoletes="works_at=Acme"`. Trou complet, écrivable dès maintenant |
 | NEG-c | négation d'existence (« Marie n'a pas de chat ») | **débloqué** : asserter `no_obsolete=True` ET aucun fait. Une absence énoncée pour la première fois ne nie rien |
 | NEG-b′ | un REMPLACEMENT (« il a quitté Acme pour Globex ») | **tranché le 2026-08-26** : l'ancien passe en péremption ET le nouveau est créé avec la bonne valeur, les deux. L'étiquette du 25/08 disait le contraire (`no_obsolete`, le supersede faisant le reste) et comptait un succès comme un écart. Se mesure sur un sujet NOMMÉ : avec un pronom sans antécédent, rien ne s'attache, `entity_canonical` étant requis |
 | NEG-b″ | négation nuancée (« je crois qu'il a quitté Acme ») | **débloqué** : `no_obsolete=True`. Retirer une connaissance sur un peut-être est pire que la garder |
@@ -243,7 +243,7 @@ retire une vérité, et personne ne remarque qu'un fait a disparu.
 | # | Frontière | Verdict |
 |---|---|---|
 | PER-a | une capture qui périme un fait antérieur doit émettre le NOUVEAU fait, sur les 7 familles mono-valuées de `routing.rs:45` | trou complet, écrivable dès maintenant |
-| PER-b | renommage d'entité déclaré en capture | **débloqué** (SYN-188) : asserter `renamed_to="Sinam"`, et `no_rename=True` pour les deux confusions voisines — la simple mention du nom, et le surnom, qui est un alias |
+| PER-b | renommage d'entité déclaré en capture | **débloqué** : asserter `renamed_to="Sinam"`, et `no_rename=True` pour les deux confusions voisines — la simple mention du nom, et le surnom, qui est un alias |
 | PER-c | un état transitoire ne doit pas devenir un fait durable (`planned_new_name`) | **débloqué** : asserter `forbidden_predicate="planned"`. Le prompt interdit désormais tout prédicat qui encode une intention, `planned_*`, `future_*`, `upcoming_*`, `will_*` |
 
 La moitié qui relève du core ne peut pas être testée ici : le harnais fige le
@@ -251,7 +251,7 @@ contexte exprès, donc il n'a aucun état antérieur.
 
 ### EMO, la capture émotionnelle
 
-**Tranché le 2026-08-25 (SYN-191), 8 cas dans `emotion.jsonl`.** Le prompt ne
+**Tranché le 2026-08-25, 8 cas dans `emotion.jsonl`.** Le prompt ne
 disait qu'une chose, « A FEELING IS NOT AN ACHIEVEMENT », et seulement pour un
 ressenti collé à une activité routinière (`ep2`). La capture émotionnelle pure
 tombait en ligne 5 par défaut, sans que personne ne l'ait décidé.
@@ -328,8 +328,8 @@ Restent à ouvrir :
 2. `evidence_strength`, qui rend mesurables les deux files de faits.
 3. `relation_confidence`, pour la file des relations.
 4. `proj` doit dire QUEL projet, pas seulement qu'il y en a un.
-5. `category`, une fois SYN-190 fait.
-6. Le prédicat nommé, inécrivable tant que SYN-190 n'est pas fait.
+5. `category`, une fois la gouvernance des prédicats faite.
+6. Le prédicat nommé, inécrivable tant que la gouvernance des prédicats n'est pas faite.
 
 ## 9. Provenance : ce qu'on prend et ce qu'on jette
 
@@ -389,7 +389,7 @@ ne les touche.
 
 ### Troisième lot : ce que les arbitrages ont débloqué
 
-`emotion.jsonl` (8 cas, SYN-191) et `renommage.jsonl` (6 cas, SYN-188). Ces deux
+`emotion.jsonl` (8 cas) et `renommage.jsonl` (6 cas). Ces deux
 familles n'étaient pas des trous d'écriture mais des trous de DÉCISION : rien
 n'y était étiquetable tant que le prompt ne tranchait pas.
 

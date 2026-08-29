@@ -1,8 +1,8 @@
 """
-SYN-21 — real resource pipeline: fetch a URL, extract readable text, summarise
+real resource pipeline: fetch a URL, extract readable text, summarise
 it with Haiku, and store it (searchable via its embedded summary).
 
-T5 (SYN-114): the pipeline lives in the core (`resources.rs`) — URL scan, the
+T5: the pipeline lives in the core (`resources.rs`) — URL scan, the
 dependency-free HTML extraction, the network fetch (ureq), the LLM summary
 (prompt = data `prompts/resource-summary.md`, snippet fallback offline/on
 error) and the idempotent-per-URL store + embed. Everything runs on the

@@ -1,4 +1,4 @@
-"""SYN-171 étage 1 — le gate. Rendre un NO-GO en minutes, pas en soirée.
+"""Étage 1 — le gate. Rendre un NO-GO en minutes, pas en soirée.
 
 Ne mesure PAS la qualité : cherche les quatre vices qui rendent un modèle
 inutilisable quelle que soit son intelligence, et s'arrête au premier trouvé.
@@ -65,7 +65,7 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
     # décroissance et de l'affichage. Un modèle qui invente une valeur hors
     # énumération fait dégrader la note en "note" par le core (routing.rs:196) —
     # une tâche silencieusement perdue. La valeur n'a de sens qu'avec une note.
-    # SYN-207 — un kind par souvenir désormais : il suffit d'UN hors énumération
+    # un kind par souvenir désormais : il suffit d'UN hors énumération
     # pour que le core le dégrade en "note", donc pour perdre une tâche.
     from scripts.parity.score import souvenirs
     for m in souvenirs(parsed):
@@ -91,7 +91,7 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="SYN-171 — gate de parité (étage 1)")
+    ap = argparse.ArgumentParser(description="gate de parité (étage 1)")
     ap.add_argument("model", help="provider:modèle, ex. ollama:qwen2.5:3b-instruct-q4_K_M")
     ap.add_argument("--prompt", help="classifier.md alternatif (variante compacte…)")
     ap.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)

@@ -1,8 +1,8 @@
-"""SYN-171 — le contexte envoyé au modèle, figé et reproductible.
+"""Le contexte envoyé au modèle, figé et reproductible.
 
 **Une seule source de vérité.** Les blocs déterministes (types actifs, auteur,
 date figée, chargement du prompt, distillation de la sortie) vivent déjà dans
-`scripts/lang_harness.py` depuis SYN-121. On les réimporte au lieu d'en faire
+`scripts/lang_harness.py` depuis le harnais multilingue. On les réimporte au lieu d'en faire
 une copie : deux définitions du contexte dériveraient, et deux mesures prises
 sous des contextes différents ne se comparent pas — ce qui ôterait au harnais
 la seule chose qu'il apporte.
@@ -30,7 +30,7 @@ from scripts.lang_harness import (  # noqa: F401 — réexports volontaires
 )
 
 # Budget de sortie du classifieur, tel que le core le fixe (`llm.rs`). Relevé de
-# 1536 à 4096 en juin (SYN-77) après des classifications tronquées en silence.
+# 1536 à 4096 en juin après des classifications tronquées en silence.
 CLASSIFY_MAX_TOKENS = 4096
 
 
@@ -41,7 +41,7 @@ def classifier_system(prompt_path: Path | None = None) -> list[str]:
     return [prompt, static_types_block(), static_owner_block()]
 
 
-# ── Mode scénario (SYN-171) ─────────────────────────────────────────────────
+# ── Mode scénario ───────────────────────────────────────────────────────────
 #
 # Les deux fonctions ci-dessous n'existent QUE pour le mode scénario. Les étages
 # 1 et 2 continuent d'appeler `classifier_system` : leurs baselines restent donc
@@ -51,7 +51,7 @@ def classifier_system(prompt_path: Path | None = None) -> list[str]:
 # stables en appel isolé se comportent AUTREMENT dans le vrai cycle — la note
 # d'anniversaire disparaît (et sa confiance passe de 0,55 à 1,0, donc plus
 # d'arbitrage) et l'épisode d'une course faite disparaît aussi. La cause n'est
-# pas le prompt : c'est la MÉMOIRE DE TRAVAIL (SYN-93), un bloc que la prod
+# pas le prompt : c'est la MÉMOIRE DE TRAVAIL, un bloc que la prod
 # ajoute et que le harnais n'envoyait jamais. Un harnais qui ne peut pas
 # reproduire la prod ne peut pas la valider.
 

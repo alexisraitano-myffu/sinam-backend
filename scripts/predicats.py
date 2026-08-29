@@ -1,4 +1,4 @@
-"""SYN-190 — la santé du vocabulaire de prédicats, et sa normalisation.
+"""La santé du vocabulaire de prédicats, et sa normalisation.
 
 Le bloc de contexte (`llm.rs::active_predicates_block`) montre au modèle les
 prédicats déjà en usage pour qu'il les réutilise. Ça n'a de sens que si ce
@@ -177,7 +177,7 @@ def cmd_proposer(args) -> int:
     Deux sources, gardées séparées dans la sortie parce qu'elles n'ont pas la même
     fiabilité : la signature lexicale (précise, peu de rappel) et le voisinage par
     embedding (l'inverse). La deuxième n'est qu'une PISTE : c'est le même outil que
-    la fusion d'entités de SYN-61, où il propose et n'applique jamais.
+    la fusion d'entités, où il propose et n'applique jamais.
     """
     conn = get_connection()
     sortie: dict = {"facts": [], "relations": [], "granularite": [],
@@ -270,7 +270,7 @@ def cmd_appliquer(args) -> int:
                 print(f"  {ancien:38} → {canon:24} ({n} ligne(s))")
                 if args.pour_de_vrai:
                     # ⚠ Les entités touchées voient leur résumé devenir obsolète :
-                    # il est DÉRIVÉ des faits actifs (SYN-89). Sans ce marquage, la
+                    # il est DÉRIVÉ des faits actifs. Sans ce marquage, la
                     # fiche continue d'afficher une phrase construite sur l'ancien
                     # nom, et plus rien ne la régénère.
                     conn.execute(
@@ -313,7 +313,7 @@ def cmd_appliquer(args) -> int:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="SYN-190 — vocabulaire de prédicats")
+    ap = argparse.ArgumentParser(description="vocabulaire de prédicats")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("rapport", help="santé du vocabulaire")

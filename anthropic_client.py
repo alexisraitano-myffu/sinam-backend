@@ -1,4 +1,4 @@
-"""Single place that builds the Anthropic client (SYN-105 — fuel-proxy seam).
+"""Single place that builds the Anthropic client (fuel-proxy seam).
 
 Centralised on purpose: the closed-beta "fuel proxy" (where I lend testers my
 Anthropic credits) is meant to be *disposable*. The entire integration lives in

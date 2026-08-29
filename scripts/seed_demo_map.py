@@ -1,5 +1,5 @@
 """
-Throwaway synthetic seeder for the living map (SYN-64 dogfood).
+Throwaway synthetic seeder for the living map (dogfood).
 
 Injects ~150 entities in 10 dense thematic communities + inter-theme bridges +
 ~50 atomic notes, with varied memory_strength / last_mentioned so the map shows

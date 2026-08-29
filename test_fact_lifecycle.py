@@ -1,6 +1,6 @@
 """
-Offline tests for SYN-37 — last-writes-wins supersede in facts_store.insert_fact.
-(SYN-59 manual archive/obsolete endpoints + view filters are tested in test_api.py.)
+Offline tests for last-writes-wins supersede in facts_store.insert_fact.
+(manual archive/obsolete endpoints + view filters are tested in test_api.py.)
 """
 
 import sys

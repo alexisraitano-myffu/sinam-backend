@@ -1,5 +1,5 @@
 """
-Offline tests for SYN-70 — cluster labels (Haiku, cached) + convex hulls.
+Offline tests for cluster labels (Haiku, cached) + convex hulls.
 
 The Haiku call is stubbed (no API key needed); the cache and hull geometry are
 exercised directly.

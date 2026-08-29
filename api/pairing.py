@@ -1,4 +1,4 @@
-"""Device pairing sessions (SYN-128) — the MEMBER side.
+"""Device pairing sessions — the MEMBER side.
 
 The member (a device already in the space, holding the data + token + optional
 key) shows a QR and, after the user approves, hands a joining device the
@@ -42,7 +42,7 @@ from db import first_row, get_connection
 # in under a minute; anything older is stale and dropped.
 _OFFER_TTL = 120.0
 _REQUEST_TTL = 120.0
-# SYN-137: online guesses allowed on one displayed code. SPAKE2 makes offline
+# online guesses allowed on one displayed code. SPAKE2 makes offline
 # guessing impossible; this cap is what bounds the online kind.
 _CODE_MAX_ATTEMPTS = 3
 
@@ -56,7 +56,7 @@ _lock = threading.Lock()
 # ne pouvait pas dériver. Il lisait « QR invalide », alors que son QR était bon.
 # Plusieurs offres peuvent donc coexister ; le TTL les nettoie.
 _offers: dict[bytes, dict] = {}
-# SYN-137: one active 6-digit code offer (Mac↔Mac, no camera).
+# one active 6-digit code offer (Mac↔Mac, no camera).
 _code_offer: dict | None = None
 # request_id -> pending/approved/denied request dict.
 _requests: dict[str, dict] = {}
@@ -121,7 +121,7 @@ def start_offer() -> dict:
 
 
 def start_code_offer() -> dict:
-    """SYN-137, member side: begin a code pairing for a camera-less joiner
+    """Member side: begin a code pairing for a camera-less joiner
     (Mac↔Mac). Returns `{code}` — display it to the user, NEVER log it. A
     fresh code replaces the previous one and resets the attempt counter."""
     global _code_offer
@@ -135,7 +135,7 @@ def start_code_offer() -> dict:
 
 
 def submit_code_request(msg_joiner: bytes, name: str, platform: str) -> dict:
-    """SYN-137, joiner side (unauthenticated): the joiner's SPAKE2 message.
+    """Joiner side (unauthenticated): the joiner's SPAKE2 message.
     We run our half on the displayed code and answer with our message; the
     channel key exists on both sides but the request stays OUT of the
     approval queue until the joiner proves code knowledge (`confirm`)."""
@@ -167,7 +167,7 @@ def submit_code_request(msg_joiner: bytes, name: str, platform: str) -> dict:
 
 
 def confirm_code_request(request_id: str, mac: bytes) -> dict:
-    """SYN-137: verify the joiner's key-confirmation MAC. Success promotes
+    """Verify the joiner's key-confirmation MAC. Success promotes
     the request into the human-approval queue; a mismatch burns one attempt
     and three misses kill the code (the user must display a new one)."""
     global _code_offer
@@ -251,7 +251,7 @@ def approve(request_id: str, include_key: bool) -> dict:
         if req["status"] != "pending":
             raise _PairingError(409, f"request already {req['status']}")
         if req.get("aad_a") is not None:
-            # SYN-137 code channel: the AAD pair travelled with the request.
+            # code channel: the AAD pair travelled with the request.
             aad_a, aad_b = req["aad_a"], req["aad_b"]
         else:
             # Canal QR : lié à l'offre que le joiner a scannée, pas à celle

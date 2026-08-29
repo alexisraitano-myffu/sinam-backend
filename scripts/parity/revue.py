@@ -1,4 +1,4 @@
-"""SYN-184 — l'outil de revue : valider les étiquettes du corpus, une par une.
+"""L'outil de revue : valider les étiquettes du corpus, une par une.
 
 Il ne mesure aucun modèle. Il sert à trancher ce que la BONNE réponse aurait dû
 être, ce qui est la seule chose qu'une machine ne peut pas produire à notre
@@ -436,7 +436,7 @@ def arbitrages() -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="SYN-184 — revue des étiquettes du corpus")
+    ap = argparse.ArgumentParser(description="revue des étiquettes du corpus")
     ap.add_argument("--rapport", action="store_true", help="état des lieux, sans rien écrire")
     ap.add_argument("--jeu", help="ne revoir qu'un fichier corpus/<jeu>.jsonl")
     ap.add_argument("--frontiere", help="ne revoir que les cas d'une frontière")

@@ -1,10 +1,10 @@
-"""SYN-121 — harnais classification multilingue (garde-fou anti-régression).
+"""Harnais classification multilingue (garde-fou anti-régression).
 
 Classifie en ISOLATION un jeu de captures FR/EN (`scripts/lang_dataset.json`) avec
 un contexte 100 % déterministe (prompt + types builtin + owner figé + date figée),
 extrait les signaux de routage, et sauve un snapshot JSON. Un mode `compare` diffe
 deux snapshots et flagge les régressions — c'est ce qui prouve que la bascule du
-prompt en base anglaise (SYN-119) ne dégrade pas la qualité FR de prod.
+prompt en base anglaise ne dégrade pas la qualité FR de prod.
 
 Pourquoi un contexte figé (conn=None) plutôt que la vraie DB : reproductibilité.
 La qualité mesurée ne doit dépendre que du PROMPT, pas de l'état de ~/.synapse
@@ -43,7 +43,7 @@ _SNAP_DIR = _REPO / "scripts" / "lang_snapshots"
 _TODAY = "2026-07-13"  # figé : rend la résolution des dates relatives reproductible
 _OWNER = "Alexis"
 
-# Prompt-as-data (SYN-111) : le classifieur est un .md versionné dans sinam-core,
+# Prompt-as-data : le classifieur est un .md versionné dans sinam-core,
 # lu à l'exécution par le core (substitution de {today}). Le harnais teste CE fichier
 # directement — pas la wheel — pour rester utilisable sans toolchain Rust.
 _CORE_CLASSIFIER = Path(
@@ -153,7 +153,7 @@ def _distill(raw: dict) -> dict:
         "event_recurring": raw.get("event_recurring"),
         "is_ephemeral": raw.get("is_ephemeral"),
         "classification_confidence": raw.get("classification_confidence"),
-        "language": raw.get("language"),  # présent seulement après SYN-119
+        "language": raw.get("language"),  # présent seulement depuis la bascule multilingue
         "entities": [e.get("canonical_name") for e in raw.get("entities", []) or []],
         "entity_types": [e.get("type") for e in raw.get("entities", []) or []],
         "facts": facts,

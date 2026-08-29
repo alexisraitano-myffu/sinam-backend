@@ -54,14 +54,14 @@ def record_and_apply_validation(
         fact_data["value"] = correction
 
     entity_name = fact_data.get("entity_canonical", "unknown")
-    # SYN-87: alias-aware lookup (lazy import — validation.py loads before cycle.py
+    # alias-aware lookup (lazy import — validation.py loads before cycle.py
     # in some entrypoints). Canonical-only matching spawned duplicate shells when
     # the pending fact carried an alias ('Cici' vs 'Cici Huang').
     from core_store import get_brain
     eid = get_brain().find_entity(entity_name, [])
     row = {"id": eid} if eid else None
-    # SYN-41: provenance traces back to the capture that spawned the pending.
-    # SYN-112: capture ids are uuid strings; a pre-migration integer payload
+    # provenance traces back to the capture that spawned the pending.
+    # capture ids are uuid strings; a pre-migration integer payload
     # is kept as its text form (same dangling-ref policy as the migration).
     raw_prov = fact_data.get("source_inbox_id")
     prov_id = str(raw_prov) if raw_prov not in (None, "") else None

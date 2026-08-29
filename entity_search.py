@@ -1,13 +1,13 @@
 """
-Shared semantic search over the entity graph (SYN-60).
+Shared semantic search over the entity graph.
 
 Entity embeddings live as raw float32 BLOBs in `entities.embedding`. Entity ids
 are UUID strings, so they can't share the int-rowid `vec0` table used for
 `atomic_notes`; similarity is an exact linear scan (sub-millisecond at personal
-scale). Since SYN-110 the scan runs inside the Rust core (`sinam_core`,
+scale). The scan runs inside the Rust core (`sinam_core`,
 `Storage.search_entities` / `search_resources`) with the exact same candidate
 filters and scoring; this module keeps the historical signatures so every
-caller — MCP `search_memory`, merge V2 (SYN-61), semantic suggestions (SYN-62)
+caller — MCP `search_memory`, merge V2, semantic suggestions
 — stays on one shared implementation.
 
 Vectors are L2-normalized at embed time, so the L2 distance lives in [0, 2] and
@@ -23,7 +23,7 @@ from embeddings import embed_text
 
 
 def entity_embedding_text(entity: dict) -> str:
-    """Build the composite text embedded for an entity (SYN-60).
+    """Build the composite text embedded for an entity.
 
     Used by both the Dream Cycle's `step6_vectorize` and the backfill script, so
     a backfilled vector lives in the same space as a freshly-cycled one. We embed
@@ -117,7 +117,7 @@ def search_entities_by_text(conn, text: str, **kwargs) -> list[dict]:
 
 
 def search_resources_by_vector(conn, query_vec: bytes, *, limit: int = 10) -> list[dict]:
-    """SYN-21: top-K stored resources by cosine on their embedded summary
+    """Top-K stored resources by cosine on their embedded summary
     (resources, like entities, use UUID ids → manual scan). Returns dicts
     `{id, title, url, summary, score}`, score-descending."""
     hits = get_store().search_resources(bytes(query_vec), limit=limit)

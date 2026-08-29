@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "purpose": "SYN-121 — garde-fou anti-régression multilingue. Paires FR/EN équivalentes, pondérées vers les captures TERSES (le point fragile de Haiku : « terse/adressé/traduit → ephemeral » qui les faisait tomber). Sert à (1) figer la baseline FR sous le prompt actuel, (2) prouver après la bascule EN-base que le FR ne régresse PAS et que l'EN atteint une qualité comparable.",
+  "purpose": "garde-fou anti-régression multilingue. Paires FR/EN équivalentes, pondérées vers les captures TERSES (le point fragile de Haiku : « terse/adressé/traduit → ephemeral » qui les faisait tomber). Sert à (1) figer la baseline FR sous le prompt actuel, (2) prouver après la bascule EN-base que le FR ne régresse PAS et que l'EN atteint une qualité comparable.",
   "today": "2026-07-13",
   "owner": "Alexis"
  },
@@ -163,7 +163,7 @@
   },
   {
    "id": "mixed-birthday-facts",
-   "note": "Capture mixte (SYN-98, régression réelle du 2026-07-16, anonymisée) : une date + des faits/relations autour d'elle. La note event DOIT survivre à l'extraction des faits — Haiku (prompt v6) routait tout en faits/relations et perdait l'événement, donc l'anniversaire ne remontait jamais dans le digest. Attendu : note kind=event récurrente + fait has_birthday + relations familiales, dans le même JSON.",
+   "note": "Capture mixte (régression réelle du 2026-07-16, anonymisée) : une date + des faits/relations autour d'elle. La note event DOIT survivre à l'extraction des faits — Haiku (prompt v6) routait tout en faits/relations et perdait l'événement, donc l'anniversaire ne remontait jamais dans le digest. Attendu : note kind=event récurrente + fait has_birthday + relations familiales, dans le même JSON.",
    "expect": {
     "atomic_note_kind": "event",
     "must_have_note": true,

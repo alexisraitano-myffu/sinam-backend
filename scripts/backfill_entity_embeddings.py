@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Backfill `entities.embedding` for entities that have none (SYN-60).
+Backfill `entities.embedding` for entities that have none.
 
 The Dream Cycle's `step6_vectorize` embeds every touched entity at the end of a
 run, so new entities are always vectorized. This one-shot script covers the

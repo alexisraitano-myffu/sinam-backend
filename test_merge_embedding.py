@@ -1,7 +1,7 @@
 """
-Offline tests for the SYN-61 embedding fallback in entity merge proposals.
+Offline tests for the embedding fallback in entity merge proposals.
 
-No ANTHROPIC_API_KEY needed — embeddings are local. SYN-111: the merge scan
+No ANTHROPIC_API_KEY needed — embeddings are local. The merge scan
 runs inside the core's routing; we drive `_process_entry` with a classified
 that creates the new entity (a persistence≥2 fact passes the creation gate)
 and assert on the proposals it raises against pre-inserted candidates.

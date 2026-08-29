@@ -1,7 +1,7 @@
-"""SYN-171 mode scénario — mesurer ce que le CONTEXTE fait à la décision.
+"""Mode scénario — mesurer ce que le CONTEXTE fait à la décision.
 
 Les étages 1 et 2 classent une capture dans le vide et rendent un verdict sur le
-prompt. La production, elle, ajoute la mémoire de travail (SYN-93) : le fil des
+prompt. La production, elle, ajoute la mémoire de travail : le fil des
 captures récentes. Le 2026-08-20, deux règles vérifiées 100 % stables en appel
 isolé se sont révélées instables dans le vrai cycle — et à chaque fois la note
 disparaissait. Un harnais incapable de reproduire la prod ne peut pas la valider.
@@ -104,7 +104,7 @@ def run(model: str, repeat_override: int | None, temperature: float) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="SYN-171 — parité sous contexte (mode scénario)")
+    ap = argparse.ArgumentParser(description="parité sous contexte (mode scénario)")
     ap.add_argument("model", help="provider:modèle")
     ap.add_argument("--repeat", type=int, default=None,
                     help="force le nombre de passes (défaut : celui du scénario)")

@@ -66,7 +66,7 @@ def _debounce_seconds() -> int:
         return 120
 
 
-# ── SYN-93: batched consolidation policy ─────────────────────────────────────
+# ── batched consolidation policy ─────────────────────────────────────────────
 # Captures no longer consolidate ~every 2 min. Instead the day's captures wait
 # for a real "sleep" pass — a scheduled hour OR a size safety-valve — which
 # widens the working-memory window (better coreference, less supersede churn,
@@ -128,7 +128,7 @@ def _consolidation_max_queued() -> int:
 def _should_consolidate(queued: int, stale: int) -> str:
     """Why a consolidation pass should run now ('' = don't). 'scheduled' is the
     twice-daily "sleep" pass → Batch API (-50%); 'valve'/'stale' stay synchronous so a
-    big capture day or a fact edit doesn't wait on batch latency (SYN-93)."""
+    big capture day or a fact edit doesn't wait on batch latency."""
     # Stale summaries on an empty inbox = a cheap resummary-only run — don't make a
     # user's fact edit wait until the nightly pass.
     if queued == 0:
@@ -148,7 +148,7 @@ def _should_consolidate(queued: int, stale: int) -> str:
 
 
 def _ensure_weekly_digest() -> None:
-    """SYN-23 — self-heal the weekly digest. The launchd job (Monday morning) is
+    """Self-heal the weekly digest. The launchd job (Monday morning) is
     the primary trigger, but it silently misses if the Mac is asleep at that time
     (StartCalendarInterval doesn't fire during sleep). Since the backend runs
     continuously (launchd KeepAlive), it checks here: if the current ISO week has
@@ -197,7 +197,7 @@ def _scheduler_loop() -> None:
                 queued = conn.execute(
                     "SELECT COUNT(*) FROM inbox WHERE processed_at IS NULL"
                 ).fetchone()[0]
-                # SYN-89: user fact edits flag summaries stale — they warrant a
+                # user fact edits flag summaries stale — they warrant a
                 # (cheap) cycle run even with an empty inbox.
                 stale = conn.execute(
                     "SELECT COUNT(*) FROM entities "
@@ -207,7 +207,7 @@ def _scheduler_loop() -> None:
                 conn.close()
             if queued == 0 and stale == 0:
                 continue
-            # SYN-93 — captures wait for a batched "sleep" pass (scheduled hour or
+            # captures wait for a batched "sleep" pass (scheduled hour or
             # size valve) instead of running ~every 2 min; stale-only resummary
             # still runs promptly. Manual /dream-cycle/run stays an on-demand override.
             reason = _should_consolidate(queued, stale)
@@ -224,7 +224,7 @@ def _scheduler_loop() -> None:
 
 
 def _recover_interrupted_runs() -> None:
-    """SYN-77 — a run left 'running' with no live cycle was killed mid-cycle
+    """A run left 'running' with no live cycle was killed mid-cycle
     (process death / machine shutdown). Surface it as an error instead of
     showing a phantom 'running' forever; its unprocessed entries stay queued
     and the auto-cycle catch-up picks them up. A fresh lock file means a cycle
@@ -252,13 +252,13 @@ async def lifespan(_app):
     # Le réglage « aller chercher les pages » vit dans config.json et se pose
     # dans l'environnement, que l'hôte partage avec le core.
     config_store.apply_fetch_resources_at_startup()
-    # SYN-127 — self-register in the replicated device registry, and let the
+    # self-register in the replicated device registry, and let the
     # owner found the space if it's missing (migrates existing installs).
     from api.sync_peers import ensure_space, register_self_device
     register_self_device()
     ensure_space()
     threading.Thread(target=_scheduler_loop, daemon=True).start()
-    # SYN-112 T3 — periodic peer pull (no-op while no peer is known;
+    # periodic peer pull (no-op while no peer is known;
     # SYNAPSE_SYNC_INTERVAL=0 disables the loop entirely).
     from api.sync_peers import start_sync_thread
     start_sync_thread()
@@ -294,7 +294,7 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
     from api.access import resolve_token
     from api.sync_peers import get_mesh_token
 
-    # SYN-137: a joined desktop accepts BOTH its per-install token (its own
+    # a joined desktop accepts BOTH its per-install token (its own
     # app) and the mesh token adopted at join time (the peers).
     accepted = {t for t in (resolve_token(), get_mesh_token()) if t}
     if not accepted:
@@ -390,19 +390,19 @@ EntityType = Literal["person", "place", "project", "concept", "organization", "a
 
 
 class EntityUpdate(BaseModel):
-    # SYN-82 — user edits on the fiche: both optional, at least one required.
+    # user edits on the fiche: both optional, at least one required.
     type: EntityType | None = None
     canonical_name: str | None = None
 
 
 class FactUpdate(BaseModel):
-    # SYN-82 — user correction of a fact (predicate and/or value).
+    # user correction of a fact (predicate and/or value).
     predicate: str | None = None
     value: str | None = None
 
 
 class RelationCreate(BaseModel):
-    # SYN-84 — manual relation between two EXISTING entities. Optional client id
+    # manual relation between two EXISTING entities. Optional client id
     # (offline action log) so replica and master agree on the row identity.
     id: str | None = None
     entity_from: str
@@ -411,7 +411,7 @@ class RelationCreate(BaseModel):
 
 
 class RelationUpdate(BaseModel):
-    # SYN-84 — user correction of a relation's predicate.
+    # user correction of a relation's predicate.
     predicate: str
 
 
@@ -427,7 +427,7 @@ class OwnerIn(BaseModel):
     entity_id: str | None = None  # the entity that IS the user (« moi »); null clears it
 
 
-# SYN-112 T3 — P2P sync bodies
+# P2P sync bodies
 class SyncPullIn(BaseModel):
     url: str | None = None  # pull one explicit peer; None = every known peer
 
@@ -436,7 +436,7 @@ class SyncOwnerClaimIn(BaseModel):
     device_id: str | None = None  # claim for this device; None = claim for self
 
 
-# SYN-128 — device pairing (member side)
+# device pairing (member side)
 class PairRequestIn(BaseModel):
     accept_pub_b64: str          # the scanner's ephemeral public key (base64)
     # Quelle offre a été scannée. Plusieurs peuvent être vivantes en même temps
@@ -457,7 +457,7 @@ class PairDenyIn(BaseModel):
     request_id: str
 
 
-# SYN-137 — code pairing (Mac↔Mac)
+# code pairing (Mac↔Mac)
 class PairCodeRequestIn(BaseModel):
     msg: str                     # the joiner's SPAKE2 message (base64)
     name: str | None = None
@@ -474,7 +474,7 @@ class PairJoinIn(BaseModel):
     url: str | None = None       # explicit member URL (mDNS otherwise)
 
 
-# SYN-127 — space + device registry
+# space + device registry
 class SpacePatchIn(BaseModel):
     name: str
 
@@ -484,7 +484,7 @@ class DevicePatchIn(BaseModel):
     revoked: bool | None = None  # True = revoke, False = restore
 
 
-# SYN-45 — bodies for project-entry correction endpoints
+# bodies for project-entry correction endpoints
 class ProjectEntryMoveIn(BaseModel):
     project_id: str
 
@@ -496,7 +496,7 @@ class ProjectEntryFactIn(BaseModel):
     persistence_value: int = 3
 
 
-# SYN-39 — merge proposal acceptance body
+# merge proposal acceptance body
 class MergeAcceptIn(BaseModel):
     canonical_id: str  # which of the two entities survives as canonical
 
@@ -539,7 +539,7 @@ def put_anthropic_key(body: AnthropicKeyIn):
     """Stores the key in ~/.synapse/config.json (0600). Lets the desktop app
     push the key without touching .env files."""
     key = body.key.strip()
-    # SYN-105: accept a beta fuel token (syn-fuel-…) too, not just sk-ant- keys.
+    # accept a beta fuel token (syn-fuel-…) too, not just sk-ant- keys.
     if not (key.startswith("sk-") or key.startswith("syn-fuel-")):
         raise HTTPException(status_code=400, detail="invalid key format (expected sk-... or syn-fuel-...)")
     config_store.set_anthropic_key(key)
@@ -626,7 +626,7 @@ def put_owner(body: OwnerIn):
     return {"status": "ok", "entity_id": eid}
 
 
-# ── P2P sync (SYN-112 T3) — Mac↔Mac transport over the core engine ──────────
+# ── P2P sync — Mac↔Mac transport over the core engine ───────────────────────
 
 @app.get("/sync/changes",
          dependencies=[Depends(require_auth), Depends(require_same_space)])
@@ -674,7 +674,7 @@ def sync_pull(body: SyncPullIn | None = None):
 @app.post("/sync/push",
           dependencies=[Depends(require_auth), Depends(require_same_space)])
 async def sync_push(request: Request):
-    """SYN-113 — accept one protocol-v1 changeset page pushed by a peer that
+    """Accept one protocol-v1 changeset page pushed by a peer that
     can't be pulled from (the phone: no HTTP server on iOS/Android). Body =
     the changeset verbatim; merge report back. Errors from the core (bad
     protocol, malformed JSON) surface as 400."""
@@ -713,7 +713,7 @@ def sync_owner_claim(body: SyncOwnerClaimIn | None = None):
     return {"owner": owner}
 
 
-# ── Device pairing (SYN-128) ─────────────────────────────────────────────────
+# ── Device pairing ───────────────────────────────────────────────────────────
 # Member endpoints require the token; joiner endpoints (/pair/request,
 # /pair/result) do NOT — a fresh device has no token yet, and everything they
 # return is AEAD-sealed under a key only a QR-scanner can derive.
@@ -772,7 +772,7 @@ def pair_result(request_id: str):
     return _pairing.poll_result(request_id)
 
 
-# ── Code pairing, Mac↔Mac (SYN-137) ──────────────────────────────────────────
+# ── Code pairing, Mac↔Mac ────────────────────────────────────────────────────
 # Same trust model as the QR: the joiner endpoints are unauthenticated, but a
 # request only reaches the approval queue after the SPAKE2 key-confirmation
 # proves the joiner knew the displayed code (3 online attempts max), and the
@@ -811,7 +811,7 @@ def pair_confirm_code(body: PairCodeConfirmIn):
 
 @app.post("/pair/join", dependencies=[Depends(require_auth)])
 def pair_join(body: PairJoinIn):
-    """THIS device joins another space with a displayed code (SYN-137).
+    """THIS device joins another space with a displayed code.
     v1: virgin installs only (no captures, no entities)."""
     try:
         return _join.start_join(body.code, body.url)
@@ -828,7 +828,7 @@ def pair_join_status():
 
 @app.get("/space", dependencies=[Depends(require_auth)])
 def space_get():
-    """The memory space (SYN-127): replicated singleton + who we are and who
+    """The memory space: replicated singleton + who we are and who
     tisses. `space` is null until the owner founds it (first cycle)."""
     from api import sync_peers
     from core_store import get_store
@@ -863,7 +863,7 @@ def space_patch(body: SpacePatchIn):
 
 @app.get("/devices", dependencies=[Depends(require_auth)])
 def devices_list():
-    """Every device of the mesh (SYN-127), replicated registry + local pull
+    """Every device of the mesh, replicated registry + local pull
     times. `is_owner` marks the device that tisses the memory."""
     from api import sync_peers
     from core_store import get_store
@@ -889,7 +889,7 @@ def devices_list():
 
 @app.patch("/device/{device_id}", dependencies=[Depends(require_auth)])
 def device_patch(device_id: str, body: DevicePatchIn):
-    """Rename or revoke/restore a device (SYN-127). Guards: a device cannot
+    """Rename or revoke/restore a device. Guards: a device cannot
     revoke itself, and the current owner must hand the cycle over first."""
     from api import sync_peers
     from core_store import get_store
@@ -989,7 +989,7 @@ def feed(limit: int = 30):
 
 @app.post("/inbox/{entry_id}/requeue", dependencies=[Depends(require_auth)])
 def inbox_requeue(entry_id: str):
-    """Put a failed entry back in the queue (SYN-77 — user-driven retry)."""
+    """Put a failed entry back in the queue (user-driven retry)."""
     conn = get_connection()
     try:
         with conn:
@@ -1032,7 +1032,7 @@ def inbox_reprocess(entry_id: str):
             conn.execute(
                 "UPDATE inbox SET status='queued', processed_at=NULL, error=NULL WHERE id=?",
                 (entry_id,))
-        # SYN-110: the mirrored vec0 rows are dropped through the core, after
+        # the mirrored vec0 rows are dropped through the core, after
         # the commit (the core writes on its own connection).
         for nid in note_ids:
             get_store().delete_note_vector(nid)
@@ -1059,8 +1059,8 @@ def _ego_filter(entities: list[dict], relations: list[dict], focus: str):
 
 def _anthropic_client_factory():
     """Build an Anthropic client from the configured key, or None if unset — the
-    cluster labeller (SYN-70) then falls back to generic labels. Reuses the same
-    key path and model as the Dream Cycle (BYOK / SYN-105 fuel proxy)."""
+    cluster labeller then falls back to generic labels. Reuses the same
+    key path and model as the Dream Cycle (BYOK / fuel proxy)."""
     from anthropic_client import get_client_or_none
     return get_client_or_none()
 
@@ -1080,8 +1080,8 @@ def canonical_community_ids(communities) -> dict:
 
 
 def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
-    """Tag every node dict with a `community_id` via Louvain community detection
-    (SYN-66/68). Best-effort: any failure leaves community_id=None rather than
+    """Tag every node dict with a `community_id` via Louvain community
+    detection. Best-effort: any failure leaves community_id=None rather than
     breaking the request.
 
     Deterministic on two counts, neither of which is a seed: the Louvain in
@@ -1104,7 +1104,7 @@ def _assign_communities(nodes: list[dict], edges: list[dict]) -> None:
         n["community_id"] = cid.get(n["id"])
 
 
-# ── Anti-hairball filters (SYN-71) ────────────────────────────────────────────
+# ── Anti-hairball filters ─────────────────────────────────────────────────────
 
 def _prune(nodes: list[dict], edges: list[dict], keep: set) -> tuple[list, list]:
     """Keep only `keep` nodes and the edges whose both endpoints survive."""
@@ -1114,7 +1114,7 @@ def _prune(nodes: list[dict], edges: list[dict], keep: set) -> tuple[list, list]
 
 def _set_degree(nodes: list[dict], edges: list[dict]) -> None:
     """(Re)compute node degree from the current edge set — drives node size on
-    the map (SYN-64: size ~ memory_strength × degree)."""
+    the map (size ~ memory_strength × degree)."""
     deg: dict = {}
     for e in edges:
         deg[e["from"]] = deg.get(e["from"], 0) + 1
@@ -1153,9 +1153,9 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
           include_isolated: bool = True, max_nodes: int = 1000,
           clusters: bool = False, semantic_layout: bool = True):
     """Nodes = entities (size ~ mention_count), edges = relations.
-    `include_archived=true` also returns user-archived entities (SYN-59).
+    `include_archived=true` also returns user-archived entities.
 
-    Living-map options (SYN-66/68/69), all default off so the legacy entity-list /
+    Living-map options, all default off so the legacy entity-list /
     ego consumers keep the original shape:
     - `include_notes=true` adds atomic_notes as a second node kind (id `n:<id>`,
       kind `atomic_note`) plus `mentions` edges note→entity (resolved from each
@@ -1167,7 +1167,7 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
       same graph draws the same map, and the map is free to move as the memory
       grows. `relayout=true` is accepted and ignored — every call recomputes.
 
-    Anti-hairball filters (SYN-71), composable — the UI tightens them by default
+    Anti-hairball filters, composable — the UI tightens them by default
     and reveals more on demand:
     - `node_types`: `entities` | `atomic_notes` | `both` (default both).
     - `memory_strength_min`: drop nodes below this liveness.
@@ -1177,7 +1177,7 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
     - `max_nodes`: hard ceiling (default 1000) — the densest-by-salience survive,
       so the endpoint never returns an unbounded hairball.
 
-    `clusters=true` (SYN-70) adds a top-level `clusters: [{community_id, label,
+    `clusters=true` adds a top-level `clusters: [{community_id, label,
     size, hull}]` — a short Haiku label per community (cached) and a convex hull
     around its node positions. Implies clustering + layout.
 
@@ -1206,9 +1206,9 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
             return result
 
         nodes = []
-        # SYN-39: hide soft-merged rows; their data already lives on the canonical one.
-        # SYN-58: hide non-active rows (pending type-validation / archived).
-        # SYN-59: hide user-archived entities unless include_archived; facts_count
+        # hide soft-merged rows; their data already lives on the canonical one.
+        # hide non-active rows (pending type-validation / archived).
+        # hide user-archived entities unless include_archived; facts_count
         # counts only active facts (not archived / obsolete).
         archived_clause = "" if include_archived else " AND e.archived_at IS NULL"
         for e in cursor_to_dicts(conn.execute(
@@ -1229,8 +1229,8 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
                 "summary": e.get("summary"),
                 "last_mentioned": e.get("last_mentioned"),
                 "facts_count": e.get("facts_count", 0),
-                "memory_strength": e.get("memory_strength"),  # SYN-68 (was reserved)
-                "archived_at": e.get("archived_at"),  # SYN-59
+                "memory_strength": e.get("memory_strength"),  # decay (was reserved)
+                "archived_at": e.get("archived_at"),  # user archive
                 "community_id": None,
             })
         edges = [
@@ -1277,7 +1277,7 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
                         edges.append({"from": nid, "to": eid,
                                       "label": "mentions", "confidence": 1.0})
 
-        # ── Anti-hairball filters (SYN-71) ───────────────────────────────────
+        # ── Anti-hairball filters ────────────────────────────────────────────
         # Cheap value filters first (kind / liveness / recency), then prune edges.
         if node_types in ("entities", "entity"):
             nodes = [n for n in nodes if n["kind"] == "entity"]
@@ -1298,7 +1298,7 @@ def graph(entity: str | None = None, mode: str = "full", include_archived: bool 
 
         # top_pct needs community_id; layout/clusters need it too.
         needs_communities = cluster or layout or clusters or top_pct_per_cluster is not None
-        # Embedding-kNN springs (SYN-64), computed once and never returned: they
+        # Embedding-kNN springs, computed once and never returned: they
         # feed BOTH the clustering and the layout. A memory this sparse (a
         # quarter of its entities carry no relation at all) leaves Louvain
         # nothing to work with otherwise.
@@ -1336,16 +1336,16 @@ def entity_detail(entity_id: str, include: str | None = None):
         e = first_row(conn.execute("SELECT * FROM entities WHERE id=?", (entity_id,)))
         if not e:
             raise HTTPException(status_code=404, detail="entity not found")
-        # SYN-39: an absorbed entity redirects to its canonical so clients that
+        # an absorbed entity redirects to its canonical so clients that
         # held the old id don't 404 silently — they get pointed at the survivor.
         if e.get("merged_into_id"):
             raise HTTPException(
                 status_code=410,
                 detail={"reason": "merged", "merged_into_id": e["merged_into_id"]},
             )
-        # SYN-54: surface provenance_capture_id on every projection so the client
+        # surface provenance_capture_id on every projection so the client
         # can render a "source" chip pointing back to the immutable inbox row.
-        # SYN-59: hide archived/obsolete facts by default; opt back in via ?include.
+        # hide archived/obsolete facts by default; opt back in via ?include.
         fact_filter = ""
         if "obsolete" not in inc:
             fact_filter += " AND obsoleted_at IS NULL"
@@ -1387,8 +1387,8 @@ def entity_detail(entity_id: str, include: str | None = None):
             "facts": facts, "relations": relations,
             "relations_incoming": relations_incoming,
             "provenance_capture_id": e.get("provenance_capture_id"),
-            "status": e.get("status"),               # SYN-58
-            "archived_at": e.get("archived_at"),     # SYN-59
+            "status": e.get("status"),               # type-vocab status
+            "archived_at": e.get("archived_at"),     # user archive
         }
     finally:
         conn.close()
@@ -1401,7 +1401,7 @@ def entity_similar(
     min_score: float = 0.7,
     same_type: bool = False,
 ):
-    """SYN-62: soft semantic neighbours of an entity — links the user never
+    """Soft semantic neighbours of an entity — links the user never
     stated explicitly ('Escalade' ↔ 'Bouldering', 'Schopenhauer' ↔ 'Nietzsche').
 
     Suggestion only, never a materialized relation: each call recomputes against
@@ -1448,7 +1448,7 @@ def entity_similar(
 
 @app.get("/projects", dependencies=[Depends(require_auth)])
 def projects_list():
-    """List entities of type=project with synthesis preview (SYN-53).
+    """List entities of type=project with synthesis preview.
 
     One row per project, joined to its current_state (if any) and counted
     against project_entries. Single trip — avoids the N+1 /entity/{id} +
@@ -1468,8 +1468,8 @@ def projects_list():
             "LEFT JOIN project_state ps ON ps.project_id = e.id "
             "LEFT JOIN project_state_versions psv ON psv.id = ps.current_version_id "
             "WHERE e.type = 'project' AND e.merged_into_id IS NULL "
-            "  AND e.status = 'active' "       # SYN-58: hide pending/archived-status
-            "  AND e.archived_at IS NULL "      # SYN-59: hide user-archived projects
+            "  AND e.status = 'active' "       # hide pending/archived-status
+            "  AND e.archived_at IS NULL "      # hide user-archived projects
             "ORDER BY COALESCE(e.last_mentioned, e.created_at) DESC"
         ))
         return rows
@@ -1485,16 +1485,16 @@ def atomic_notes_list(
     kind: str | None = None,
     review_status: str | None = None,
 ):
-    """List atomic_notes for the Notes view (SYN-52).
+    """List atomic_notes for the Notes view.
 
     Filters are AND-combined and best-effort:
     - q: substring match on title or content (case-insensitive)
     - entity: matches any note whose entities_mentioned JSON array contains
       the canonical name (LIKE on the serialized list — cheap, no JSON1)
-    - kind: note | task | event (SYN-85)
+    - kind: note | task | event
     - review_status: 'pending' to fetch the « À valider » queue. Omitted ⇒ the
       normal view, which HIDES pending tasks (they only surface in validation).
-    User-archived notes are hidden (SYN-85 "rendre obsolète").
+    User-archived notes are hidden ("rendre obsolète").
     """
     limit = min(max(1, limit), 200)
     conn = get_connection()
@@ -1509,7 +1509,7 @@ def atomic_notes_list(
             clauses.append("entities_mentioned LIKE ?")
             params.append(f'%"{entity}"%')
         if kind:
-            # SYN-182 — 'episode' was born in 2026-08 and never added here, so the
+            # 'episode' was born in 2026-08 and never added here, so the
             # Notes view could not filter on a kind the classifier emits daily.
             if kind not in ("note", "task", "event", "episode"):
                 raise HTTPException(status_code=400, detail="invalid kind filter")
@@ -1528,7 +1528,7 @@ def atomic_notes_list(
         rows = cursor_to_dicts(conn.execute(
             f"SELECT id, title, content, summary, entities_mentioned, memory_strength, "
             f"       provenance_capture_id, created_at, updated_at, "
-            # SYN-182 — review_reason says WHICH question « À valider » is asking
+            # review_reason says WHICH question « À valider » is asking
             # (perte_possible / existence_douteuse / recurrence_inferee); owner is
             # NULL for the author and carries a name when the action was reported
             # as someone else's. Mirror of snapshot.rs::pending_tasks — the two
@@ -1551,7 +1551,7 @@ def atomic_notes_list(
 
 @app.get("/atomic-note/{note_id}", dependencies=[Depends(require_auth)])
 def atomic_note_detail(note_id: str):
-    """A single atomic_note for the map / notes detail (SYN-64).
+    """A single atomic_note for the map / notes detail.
 
     Same shape as the list rows, plus the source capture's content when the
     provenance link resolves — so the client can show where the note came from.
@@ -1584,7 +1584,7 @@ def atomic_note_detail(note_id: str):
 
 @app.post("/atomic-note/{note_id}/archive", dependencies=[Depends(require_auth)])
 def atomic_note_archive(note_id: str):
-    """SYN-85 — user gesture « rendre obsolète » : hide a note (task done /
+    """User gesture « rendre obsolète » : hide a note (task done /
     event passé / pensée périmée) without deleting it (reversible)."""
     conn = get_connection()
     try:
@@ -1675,7 +1675,7 @@ def atomic_note_promote_to_project(note_id: str, body: NotePromoteIn):
 
 @app.post("/atomic-note/{note_id}/reinforce", dependencies=[Depends(require_auth)])
 def atomic_note_reinforce(note_id: str):
-    """SYN-23 (digest) — user gesture 👍 « garder ça » on a fading note: full
+    """Digest — user gesture 👍 « garder ça » on a fading note: full
     reactivation. Moves last_reactivated_at to now so Ebbinghaus springs the
     memory_strength back up; sets it to 1.0 immediately for the UI."""
     now = datetime.now(timezone.utc)
@@ -1696,7 +1696,7 @@ def atomic_note_reinforce(note_id: str):
 
 @app.post("/atomic-note/{note_id}/date", dependencies=[Depends(require_auth)])
 def atomic_note_set_date(note_id: str, event_date: str | None = None, recurring: bool = False):
-    """SYN-23 (dated tasks) — set (or clear) a note's date. Lets a task carry an
+    """Dated tasks — set (or clear) a note's date. Lets a task carry an
     `event_date` without becoming an event, so it surfaces in « À venir » like an
     event. `event_date=null` clears it. Absolute date (YYYY-MM-DD) expected."""
     conn = get_connection()
@@ -1716,7 +1716,7 @@ def atomic_note_set_date(note_id: str, event_date: str | None = None, recurring:
 
 @app.get("/merge-proposals", dependencies=[Depends(require_auth)])
 def merge_proposals_list(status: str = "pending"):
-    """List entity merge proposals filtered by status (SYN-39).
+    """List entity merge proposals filtered by status.
 
     Joins the two side entities + their fact previews so the client can render
     a side-by-side card without follow-up requests.
@@ -1759,7 +1759,7 @@ def _reroute_to_canonical(conn, absorbed_id: str, canonical_id: str) -> None:
 
     Touches facts.entity_id, relations.entity_from / entity_to, and the JSON
     `entities_mentioned` array on atomic_notes (canonical_name swap, since the
-    list stores names not ids — see SYN-42). Caller owns the transaction.
+    list stores names not ids). Caller owns the transaction.
     """
     import json as _json
     absorbed = first_row(conn.execute(
@@ -1891,11 +1891,11 @@ def merge_proposal_reject(proposal_id: str):
         conn.close()
 
 
-# ── Predicate merge proposals (SYN-190) ───────────────────────────────────────
+# ── Predicate merge proposals ─────────────────────────────────────────────────
 
 @app.get("/predicate-proposals", dependencies=[Depends(require_auth)])
 def predicate_proposals_list(status: str = "pending"):
-    """Les rapprochements de prédicats en attente d'arbitrage (SYN-190).
+    """Les rapprochements de prédicats en attente d'arbitrage.
 
     Un prédicat vu pour la première fois est comparé à ceux déjà en usage ; un
     quasi-doublon devient une proposition. Renvoie de quoi trancher sans requête
@@ -1927,7 +1927,7 @@ def predicate_proposals_list(status: str = "pending"):
                 r[f"{cote}_usage"] = stat.get("n", 0)
                 r[f"{cote}_entities"] = stat.get("ents", 0)
             # Accepter fera-t-il périmer des faits ? `insert_fact` applique le
-            # last-writes-wins de SYN-37 aux familles mono-valuées : ramener un
+            # last-writes-wins aux familles mono-valuées : ramener un
             # synonyme vers `works_at` REPARE le supersede, et c'est le but, mais
             # ça se voit dans la fiche. Le client doit pouvoir prévenir.
             r["target_is_family_head"] = r["existing_predicate"] in _SINGLE_VALUED_HEADS
@@ -1951,8 +1951,7 @@ def predicate_proposal_accept(proposal_id: str):
     """Renommer le prédicat candidat vers l'existant, partout où il est écrit.
 
     Aucune suppression : seul le NOM change, les faits et leurs valeurs restent.
-    Le résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits,
-    SYN-89) — sans ça la fiche continuerait d'afficher une phrase construite sur
+    Le résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits) — sans ça la fiche continuerait d'afficher une phrase construite sur
     l'ancien nom et plus rien ne la régénérerait.
     """
     conn = get_connection()
@@ -2015,11 +2014,11 @@ def predicate_proposal_reject(proposal_id: str):
         conn.close()
 
 
-# ── Rename proposals (SYN-188) ────────────────────────────────────────────────
+# ── Rename proposals ──────────────────────────────────────────────────────────
 
 @app.get("/rename-proposals", dependencies=[Depends(require_auth)])
 def rename_proposals_list(status: str = "pending"):
-    """Les renommages déclarés en capture, en attente de confirmation (SYN-188).
+    """Les renommages déclarés en capture, en attente de confirmation.
 
     Le nom canonique titre la fiche, sort dans le digest et remonte en recherche :
     c'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le
@@ -2067,7 +2066,7 @@ def rename_proposals_list(status: str = "pending"):
 def rename_proposal_accept(proposal_id: str):
     """Appliquer le renommage : l'ancien nom canonique devient un alias.
 
-    Même écriture que `PATCH /entity` (SYN-82), pour qu'il n'existe qu'un seul
+    Même écriture que `PATCH /entity`, pour qu'il n'existe qu'un seul
     chemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,
     le nouveau nom étant retiré de la liste au passage.
     """
@@ -2225,11 +2224,11 @@ def entity_creation_proposal_reject(proposal_id: str):
     return out
 
 
-# ── Negation proposals (SYN-189) ──────────────────────────────────────────────
+# ── Negation proposals ────────────────────────────────────────────────────────
 
 @app.get("/negation-proposals", dependencies=[Depends(require_auth)])
 def negation_proposals_list(status: str = "pending"):
-    """Les négations que le core n'a pas su appliquer seul (SYN-189).
+    """Les négations que le core n'a pas su appliquer seul.
 
     Une négation dont la cible est certaine est appliquée à la capture : le fait
     est périmé, et `POST /fact/{id}/restore` l'annule. N'arrivent ici que les
@@ -2239,7 +2238,7 @@ def negation_proposals_list(status: str = "pending"):
       autre sous le même prédicat. Les deux se contredisent sur ce qui était
       vrai ; trancher sans regarder serait pire que ne rien faire.
     * `approximatif` — aucun prédicat exact, mais un nom voisin. C'est le résidu
-      que laisse la gouvernance des prédicats (SYN-190) sur les noms libres.
+      que laisse la gouvernance des prédicats sur les noms libres.
     * `introuvable` — rien ne correspond sur une entité qui porte pourtant des
       faits, ce qui signale en général une dérive de nommage.
 
@@ -2302,7 +2301,7 @@ def negation_proposal_accept(proposal_id: str, fact_id: str):
     Rien n'est supprimé. `obsoleted_at` est posé, `obsoleted_by` reste NULL —
     aucun fait n'a remplacé celui-ci, il a cessé — et `POST /fact/{id}/restore`
     le rappelle. Le résumé de l'entité est marqué obsolète, étant dérivé des
-    faits vivants (SYN-89).
+    faits vivants.
     """
     conn = get_connection()
     try:
@@ -2365,11 +2364,11 @@ def negation_proposal_reject(proposal_id: str):
         conn.close()
 
 
-# ── Entity-type proposals (SYN-58) ────────────────────────────────────────────
+# ── Entity-type proposals ─────────────────────────────────────────────────────
 
 @app.get("/entity-type-proposals", dependencies=[Depends(require_auth)])
 def type_proposals_list(status: str = "pending"):
-    """List entity-type proposals filtered by status (SYN-58).
+    """List entity-type proposals filtered by status.
 
     Joins the candidate entity + the evidence capture so the client can render
     the card ("create type `recipe` for entity X?") without follow-up requests.
@@ -2549,7 +2548,7 @@ def project_attach_proposal_reject(proposal_id: str):
         conn.close()
 
 
-# ── Lifecycle: archive / obsolete (SYN-59) ────────────────────────────────────
+# ── Lifecycle: archive / obsolete ─────────────────────────────────────────────
 
 def _set_timestamp(table: str, row_id: str, columns: dict, label: str):
     """Set/clear lifecycle timestamp columns on one entity/fact row. `columns`
@@ -2565,7 +2564,7 @@ def _set_timestamp(table: str, row_id: str, columns: dict, label: str):
         with conn:
             conn.execute(f"UPDATE {table} SET {sets} WHERE id = ?", (row_id,))
             if table == "facts":
-                # SYN-89: a fact lifecycle change invalidates the derived summary.
+                # a fact lifecycle change invalidates the derived summary.
                 conn.execute(
                     "UPDATE entities SET summary_stale = 1 "
                     "WHERE id = (SELECT entity_id FROM facts WHERE id = ?)",
@@ -2599,7 +2598,7 @@ def fact_unarchive(fact_id: str):
 @app.post("/fact/{fact_id}/obsolete", dependencies=[Depends(require_auth)])
 def fact_obsolete(fact_id: str):
     """Manual obsolescence (no replacement): obsoleted_by stays NULL — that's
-    SYN-37's job when a newer fact supersedes."""
+    the supersede rule's job when a newer fact arrives."""
     return _set_timestamp("facts", fact_id, {"obsoleted_at": "now"}, "obsoleted")
 
 
@@ -2631,7 +2630,7 @@ def capture_detail(capture_id: str):
 
 @app.get("/capture/{capture_id}/generated", dependencies=[Depends(require_auth)])
 def capture_generated(capture_id: str):
-    """SYN-92 — the reverse provenance index: what the Dream Cycle produced from
+    """The reverse provenance index: what the Dream Cycle produced from
     one capture. Every derived table carries provenance_capture_id (the inbox row
     that first created the entity / fact / relation / note), so this is a uniform
     fan-out. Powers the app's "ce qui en est sorti" panel under a journal line.
@@ -2675,7 +2674,7 @@ def capture_generated(capture_id: str):
 def move_project_entry(entry_id: str, body: ProjectEntryMoveIn):
     """Reassign a project_entry to a different project.
 
-    SYN-45: the immutable capture (inbox row) is never touched — we only
+    The immutable capture (inbox row) is never touched — we only
     reassign the projection. Caller is expected to trigger a refinement
     later if the synthesis on either project needs updating.
     """
@@ -2708,7 +2707,7 @@ def move_project_entry(entry_id: str, body: ProjectEntryMoveIn):
 def attach_entry_to_project(entry_id: str, body: ProjectEntryMoveIn):
     """Add a parallel rattachement to another project (additive, not move).
 
-    SYN-55 + SYN-57: a capture can belong to N projects (the schema already
+    A capture can belong to N projects (the schema already
     allows multiple project_entries per capture_id, and the classifier emits
     project_entries in batch). This manual endpoint mirrors that capability
     for the UI: it takes an existing entry as a template and INSERTs a new
@@ -2751,7 +2750,7 @@ def attach_entry_to_project(entry_id: str, body: ProjectEntryMoveIn):
             "SELECT COUNT(*) AS n FROM project_entries WHERE project_id = ?",
             (body.project_id,),
         ))["n"]
-        # SYN-144 — the attached entry reaches the target's living prose, same
+        # the attached entry reaches the target's living prose, same
         # behaviour as the mobile core rail. Post-commit (never hold SQLite
         # during the Haiku call); without a key it's a no-op.
         synthesize_project(body.project_id, target["canonical_name"],
@@ -2766,7 +2765,7 @@ def attach_entry_to_project(entry_id: str, body: ProjectEntryMoveIn):
 def detach_project_entry(entry_id: str):
     """Remove the project rattachement; the capture in inbox is preserved.
 
-    SYN-45: the projection is destroyed but the source-of-truth capture stays
+    The projection is destroyed but the source-of-truth capture stays
     in inbox. The user can re-route later from another correction endpoint,
     or capture again.
     """
@@ -2791,7 +2790,7 @@ def detach_project_entry(entry_id: str):
 def reclassify_entry_as_fact(entry_id: str, body: ProjectEntryFactIn):
     """Turn a project_entry into an explicit fact on a target entity.
 
-    SYN-45: the entry is removed (the projection), the capture stays in inbox,
+    The entry is removed (the projection), the capture stays in inbox,
     and a new fact is created with confidence=1.0 (the user vouches for it).
     Provenance points back to the capture that originally spawned the entry.
     """
@@ -2826,7 +2825,7 @@ def reclassify_entry_as_fact(entry_id: str, body: ProjectEntryFactIn):
 
 @app.get("/project/{project_id}/state", dependencies=[Depends(require_auth)])
 def project_state(project_id: str):
-    """Live synthesis of a project entity (SYN-43).
+    """Live synthesis of a project entity.
 
     Returns the current summary_md + metadata, plus a small recent-entries slice
     so the client can show the timeline without a second round-trip.
@@ -2854,7 +2853,7 @@ def project_state(project_id: str):
         total_entries = conn.execute(
             "SELECT COUNT(*) FROM project_entries WHERE project_id = ?", (project_id,)
         ).fetchone()[0]
-        # SYN-134 — projects carry facts now (durable literal data); the fiche
+        # projects carry facts now (durable literal data); the fiche
         # shows the ACTIVE ones. Mirror: snapshot.rs::project_state.
         facts = cursor_to_dicts(conn.execute(
             "SELECT id, predicate, value, confidence, category, "
@@ -2893,7 +2892,7 @@ def project_state(project_id: str):
 
 @app.patch("/entity/{entity_id}", dependencies=[Depends(require_auth)])
 def update_entity(entity_id: str, body: EntityUpdate):
-    """User edit of the fiche (SYN-82): type (closed enum) and/or rename.
+    """User edit of the fiche: type (closed enum) and/or rename.
 
     A rename keeps the old canonical_name as an alias so the resolver still
     matches future mentions of the old name."""
@@ -2933,7 +2932,7 @@ def update_entity(entity_id: str, body: EntityUpdate):
 
 @app.post("/relation", dependencies=[Depends(require_auth)])
 def create_relation(body: RelationCreate):
-    """SYN-84 — user-created relation (the cycle only extracts from new notes;
+    """User-created relation (the cycle only extracts from new notes;
     a fact edit never regenerates relations, so wrong/missing ones are fixed here).
     Both entities must already exist; user origin → confidence 1.0."""
     predicate = body.predicate.strip()
@@ -2960,7 +2959,7 @@ def create_relation(body: RelationCreate):
 
 @app.patch("/relation/{relation_id}", dependencies=[Depends(require_auth)])
 def update_relation(relation_id: str, body: RelationUpdate):
-    """SYN-84 — user correction of a relation's predicate (authoritative → 1.0)."""
+    """User correction of a relation's predicate (authoritative → 1.0)."""
     predicate = body.predicate.strip()
     if not predicate:
         raise HTTPException(status_code=400, detail="predicate required")
@@ -2980,7 +2979,7 @@ def update_relation(relation_id: str, body: RelationUpdate):
 
 @app.delete("/relation/{relation_id}", dependencies=[Depends(require_auth)])
 def delete_relation(relation_id: str):
-    """SYN-84 — remove a wrongly-extracted relation (provenance stays in the capture).
+    """Remove a wrongly-extracted relation (provenance stays in the capture).
     Doubles as the « À valider » reject: dropping a pending relation discards it."""
     conn = get_connection()
     try:
@@ -3034,7 +3033,7 @@ def relation_confirm(relation_id: str):
 
 @app.patch("/fact/{fact_id}", dependencies=[Depends(require_auth)])
 def update_fact(fact_id: str, body: FactUpdate):
-    """User correction of a fact (SYN-82) — authoritative: confidence → 1.0."""
+    """User correction of a fact — authoritative: confidence → 1.0."""
     predicate = body.predicate.strip() if body.predicate else None
     value = body.value.strip() if body.value else None
     if not predicate and not value:
@@ -3053,7 +3052,7 @@ def update_fact(fact_id: str, body: FactUpdate):
         params.append(fact_id)
         with conn:
             conn.execute(f"UPDATE facts SET {', '.join(sets)} WHERE id=?", params)
-            # SYN-89: a user correction invalidates the derived summary.
+            # a user correction invalidates the derived summary.
             conn.execute(
                 "UPDATE entities SET summary_stale = 1 "
                 "WHERE id = (SELECT entity_id FROM facts WHERE id = ?)",
@@ -3120,10 +3119,10 @@ def validate(fact_id: str, body: ValidateIn):
 @app.post("/dream-cycle/run", dependencies=[Depends(require_auth)])
 def dream_cycle_run(trigger: str = "manual", use_batch: bool = False):
     """Run the cycle now (manual/testing). Guarded by a single-instance lock.
-    SYN-93: use_batch routes the classify step through the Message Batches API
+    use_batch routes the classify step through the Message Batches API
     (~-50%) — set for the scheduled nightly "sleep" pass, off for size-valve /
     manual runs where immediacy matters."""
-    # SYN-112 T3 run-guard: only the owner device routes captures — the whole
+    # run-guard: only the owner device routes captures — the whole
     # derived layer stays single-writer, which is what keeps the P2P LWW merge
     # trivially correct. First run on a fresh install self-claims.
     from api.sync_peers import ensure_cycle_owner
@@ -3204,7 +3203,7 @@ def dream_cycle_last():
     return _last_run() or {"status": "never_run"}
 
 
-# ── SYN-23 — Weekly digest ───────────────────────────────────────────────────────
+# ── Weekly digest ────────────────────────────────────────────────────────────────
 
 @app.post("/digest/run", dependencies=[Depends(require_auth)])
 def digest_run(days: int = 7, dry_run: bool = False):
@@ -3250,7 +3249,7 @@ def changes(since: str | None = None):
         import base64
         entities = cursor_to_dicts(conn.execute("SELECT * FROM entities"))
         for e in entities:
-            # SYN-91: ship the embedding (raw float32 BLOB) as base64 so the replica can compute
+            # ship the embedding (raw float32 BLOB) as base64 so the replica can compute
             # « entités liées » (cosine) offline. JSON can't hold bytes; the raw BLOB is dropped.
             emb = e.pop("embedding", None)
             e["embedding_b64"] = base64.b64encode(emb).decode("ascii") if emb else None

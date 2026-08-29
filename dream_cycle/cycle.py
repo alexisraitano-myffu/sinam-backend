@@ -6,12 +6,12 @@ Per inbox entry, Claude classifies the input and routes it:
   - fact      → entity graph (entities / facts / relations), confidence-scored
   - episodic  → atomic_notes (episodic memory, vectorized for search)
   - ephemeral → intentions (short TTL)
-  - any URL   → fetched + summarised into `resources` (SYN-21)
+  - any URL   → fetched + summarised into `resources`
 
-T5 (SYN-114): the brain lives in the Rust core. This module is a thin shell —
+T5: the brain lives in the Rust core. This module is a thin shell —
 what legitimately remains host-side is the orchestration: the run loop and
 per-entry error policy, the Batch API submission (anthropic SDK), the
-working-memory day context (SYN-93), and the key/fuel-proxy resolution
+working-memory day context, and the key/fuel-proxy resolution
 (`_llm_args`). Classification, routing, resummary, project synthesis,
 vectorization, resources and decay are all core calls behind shims here or in
 sibling modules (decay.py, digest.py, resources.py, facts_store.py).
@@ -44,19 +44,19 @@ _TODAY = date.today().isoformat()
 # ── Claude client ──────────────────────────────────────────────────────────────
 
 def _get_client() -> anthropic.Anthropic:
-    # SYN-105: client construction (incl. the fuel-proxy seam) is centralised.
+    # client construction (incl. the fuel-proxy seam) is centralised.
     from anthropic_client import get_client
     return get_client()
 
 
 # ── Step 1 — Classifier ────────────────────────────────────────────────────────
 
-# ── SYN-111 : le cerveau (classif + routing) vit dans le cœur Rust ───────────
+# ── le cerveau (classif + routing) vit dans le cœur Rust ─────────────────────
 # Le prompt classifieur est une DONNÉE versionnée dans le repo sinam-core
 # (prompts/classifier.md), déployée ici et lue à l'exécution par le core.
 PROMPTS_DIR = Path(os.getenv("SYNAPSE_PROMPTS_DIR", Path.home() / ".synapse" / "prompts"))
 
-# SYN-93 — working memory. Recent captures are handed to the classifier as a
+# working memory. Recent captures are handed to the classifier as a
 # read-only context block so coreference ("il / elle / ce projet / hier") resolves
 # across a day's captures instead of each entry being classified in a vacuum. The
 # block COMMITS NOTHING — only the current capture (the user message) produces
@@ -71,7 +71,7 @@ _WM_LOOKBACK_HOURS = 24
 # la prod envoie ne mesure pas la prod — c'est justement le trou qui a laissé
 # passer le défaut ci-dessous.
 #
-# SYN-171 (2026-08-20) — ce bloc n'est PAS neutre sur la décision, et le texte
+# ce bloc n'est PAS neutre sur la décision, et le texte
 # ci-dessous ne suffit pas à le rendre neutre. Mesuré : une capture antérieure
 # d'un épisode plus marquant (« j'ai mangé chez Léa hier ») suffit à faire
 # disparaître la note de la capture COURANTE (« j'ai acheté du pain ce matin »),
@@ -94,7 +94,7 @@ _WM_HEADER = (
 
 
 def _build_day_context(conn, batch_entries, now) -> str | None:
-    """Build the working-memory context (SYN-93): captures of the current
+    """Build the working-memory context: captures of the current
     consolidation batch + recently-consolidated captures within the lookback
     window, as a chronological transcript. Returns None when there's nothing to
     resolve against (a lone capture with no recent history)."""
@@ -131,7 +131,7 @@ def _classify_params(entry: dict, conn=None, day_context: str | None = None,
     `conn` est conservé pour la signature historique ; le core lit toujours ses
     blocs lui-même.
 
-    SYN-171 — `half` vaut "note" ou "graph". Une capture demande les DEUX : la
+    `half` vaut "note" ou "graph". Une capture demande les DEUX : la
     moitié note décide ce qu'elle laisse derrière elle, la moitié graphe ce
     qu'elle dit du monde. Les deux appels sont volontairement indépendants —
     l'extracteur ne voit pas le routage — parce que c'est l'indépendance qui
@@ -156,7 +156,7 @@ def step1_classify(
 ) -> dict:
     """Classification synchrone via le core (build prompt + HTTP + parse).
 
-    La résolution de la clé (et le seam fuel-proxy, SYN-105) reste côté hôte ;
+    La résolution de la clé (et le seam fuel-proxy) reste côté hôte;
     le core exécute. Une erreur réseau/HTTP remonte en ConnectionError (la boucle
     interrompt le run, politique anthropic.APIError) ; un contenu invalide en
     ValueError (l'entrée passe en 'failed'). `client`/`conn` gardés pour la
@@ -186,7 +186,7 @@ def step1_classify(
 
 def _llm_args() -> tuple[str, str | None, str | None]:
     """(api_key, base_url, fuel_token) pour les appels LLM du core — la
-    résolution de la clé et le seam fuel-proxy (SYN-105) restent côté hôte.
+    résolution de la clé et le seam fuel-proxy restent côté hôte.
     Lève EnvironmentError sans clé (même message que step1_classify)."""
     from anthropic_client import is_fuel_token, _fuel_base_url
     from config_store import get_anthropic_key
@@ -206,14 +206,14 @@ def _batch_classify(
     entries: list[dict], client, conn, day_context: str | None = None,
     verbose: bool = False, poll_seconds: int = 10, timeout_seconds: int = 3600,
 ) -> dict:
-    """SYN-93 — classify a whole batch via the Message Batches API (~-50% on the
+    """Classify a whole batch via the Message Batches API (~-50% on the
     nightly pass; latency is acceptable for a "sleep" consolidation). Submits one
     request per entry, polls until the batch ends, and returns {entry_id: classified}.
     An entry whose request errored or whose JSON won't parse maps to None — the
     caller then classifies just that one synchronously. Raises on infrastructure
     failure (submit/poll) so the caller can fall back to the fully-sync path."""
     from anthropic.types.messages.batch_create_params import Request
-    # SYN-171 — DEUX requêtes par capture. Le batch reste rentable : ce qui
+    # DEUX requêtes par capture. Le batch reste rentable : ce qui
     # coûte, c'est le nombre de jetons, pas le nombre de requêtes, et les deux
     # moitiés réunies sont plus courtes que le prompt unique (17 233 caractères
     # contre 20 510 — l'échafaudage est le seul duplicata).
@@ -281,9 +281,9 @@ def _batch_classify(
 
 
 
-# ── SYN-89 — Entity re-summary ────────────────────────────────────────────────
+# ── Entity re-summary ─────────────────────────────────────────────────────────
 
-# SYN-89 : le prompt du re-résumé est de la donnée (prompts/resummary.md,
+# le prompt du re-résumé est de la donnée (prompts/resummary.md,
 # repo sinam-core, déployé dans ~/.synapse/prompts) — lu par le core.
 
 
@@ -293,7 +293,7 @@ def step_resummarize(
     client,
     verbose: bool = False,
 ) -> list[str]:
-    """SYN-89 — regenerate entity summaries from scratch (derived, never edited).
+    """Regenerate entity summaries from scratch (derived, never edited).
 
     T5 : la passe vit dans le core (`Brain.resummarize`, prompt = data). Cibles =
     entités touchées par le run + summary_stale ; reconstruit depuis les faits
@@ -340,7 +340,7 @@ def step6_vectorize(
 def synthesize_project(project_id: str, project_name: str,
                        entry_content: str, entry_count: int,
                        verbose: bool = False) -> str | None:
-    """SYN-43/44 — synthèse vivante d'un projet après une nouvelle entrée.
+    """Synthèse vivante d'un projet après une nouvelle entrée.
 
     T5 : append + refinement (seuil SYNAPSE_REFINEMENT_THRESHOLD) vivent dans
     le core (`Brain.synthesize_project`, prompts = data). Un échec LLM ne
@@ -377,11 +377,11 @@ def _mark(conn, entry_id: str, now: str, status: str, dry_run: bool = False,
 def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None, classified=None) -> tuple[list[str], list[dict]]:
     """Process one inbox entry; mark it processed. Returns (entity_ids, new_facts).
 
-    SYN-111 : le routing déterministe (résolution, confiance, buckets, dédup
+    Le routing déterministe (résolution, confiance, buckets, dédup
     fait⇄relation, gates, intentions, note atomique, project entries, merge/
     attach proposals, réactivation) vit dans le cœur Rust — classified JSON in,
     écritures DB out. Restent côté hôte : la classification Batch API, le fetch
-    de ressources (réseau) et les sous-appels LLM (synthèse projet SYN-43),
+    de ressources (réseau) et les sous-appels LLM (synthèse projet),
     exécutés à partir de la work-list du rapport.
 
     Raises ConnectionError (HTTP/réseau — le run s'interrompt, entrées laissées
@@ -391,7 +391,7 @@ def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None,
     if classified is None:
         classified = step1_classify(entry, client, verbose, conn=conn, day_context=day_context)
 
-    # SYN-21: resource fetch is URL-driven and independent of routing — run it
+    # resource fetch is URL-driven and independent of routing — run it
     # for ANY capture, even a pure intention. T5: fetch + summary + store live
     # in the core (resources.rs), on ITS OWN connection — no transaction here.
     if not dry_run:
@@ -421,7 +421,7 @@ def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None,
         now_dt.strftime("%Y-%m-%d %H:%M:%S"),
     ))
 
-    # SYN-43: la synthèse vivante des projets touchés (un appel Haiku chacun)
+    # la synthèse vivante des projets touchés (un appel Haiku chacun)
     # reste côté hôte — le core a persisté les entrées et renvoie la work-list.
     if client is not None:
         for s in report["project_syntheses"]:
@@ -454,7 +454,7 @@ def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: boo
         ))
 
         if not entries:
-            # SYN-89: a user fact edit between cycles flags summaries stale —
+            # a user fact edit between cycles flags summaries stale —
             # an empty-inbox run still regenerates them (then exits).
             stale_count = conn.execute(
                 "SELECT COUNT(*) FROM entities WHERE summary_stale = 1 AND merged_into_id IS NULL"
@@ -468,10 +468,10 @@ def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: boo
         print(f"\n  {len(entries)} unprocessed entr{'y' if len(entries) == 1 else 'ies'} found\n")
 
         now = datetime.now(timezone.utc).isoformat()
-        # SYN-93 — working memory: one context block for the whole batch (coreference).
+        # working memory: one context block for the whole batch (coreference).
         day_context = _build_day_context(conn, entries, datetime.now(timezone.utc))
 
-        # SYN-93 — Batch API for the scheduled "sleep" pass (~-50%). Classify the
+        # Batch API for the scheduled "sleep" pass (~-50%). Classify the
         # whole batch up front; route each entry with its pre-computed result.
         # Best-effort: any failure (or an empty result for one entry) falls back to
         # classifying synchronously, so the cycle never gets stuck on the batch path.
@@ -523,7 +523,7 @@ def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: boo
             if promoted:
                 print(f"  → {promoted} pending fact(s) promoted")
 
-        # SYN-89 — Re-summary: entities touched by this run + stale ones (user edits).
+        # Re-summary: entities touched by this run + stale ones (user edits).
         if not dry_run:
             # T5 : le core écrit sur sa propre connexion — pas de `with conn:`.
             resummed = step_resummarize(all_entity_ids, conn, client, verbose)
@@ -534,12 +534,12 @@ def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: boo
         # Step 6 — Vectorize touched entities
         if all_entity_ids:
             print("▸ Step 6 — Vectorization")
-            # SYN-110: no `with conn:` here — the writes go through the core's
+            # no `with conn:` here — the writes go through the core's
             # own connection; holding an apsw transaction would deadlock them.
             vectorized = step6_vectorize(all_entity_ids, conn, client, dry_run, verbose)
             print(f"  → {vectorized} entit{'y' if vectorized == 1 else 'ies'} vectorized")
 
-        # SYN-19 / SYN-68 — refresh Ebbinghaus memory_strength on notes AND
+        # refresh Ebbinghaus memory_strength on notes AND
         # entities (cadence-free recompute; both anchor on a reactivation date).
         if not dry_run:
             with conn:

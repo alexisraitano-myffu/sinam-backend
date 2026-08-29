@@ -1,4 +1,4 @@
-"""Offline test for SYN-64 semantic layout edges (embedding-kNN soft springs)."""
+"""Offline test for semantic layout edges (embedding-kNN soft springs)."""
 
 import struct
 import sys

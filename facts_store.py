@@ -1,7 +1,7 @@
 """
-Shared fact insertion (SYN-37 last-writes-wins + dedup-reinforce).
+Shared fact insertion (last-writes-wins + dedup-reinforce).
 
-T5 (SYN-114): the implementation lives in the Rust core (`routing.rs::insert_fact`,
+T5: the implementation lives in the Rust core (`routing.rs::insert_fact`,
 also used by the routing path — one implementation, zero drift). This module is
 the host-side shim kept for its call sites (validation, reclassify endpoint) and
 the historical signature; the write runs on the CALLER's connection so an open

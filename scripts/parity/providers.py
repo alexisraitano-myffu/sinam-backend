@@ -1,13 +1,13 @@
-"""SYN-171 — appeler un modèle candidat, quel que soit son runtime.
+"""Appeler un modèle candidat, quel que soit son runtime.
 
 Deux dialectes suffisent aujourd'hui :
 
   * `anthropic:<model>` — la référence (Haiku), via `anthropic_client.get_client()`,
-    donc le seam fuel-proxy de SYN-105 marche aussi pour un token `syn-fuel-`.
+    donc le seam fuel-proxy marche aussi pour un token `syn-fuel-`.
   * `ollama:<model>`    — tout ce qui tourne en local (Qwen, Llama, Gemma…).
 
 Toute réponse est ramenée à la MÊME forme (`Reply`), pour que le scoring ne
-sache pas d'où elle vient. C'est la leçon de SYN-150 côté core : normaliser au
+sache pas d'où elle vient. C'est la leçon apprise côté core : normaliser au
 plus près du réseau, et laisser le reste du code provider-agnostique.
 
 ⚠️ Le piège Ollama qui invalide silencieusement une mesure : `num_ctx` vaut
@@ -42,7 +42,7 @@ GEMINI_URL = ("https://generativelanguage.googleapis.com/v1beta/openai/"
 GEMINI_REASONING = "low"
 # Assez large pour le classifieur (~4 500 tokens) + la capture + la sortie JSON.
 # Volontairement pas énorme : un num_ctx géant réserve du KV-cache pour rien et
-# fausse la mesure d'empreinte mémoire (leçon SYN-154, cf. maxNumTokens 8192→6144).
+# fausse la mesure d'empreinte mémoire (leçon du portage on-device, cf. maxNumTokens 8192→6144).
 DEFAULT_NUM_CTX = 8192
 
 

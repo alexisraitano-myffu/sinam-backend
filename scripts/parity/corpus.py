@@ -1,4 +1,4 @@
-"""SYN-184 — le corpus étiqueté, chargé depuis `corpus/*.jsonl`.
+"""Le corpus étiqueté, chargé depuis `corpus/*.jsonl`.
 
 Synthétique, donc committable dans ce dépôt public. Les labels dérivent
 STRICTEMENT des prompts de production : ce sont leurs règles écrites, pas des
@@ -35,10 +35,10 @@ formulée. C'est `score.py` qui les lit, et lui seul.
     rel         fragment attendu dans un prédicat de relation, ou LISTE de fragments
                 quand la capture nomme plusieurs liens
     proj        "new" | "existing" : une entrée projet est attendue
-    facts_min   nombre minimal de faits + relations (atomicité, SYN-98)
+    facts_min   nombre minimal de faits + relations (atomicité)
     entity_expected / no_entity   l'échelle de persistance décide du nœud
     forbidden_value / forbidden_predicate   ce qui ne doit PAS naître
-    obsoletes   "predicate" ou "predicate=valeur" que la capture doit périmer (SYN-189)
+    obsoletes   "predicate" ou "predicate=valeur" que la capture doit périmer
     no_obsolete True : la capture ne doit RIEN périmer
     renamed_to  le nouveau nom que la capture déclare, à proposer et jamais à appliquer
     no_rename   True : la capture ne déclare aucun renommage

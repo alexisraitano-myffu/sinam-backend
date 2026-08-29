@@ -1,5 +1,5 @@
 """
-Offline tests for entity vectorization + shared semantic search (SYN-60).
+Offline tests for entity vectorization + shared semantic search.
 
 No ANTHROPIC_API_KEY needed — embeddings are local (fastembed) and we exercise
 the storage/search path directly, not the classify step.

@@ -137,7 +137,7 @@ aside pre {
 <body>
 <header>
   <h1>sinam · Engine Map</h1>
-  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot <b>2026-08-23</b> (SYN-96 : le moteur décrit ici vit dans le cœur Rust <code>sinam-core</code> : routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs ; comportement golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur. Les prompts sont de la donnée, jeu <b>v17</b>, déployés dans <code>~/.synapse/prompts/</code> et recopiés sur chaque surface. <b>Depuis SYN-171 le Step 1 est en deux appels</b> : <code>classifier-note.md</code> + <code>classifier-graph.md</code>).</span>
+  <span class="sub">Cliquer un nœud → détail dans la sidebar. Snapshot <b>2026-08-23</b> (le moteur décrit ici vit dans le cœur Rust <code>sinam-core</code> : routing.rs, decay.rs, summaries.rs, digest.rs, resources.rs; comportement golden-testé. Les fichiers Python cités en référence sont les shims/orchestrateur. Les prompts sont de la donnée, jeu <b>v17</b>, déployés dans <code>~/.synapse/prompts/</code> et recopiés sur chaque surface. <b>Le Step 1 est en deux appels</b> : <code>classifier-note.md</code> + <code>classifier-graph.md</code>).</span>
 </header>
 <nav class="tabs">
   <button data-tab="pipeline" class="active">Pipeline Dream Cycle</button>
@@ -224,12 +224,12 @@ flowchart TD
     <div class="section">
       <h3>Vue d'ensemble</h3>
       <p>
-        Une capture entre dans l'inbox et attend la <b>consolidation batchée</b> (SYN-93) : le scheduler
+        Une capture entre dans l'inbox et attend la <b>consolidation batchée</b> : le scheduler
         déclenche un cycle sur tout le lot à une heure planifiée (minuit/midi) ou via une valve de taille.
         Le Step 1 classifie via Claude Haiku 4.5 → 4 sorties non-exclusives possibles (atomic_note,
         project_entries[N], entities/facts, relations). Les facts passent par un score de confiance
         qui les répartit en 3 buckets. Les entités peuvent déclencher une proposition de merge si elles
-        ressemblent à une existante (SYN-39). Les project_entries déclenchent une synthèse vivante par projet
+        ressemblent à une existante. Les project_entries déclenchent une synthèse vivante par projet
         (append ou refinement si ≥ 20 entries).
       </p>
     </div>
@@ -266,7 +266,7 @@ flowchart LR
     m_pending["pending_facts<br/>a valider"]:::queue
     m_review["review_queue<br/>signal faible"]:::queue
     m_merge["entity_merge_proposals<br/>doublons detectes"]:::queue
-    m_type_prop["entity_type_proposals<br/>+ active_entity_types<br/>(vocab dynamique SYN-58)"]:::queue
+    m_type_prop["entity_type_proposals<br/>+ active_entity_types<br/>(vocab dynamique)"]:::queue
     m_attach["project_attach_proposals<br/>rattacher a un projet ?"]:::queue
   end
 
@@ -274,19 +274,19 @@ flowchart LR
     m_intentions["intentions<br/>TTL"]:::eph
   end
 
-  subgraph CARTE["Carte vivante : projection SYN-66"]
+  subgraph CARTE["Carte vivante : projection"]
     m_node_positions["node_positions<br/>table morte"]:::carte
     m_cluster_labels["cluster_labels<br/>label Haiku cache"]:::carte
   end
 
-  subgraph WEB["Ressources web SYN-21"]
+  subgraph WEB["Ressources web"]
     m_resources["resources<br/>URL fetchee + resume + embedding"]:::note
   end
 
   subgraph MULTI["Multi-appareils et exploitation"]
-    m_space["space + devices<br/>SYN-127 singleton replique"]:::source
-    m_sync["sync_log + sync_owner<br/>SYN-112 HLC, LWW par colonne"]:::source
-    m_usage["llm_usage<br/>SYN-160 une ligne par appel"]:::source
+    m_space["space + devices<br/>singleton replique"]:::source
+    m_sync["sync_log + sync_owner<br/>HLC, LWW par colonne"]:::source
+    m_usage["llm_usage<br/>une ligne par appel"]:::source
     m_events["validation_events + cycle_runs<br/>journal append-only"]:::source
   end
 
@@ -361,7 +361,7 @@ flowchart LR
       </p>
     </div>
     <div class="section">
-      <h3>Pattern provenance (SYN-41)</h3>
+      <h3>Pattern provenance</h3>
       <p>
         Toutes les <b>projections</b> (entities, facts, relations, atomic_notes, project_entries) gardent un
         <code>provenance_capture_id</code> qui pointe vers la ligne <code>inbox</code> immuable qui les a
@@ -372,8 +372,8 @@ flowchart LR
       <h3>Soft-delete vs hard-delete</h3>
       <p>
         Aucune table ne fait de <code>DELETE</code> hors des files temporaires (pending_facts résolus, review_queue).
-        Les disparitions sont des <em>soft-links</em> : <code>merged_into_id</code> sur entities (SYN-39),
-        bientôt <code>archived_at</code> / <code>obsoleted_at</code> sur facts + entities (SYN-37 + SYN-59).
+        Les disparitions sont des <em>soft-links</em> : <code>merged_into_id</code> sur entities,
+        bientôt <code>archived_at</code> / <code>obsoleted_at</code> sur facts + entities.
         Lineage toujours rebuildable.
       </p>
     </div>
@@ -424,9 +424,9 @@ flowchart LR
       <table class="fn-table">
         <tr><td class="functional">taille du neurone</td><td class="technical"><span class="var no-val" data-var="memory_strength × degree">vivacité × connexions</span></td></tr>
         <tr><td class="functional">couleur de zone</td><td class="technical"><span class="var no-val" data-var="community_id">communauté Louvain</span></td></tr>
-        <tr><td class="functional">saturation</td><td class="technical"><span class="var" data-var="memory_strength" data-val="decay Ebbinghaus SYN-19/68">vivacité</span></td></tr>
+        <tr><td class="functional">saturation</td><td class="technical"><span class="var" data-var="memory_strength" data-val="decay Ebbinghaus">vivacité</span></td></tr>
         <tr><td class="functional">position</td><td class="technical"><span class="var no-val" data-var="ForceLayout.kt (client) · forceAtlas2Based">forceAtlas2 client</span></td></tr>
-        <tr><td class="functional">zones</td><td class="technical"><span class="var no-val" data-var="Voronoï retiré (SYN-64) : couleur de communauté seule">plus de régions dessinées</span></td></tr>
+        <tr><td class="functional">zones</td><td class="technical"><span class="var no-val" data-var="Voronoï retiré : couleur de communauté seule">plus de régions dessinées</span></td></tr>
       </table>
     </div>
   </aside>
@@ -442,7 +442,7 @@ const DETAILS = {
       <p>L'API d'entrée. Stocke la capture brute dans <code>inbox</code> avec un client_id UUID
       (idempotent : un retry réseau ne duplique pas). La capture est <em>immuable</em>, toutes
       les projections (entities, facts, atomic_notes, project_entries) gardent un
-      <code>provenance_capture_id</code> qui pointe ici (SYN-41).</p>
+      <code>provenance_capture_id</code> qui pointe ici.</p>
     `,
     sections: [
       { h: "Schema clé", body: `<pre>inbox(id, content, source, client_id, device_id,
@@ -452,7 +452,7 @@ const DETAILS = {
     ],
   },
   scheduler: {
-    title: "Consolidation batchée (SYN-93)",
+    title: "Consolidation batchée",
     tags: ["infra"],
     ref: "api/app.py:65-219 (_should_consolidate)",
     body: `
@@ -476,7 +476,7 @@ const DETAILS = {
             <td class="functional">synchrone (immédiat)</td>
           </tr>
           <tr>
-            <td class="functional">Résumés périmés, inbox vide (SYN-89)</td>
+            <td class="functional">Résumés périmés, inbox vide</td>
             <td class="technical"><span class="var no-val" data-var="stale > 0">resummary seul</span></td>
             <td class="functional">synchrone</td>
           </tr>
@@ -494,7 +494,7 @@ const DETAILS = {
       { h: "Batch API vs synchrone", body: `La passe planifiée classifie tout le lot via la Message
         Batches API (<span class="var no-val" data-var="_batch_classify (submit → poll → results)">_batch_classify</span>,
         -50 % sur la classification), mêmes prompts que la voie synchrone (<code>_classify_params(entry, conn, day_context, half)</code>).
-        Depuis SYN-171 elle soumet <b>deux requêtes par capture</b> : <code>e{id}#note</code> et <code>e{id}#graph</code>.
+        Elle soumet <b>deux requêtes par capture</b> : <code>e{id}#note</code> et <code>e{id}#graph</code>.
         Une capture à qui il manque une moitié <b>n'est pas à moitié classée</b> : elle repart en synchrone, parce
         qu'écrire un demi-résultat perdrait tout le graphe en silence. Best-effort :
         tout échec submit/poll retombe en classify synchrone. <code>SYNAPSE_CYCLE_DEBOUNCE_SECONDS</code> est
@@ -507,7 +507,7 @@ const DETAILS = {
     tags: ["LLM"],
     ref: "core llm.rs::classify + merge_halves · prompts/classifier-note.md + classifier-graph.md (orchestré par dream_cycle/cycle.py)",
     body: `
-      <p><b>Deux appels à Claude par capture</b> depuis SYN-171 (2026-08-21), fusionnés dans le core.
+      <p><b>Deux appels à Claude par capture</b> depuis le 2026-08-21, fusionnés dans le core.
       Ensemble ils rendent un seul JSON structuré : quelles entités sont mentionnées, quels faits,
       quelles relations, est-ce une réflexion, une tâche, un événement, un vécu, un compte-rendu
       projet, une intention courte.</p>
@@ -518,7 +518,7 @@ const DETAILS = {
       il ne peut pas le mettre à <code>null</code>.</p>
     `,
     sections: [
-      { h: "Les deux moitiés (SYN-171)", body: `
+      { h: "Les deux moitiés", body: `
         <table class="fn-table">
           <tr><th>Moitié</th><th>Décide</th><th>Champs</th></tr>
           <tr><td class="technical"><span class="var no-val" data-var="prompts/classifier-note.md">note</span></td>
@@ -553,21 +553,21 @@ const DETAILS = {
         de l'installeur Windows. Éditer le repo <code>sinam-core</code> ne le livre <b>nulle part</b>.
         Version du jeu : <span class="var no-val" data-var="prompts/manifest.json">v17</span>.` },
       { h: "Modèle utilisé", body: `<span class="var" data-var="CLAUDE_MODEL" data-val="claude-haiku-4-5-20251001">Claude Haiku 4.5</span>
-        · longueur de sortie max <span class="var no-val" data-var="max_tokens=4096 (SYN-78)">4096 tokens</span>
-        · le cœur est <b>provider-agnostique</b> (SYN-150/155 : Anthropic, OpenAI-compatible, ou un backend
+        · longueur de sortie max <span class="var no-val" data-var="max_tokens=4096">4096 tokens</span>
+        · le cœur est <b>provider-agnostique</b> (Anthropic, OpenAI-compatible, ou un backend
         on-device fourni en callback), la réponse étant toujours renormalisée à la forme Anthropic
-        · chaque appel écrit sa consommation (<span class="var no-val" data-var="core usage.rs (SYN-160)">usage.rs</span>)` },
+        · chaque appel écrit sa consommation (<span class="var no-val" data-var="core usage.rs">usage.rs</span>)` },
       { h: "Sorties possibles (toutes coexistent)", body: `
         <ul>
           <li><b>Réflexion libre</b> : pensée à mémoriser <span class="var no-val" data-var="atomic_note (string|null) · kind=note">·</span></li>
           <li><b>Tâche</b> ou <b>événement daté</b> <span class="var no-val" data-var="kind=task|event · event_date · event_recurring">·</span></li>
-          <li><b>Épisode vécu</b> (SYN-171) : ce qui a eu lieu, gardé mais décroissant plus vite qu'une note <span class="var no-val" data-var="kind=episode">·</span></li>
-          <li><b>À qui appartient l'action</b> (SYN-182) : NULL = l'auteur, sinon le nom de la personne <span class="var no-val" data-var="atomic_note_owner">·</span></li>
-          <li><b>Rattachement projet</b> : un ou plusieurs <span class="var no-val" data-var="project_entries[] (SYN-57)">·</span></li>
+          <li><b>Épisode vécu</b> : ce qui a eu lieu, gardé mais décroissant plus vite qu'une note <span class="var no-val" data-var="kind=episode">·</span></li>
+          <li><b>À qui appartient l'action</b> : NULL = l'auteur, sinon le nom de la personne <span class="var no-val" data-var="atomic_note_owner">·</span></li>
+          <li><b>Rattachement projet</b> : un ou plusieurs <span class="var no-val" data-var="project_entries[]">·</span></li>
           <li><b>Entités + faits</b> : graphe de connaissance <span class="var no-val" data-var="entities[] + facts[] par entité">·</span></li>
           <li><b>Relations entre entités</b> <span class="var no-val" data-var="relations[]">·</span></li>
           <li><b>Intention périssable</b> : sortie courte <span class="var no-val" data-var="is_ephemeral=true">·</span></li>
-          <li><b>Ressource web</b> (SYN-21) : toute URL est fetchée + résumée (Haiku) + stockée dans <code>resources</code>, cherchable. URL-driven, indépendant du routing. <span class="var no-val" data-var="core resources.rs (shim dream_cycle/resources.py)">·</span></li>
+          <li><b>Ressource web</b> : toute URL est fetchée + résumée (Haiku) + stockée dans <code>resources</code>, cherchable. URL-driven, indépendant du routing. <span class="var no-val" data-var="core resources.rs (shim dream_cycle/resources.py)">·</span></li>
         </ul>` },
       { h: "Importance d'un fait (1-5)", body: `
         <table class="fn-table">
@@ -585,7 +585,7 @@ const DETAILS = {
           <tr><td class="functional">avec marqueur de doute</td><td class="technical"><span class="var" data-var="evidence_strength=hedged" data-val="base 0.65">0.65</span></td><td>file de validation</td></tr>
           <tr><td class="functional">déduit du contexte</td><td class="technical"><span class="var" data-var="evidence_strength=implicit" data-val="base 0.40">0.40</span></td><td>file de review</td></tr>
         </table>` },
-      { h: "Type d'entité : vocab dynamique (SYN-58)", body: `Le prompt reçoit la liste
+      { h: "Type d'entité : vocab dynamique", body: `Le prompt reçoit la liste
         <code>active_entity_types</code> (bloc non-caché) et doit choisir dedans. S'il ne trouve
         pas, il met <code>type=concept</code> + <code>type_proposal {value, reason}</code> (au lieu
         de forcer un type faux). Garde-fou : <code>type=project</code> uniquement si un project_entry
@@ -602,10 +602,10 @@ const DETAILS = {
         <span class="var no-val" data-var="classification_confidence (0 à 1)">classification_confidence</span> :
         1.0 = sans ambiguïté, < 0.6 = il hésite. En cas de doute « durable vs éphémère » il choisit
         <code>task</code> et baisse la confiance plutôt que de jeter → la tâche part en « À valider » (voir Tri).
-        Depuis SYN-182 la porte couvre aussi l'<b>épisode</b>, et le motif du doute voyage avec la ligne
+        La porte couvre aussi l'<b>épisode</b>, et le motif du doute voyage avec la ligne
         (<span class="var no-val" data-var="atomic_notes.review_reason">review_reason</span>) : sans lui, la file
         mélangerait « je ne suis pas sûr de la date » et « je ne suis pas sûr que ça mérite d'exister ».` },
-      { h: "Une table de décision, plus une prose de règles (SYN-171)", body: `La moitié note est écrite
+      { h: "Une table de décision, plus une prose de règles", body: `La moitié note est écrite
         comme une <b>porte</b> (ce qui ne mérite aucune note) suivie de <b>lignes ordonnées</b>, et non
         plus comme des paragraphes de règles qui se contredisaient. Trois arbitrages produit y sont
         inscrits : un équipement durable implique un choix et un prix, donc une vraie tâche (la micro-course
@@ -625,7 +625,7 @@ const DETAILS = {
       elle évite le graphe et atterrit ici avec une date d'expiration. Pas remontée comme fait,
       pas reliée à des entités → ne pollue pas la mémoire long-terme.</p>
       <p><b>Note dogfood 2026-05-28</b> : Claude peut tagger ephemeral à tort (recettes Udon).
-      SYN-58 traitera ce point via vocab dynamique + status pending sur les entités douteuses.</p>
+      Le vocabulaire dynamique + le status pending traiteront ce point sur les entités douteuses.</p>
     `,
     sections: [
       { h: "Durée par défaut", body: `<span class="var" data-var="ttl_hours" data-val="48">48 heures</span>` },
@@ -640,7 +640,7 @@ const DETAILS = {
       Match strict : <code>LOWER(canonical_name)</code> identique OU intersection avec l'union
       des aliases (case-insensitive).</p>
       <p>Filtre <code>merged_into_id IS NULL</code> pour ignorer les entités absorbées
-      par un merge (SYN-39).</p>
+      par un merge.</p>
     `,
     sections: [
       { h: "Date resolver", body: `Pour les facts dont le predicate contient "birthday", "birth",
@@ -746,8 +746,8 @@ const DETAILS = {
       { h: "Schema", body: `<pre>facts(id, entity_id, predicate, value,
        confidence, source_inbox_id, persistence_value,
        provenance_capture_id, created_at, last_confirmed)</pre>` },
-      { h: "À venir", body: `SYN-37 ajoutera <code>obsoleted_at</code> + <code>obsoleted_by</code> pour gérer
-        last-writes-wins et l'archivage manuel (SYN-59).` },
+      { h: "À venir", body: `Le last-writes-wins ajoutera <code>obsoleted_at</code> + <code>obsoleted_by</code> pour gérer
+        last-writes-wins et l'archivage manuel.` },
     ],
   },
   pending: {
@@ -761,7 +761,7 @@ const DETAILS = {
     sections: [
       { h: "Validation strategy", body: `<code>passive</code> = attente UI. Autres stratégies (active
         question, MCP refinement) prévues mais pas implémentées.` },
-      { h: "Confirmation", body: `À l'accept (SYN-9 livré), record validation event + INSERT dans facts
+      { h: "Confirmation", body: `À l'accept (livré), record validation event + INSERT dans facts
         avec confidence=0.95. À reject, DELETE.` },
     ],
   },
@@ -811,27 +811,27 @@ const DETAILS = {
          persistence_value, summary, embedding BLOB,
          provenance_capture_id, merged_into_id, merged_at,
          status, created_at)</pre>` },
-      { h: "Types (vocab dynamique SYN-58)", body: `Le <code>type</code> est choisi parmi
+      { h: "Types (vocab dynamique)", body: `Le <code>type</code> est choisi parmi
         <code>active_entity_types</code> (6 built-in + types validés par l'user), injecté dans le
         prompt au runtime. Un type inconnu → entité <code>status='pending'</code> + une
         <code>entity_type_proposals</code>. Garde-fou : <code>type='project'</code> seulement si un
         project_entry correspond, sinon → <code>concept</code>.` },
-      { h: "Statut (SYN-58)", body: `<code>status active|pending|archived</code> : seules les
+      { h: "Statut", body: `<code>status active|pending|archived</code> : seules les
         <code>active</code> apparaissent dans les vues (graphe, recherche, suggestions).` },
     ],
   },
   mergeCheck: {
     title: "Détection de doublon d'entité",
     tags: ["compute"],
-    ref: "core routing.rs (merge proposal) · embedder.rs (similarité) — SYN-39 + SYN-61",
+    ref: "core routing.rs (merge proposal) · embedder.rs (similarité)",
     body: `
       <p>Après chaque création d'entité, on scanne les autres entités du même type pour repérer
       un éventuel doublon. Deux couches, la moins chère d'abord ; la première qui matche gagne
       (une proposition par entité, l'utilisateur tranche) :</p>
       <ol>
-        <li><b>Substring (SYN-39)</b> : un nom entièrement contenu dans l'autre ET au moins un mot
+        <li><b>Substring</b> : un nom entièrement contenu dans l'autre ET au moins un mot
         complet en commun (évite "Pi" ⊂ "Pierre"). Cas typique : "Martin" ↔ "Martin Bari".</li>
-        <li><b>Fallback embedding (SYN-61)</b> : si le substring ne trouve rien, similarité cosine
+        <li><b>Fallback embedding</b> : si le substring ne trouve rien, similarité cosine
         sur les entités du même type. Rattrape les doublons sans substring partagée : "Marie Dupont"
         ↔ "M. Dupont", "OpenAI" ↔ "Open AI". L'entité n'étant pas encore vectorisée (step6 tourne en
         fin de cycle), on l'embed à la volée et on cherche dans le graphe historique.</li>
@@ -852,7 +852,7 @@ const DETAILS = {
   mergeQueue: {
     title: "File de fusion : l'utilisateur tranche",
     tags: ["store"],
-    ref: "db/__init__.py + api/app.py:456-650 (SYN-39)",
+    ref: "db/__init__.py + api/app.py:456-650",
     body: `
       <p>L'utilisateur tranche via <code>POST /merge-proposals/{id}/accept</code> avec
       <code>{canonical_id}</code>. Au accept : reroute facts.entity_id, relations.entity_from/to,
@@ -863,16 +863,16 @@ const DETAILS = {
       { h: "Filtres", body: `<code>/graph</code>, <code>/projects</code>, <code>/entity/{id}</code> et le
         projects context du classifier filtrent <code>merged_into_id IS NULL</code>. GET sur
         l'absorbé → 410 avec pointer.` },
-      { h: "UI", body: `Sous-tab "Propositions" dans Mémoire à venir (commune à merge + type, SYN-58).` },
+      { h: "UI", body: `Sous-tab "Propositions" dans Mémoire à venir (commune à merge + type).` },
     ],
   },
   atomicNote: {
     title: "Notes atomiques : pensées à mémoriser",
     tags: ["store"],
-    ref: "core routing.rs + db/__init__.py — note atomique (SYN-42, durci SYN-56)",
+    ref: "core routing.rs + db/__init__.py — note atomique (durcie)",
     body: `
       <p>Une atomic_note est une <b>pensée de l'auteur qui doit pouvoir resurgir</b> (insight,
-      citation, décision). Critères positifs (au moins un requis, SYN-56) :</p>
+      citation, décision). Critères positifs (au moins un requis) :</p>
       <ul>
         <li>Première personne réflexive ("je pense que…", "je vais essayer…")</li>
         <li>Citation/référence à une œuvre + positionnement</li>
@@ -893,7 +893,7 @@ const DETAILS = {
   projectEntries: {
     title: "Timelines projet : N projets par capture",
     tags: ["store"],
-    ref: "core routing.rs + db/__init__.py — project entries (SYN-42 + SYN-57)",
+    ref: "core routing.rs + db/__init__.py — project entries",
     body: `
       <p>Le classifier émet <code>project_entries[]</code> : une capture peut nourrir plusieurs
       projets en parallèle. Routing : dedup par <code>canonical_name</code> (lowercase) puis
@@ -909,7 +909,7 @@ const DETAILS = {
   synthesis: {
     title: "Synthèse vivante du projet",
     tags: ["LLM"],
-    ref: "core summaries.rs · prompts/project-summary.md (SYN-43, SYN-44)",
+    ref: "core summaries.rs · prompts/project-summary.md",
     body: `
       <p>Après chaque nouvelle entrée dans la timeline d'un projet, on demande à Claude de mettre
       à jour la synthèse du projet. Deux modes :</p>
@@ -938,7 +938,7 @@ const DETAILS = {
   projectState: {
     title: "État courant des projets : versions historisées",
     tags: ["store"],
-    ref: "db/__init__.py (SYN-41 + SYN-44)",
+    ref: "db/__init__.py",
     body: `
       <p>2 tables :</p>
       <ul>
@@ -1013,7 +1013,7 @@ device_id, captured_at, created_at, processed_at, status</pre>` },
     ref: "db/__init__.py · core schema.rs + routing.rs",
     body: `
       <p>Le graphe d'entités. Chaque entité a un <b>type</b> (vocab dynamique
-      <code>active_entity_types</code>, SYN-58, built-in + validés user), un nom canonique,
+      <code>active_entity_types</code>, built-in + validés user), un nom canonique,
       des aliases, une summary, un embedding, un compteur de mentions et un <b>status</b>
       (active|pending|archived).</p>
     `,
@@ -1022,12 +1022,12 @@ device_id, captured_at, created_at, processed_at, status</pre>` },
 attributes JSON, mention_count, last_mentioned,
 persistence_value, summary, embedding BLOB,
 provenance_capture_id,
-merged_into_id (SYN-39), merged_at,
-status (SYN-58), archived_at (SYN-59), created_at</pre>` },
+merged_into_id, merged_at,
+status, archived_at, created_at</pre>` },
       { h: "Création", body: `Gardée par le <em>Filtre anti-bruit</em> du cycle (Step 4) :
         existe déjà / apparaît dans une relation / a un fait avec persistence ≥ 2. Sinon skip.` },
       { h: "Pointe vers", body: `<code>merged_into_id</code> → autre entité (soft-link absorption).` },
-      { h: "Entités liées offline (SYN-91)", body: `L'<span class="var no-val" data-var="entities.embedding BLOB · float32 384d">embedding</span> est désormais
+      { h: "Entités liées offline", body: `L'<span class="var no-val" data-var="entities.embedding BLOB · float32 384d">embedding</span> est désormais
         répliqué vers le mobile (<span class="var" data-var="/changes · embedding_b64" data-val="base64">base64</span>) → l'app calcule
         le <b>cosinus top-K</b> (« entités liées ») hors-ligne, sans appel réseau.` },
       { h: "Pointée par", body: `
@@ -1038,7 +1038,7 @@ status (SYN-58), archived_at (SYN-59), created_at</pre>` },
           <li><b>project_state.project_id</b> (si type=project, 1:1)</li>
           <li><b>entity_merge_proposals</b> (2 FK : candidate + existing)</li>
         </ul>` },
-      { h: "Filtres lecture", body: `Vues UI filtrent <code>merged_into_id IS NULL</code>. SYN-59
+      { h: "Filtres lecture", body: `Vues UI filtrent <code>merged_into_id IS NULL</code>. L'archivage
         ajoutera <code>archived_at IS NULL</code>.` },
     ],
   },
@@ -1055,7 +1055,7 @@ status (SYN-58), archived_at (SYN-59), created_at</pre>` },
       { h: "Colonnes clés", body: `<pre>id, entity_id (FK), predicate, value,
 confidence, source_inbox_id (legacy), persistence_value,
 provenance_capture_id, created_at, last_confirmed,
-archived_at, obsoleted_at, obsoleted_by (SYN-37/59)</pre>` },
+archived_at, obsoleted_at, obsoleted_by</pre>` },
       { h: "Provient de", body: `
         <ul>
           <li>Direct via Step 4 quand <span class="var" data-var="seuil facts" data-val="conf > 0.85">confiance &gt; 0.85</span></li>
@@ -1067,9 +1067,9 @@ archived_at, obsoleted_at, obsoleted_by (SYN-37/59)</pre>` },
         l'existant (<code>confidence ← max</code>, <code>last_confirmed</code> bumpé) et renvoie son id.
         Re-dire un fait le consolide au lieu d'empiler des copies.` },
       { h: "Pointe vers", body: `<code>entity_id</code> → entities (N:1) · <code>obsoleted_by</code> → facts (le fait qui remplace).` },
-      { h: "Cycle de vie (SYN-37/59)", body: `
+      { h: "Cycle de vie", body: `
         <ul>
-          <li><b>obsoleted_at/by</b> : « plus vrai aujourd'hui ». Auto par <b>SYN-37</b> (last-writes-wins
+          <li><b>obsoleted_at/by</b> : « plus vrai aujourd'hui ». Auto par le <b>supersede</b> (last-writes-wins
           sur prédicats single-valued (<code>works_at</code>, <code>lives_in</code>…) si la nouvelle
           confiance ≥ l'ancienne) OU manuel (<code>obsoleted_by</code> NULL).</li>
           <li><b>archived_at</b> : « rangé hors vue », geste user explicite, réversible.</li>
@@ -1108,7 +1108,7 @@ confidence, review_status (2026-06-30), provenance_capture_id, created_at</pre>`
     ref: "db/__init__.py · core schema.rs + routing.rs",
     body: `
       <p>Le pont entre une capture (inbox) et un projet (entity type=project). Une capture peut
-      en spawner <b>N</b> (SYN-57) : chaque projet mentionné reçoit son extrait spécifique du
+      en spawner <b>N</b> : chaque projet mentionné reçoit son extrait spécifique du
       texte original.</p>
     `,
     sections: [
@@ -1116,7 +1116,7 @@ confidence, review_status (2026-06-30), provenance_capture_id, created_at</pre>`
 capture_id (FK inbox), content, kind, created_at</pre>` },
       { h: "Side-effects", body: `Chaque INSERT déclenche une mise à jour de la synthèse vivante
         du projet concerné (append le plus souvent, refonte tous les <span class="var" data-var="SYNAPSE_REFINEMENT_THRESHOLD" data-val="20">20 entries</span>).` },
-      { h: "Corrections manuelles (SYN-55)", body: `<code>POST /detach</code>, <code>POST /attach-to-project</code>
+      { h: "Corrections manuelles", body: `<code>POST /detach</code>, <code>POST /attach-to-project</code>
         (additif), <code>POST /reclassify-as-fact</code>.` },
     ],
   },
@@ -1157,17 +1157,17 @@ summary_md, entry_count, trigger, kind, created_at</pre>` },
     ref: "db/__init__.py · core schema.rs + routing.rs",
     body: `
       <p>Les pensées de l'auteur qui doivent pouvoir resurgir (insight, citation, décision).
-      Post-SYN-56, les règles d'éligibilité sont strictes pour ne pas inclure de simples
+      Depuis ce durcissement, les règles d'éligibilité sont strictes pour ne pas inclure de simples
       compte-rendus factuels.</p>
     `,
     sections: [
       { h: "Colonnes clés", body: `<pre>id (INTEGER PK · rowid vec0), title, content, summary,
 entities_mentioned JSON (liste de canonical_name),
-memory_strength, last_reactivated_at (SYN-19),
-kind, event_date, event_recurring, archived_at (SYN-85),
-review_status (2026-06-29), review_reason (SYN-182), owner (SYN-182),
-language (SYN-119), provenance_capture_id, created_at, updated_at</pre>` },
-      { h: "« À valider » (review_status, 2026-06-29 · étendu SYN-182)", body: `Une tâche, un événement
+memory_strength, last_reactivated_at,
+kind, event_date, event_recurring, archived_at,
+review_status (2026-06-29), review_reason, owner,
+language, provenance_capture_id, created_at, updated_at</pre>` },
+      { h: "« À valider » (review_status, 2026-06-29 · étendu le 2026-08-21)", body: `Une tâche, un événement
         ou un <b>épisode</b> dont le classifier n'est pas sûr (<code>classification_confidence</code> &lt;
         <span class="var" data-var="SYNAPSE_REVIEW_CONFIDENCE_THRESHOLD" data-val="0.7">0.7</span>) est écrit
         <code>review_status='pending'</code> (défaut <code>'confirmed'</code>) au lieu d'être jeté.
@@ -1181,24 +1181,24 @@ language (SYN-119), provenance_capture_id, created_at, updated_at</pre>` },
         répétition décidée par un modèle. Mesuré sur 27 baselines, la porte élargie n'ajoute
         <b>aucune ligne</b> aux prompts actuels : la décision est correcte et pour l'instant inerte,
         parce que le prompt ne demande de douter que sur deux frontières.</p>` },
-      { h: "Natures de note (SYN-85 / SYN-23)", body: `
+      { h: "Natures de note", body: `
         <ul>
           <li><span class="var no-val" data-var="kind='note'">réflexion</span> : pensée libre (défaut).</li>
-          <li><span class="var no-val" data-var="kind='task'">tâche</span> : chose à <b>faire</b>, retrouvable ; peut porter une <span class="var no-val" data-var="event_date sur kind=task (SYN-23)">échéance</span> sans devenir un événement.</li>
+          <li><span class="var no-val" data-var="kind='task'">tâche</span> : chose à <b>faire</b>, retrouvable; peut porter une <span class="var no-val" data-var="event_date sur kind=task">échéance</span> sans devenir un événement.</li>
           <li><span class="var no-val" data-var="kind='event'">événement</span> : occurrence qui <b>se produit</b> à une date (<span class="var no-val" data-var="event_date absolue + event_recurring">date absolue, récurrence annuelle</span>).</li>
-          <li><span class="var no-val" data-var="kind='episode' (SYN-171)">épisode</span> : un <b>vécu</b> qui affirme que quelque chose a eu lieu (« j'ai déjeuné avec Manon »). Ni pensée durable, ni tâche : <b>gardé mais décroissant plus vite</b> qu'une note, jamais supprimé. Un <b>ressenti n'est pas un accomplissement</b>. Depuis SYN-182 il <span class="var no-val" data-var="dated = event|task|episode">garde sa date</span> : « notre rencontre était le 18 avril » perdait son <code>event_date</code> à l'insertion, détruisant l'anniversaire avant qu'aucune règle de récurrence n'ait pu jouer.</li>
-          <li><span class="var no-val" data-var="atomic_notes.owner (SYN-182)">à qui c'est</span> : <code>owner</code> NULL = l'auteur, sinon le nom de la personne dont l'action est rapportée. Depuis SYN-85 le prompt promettait qu'une action rapportée n'atterrit « jamais comme celle de l'auteur » : rien ne portait cette promesse, elle était <b>inexprimable</b> tant que le stockage ne savait pas la représenter. Le digest filtre dessus.</li>
-          <li><span class="var no-val" data-var="kind='digest' (SYN-23)">digest</span> : synthèse hebdo générée par un job à part (<span class="var no-val" data-var="core digest.rs (shim dream_cycle/digest.py) · LaunchAgent lundi 08h + auto-heal _ensure_weekly_digest">cron hebdo</span> : rétro semaine + « à venir », rendu <span class="var no-val" data-var="Haiku · règle intemporelle (dates absolues)">Haiku intemporel</span>, idempotent par semaine ISO ; <span class="var no-val" data-var="POST /digest/run · GET /digest/latest">endpoints</span>). Exclu de la carte (sinon hairball).</li>
+          <li><span class="var no-val" data-var="kind='episode'">épisode</span> : un <b>vécu</b> qui affirme que quelque chose a eu lieu (« j'ai déjeuné avec Manon »). Ni pensée durable, ni tâche : <b>gardé mais décroissant plus vite</b> qu'une note, jamais supprimé. Un <b>ressenti n'est pas un accomplissement</b>. Il <span class="var no-val" data-var="dated = event|task|episode">garde sa date</span> : « notre rencontre était le 18 avril » perdait son <code>event_date</code> à l'insertion, détruisant l'anniversaire avant qu'aucune règle de récurrence n'ait pu jouer.</li>
+          <li><span class="var no-val" data-var="atomic_notes.owner">à qui c'est</span> : <code>owner</code> NULL = l'auteur, sinon le nom de la personne dont l'action est rapportée. Le prompt promettait de longue date qu'une action rapportée n'atterrit « jamais comme celle de l'auteur » : rien ne portait cette promesse, elle était <b>inexprimable</b> tant que le stockage ne savait pas la représenter. Le digest filtre dessus.</li>
+          <li><span class="var no-val" data-var="kind='digest'">digest</span> : synthèse hebdo générée par un job à part (<span class="var no-val" data-var="core digest.rs (shim dream_cycle/digest.py) · LaunchAgent lundi 08h + auto-heal _ensure_weekly_digest">cron hebdo</span> : rétro semaine + « à venir », rendu <span class="var no-val" data-var="Haiku · règle intemporelle (dates absolues)">Haiku intemporel</span>, idempotent par semaine ISO; <span class="var no-val" data-var="POST /digest/run · GET /digest/latest">endpoints</span>). Exclu de la carte (sinon hairball).</li>
         </ul>
         <span class="var no-val" data-var="archived_at (POST /atomic-note/{id}/archive|unarchive)">« rendre obsolète »</span> masque sans détruire (réversible).
-        <span class="var no-val" data-var="POST /atomic-note/{id}/reinforce (SYN-23)">👍 « garder »</span> réactive une note en cours d'oubli.` },
-      { h: "Oubli gracieux (SYN-19)", body: `<code>memory_strength = exp(-Δjours / τ)</code> recalculé
+        <span class="var no-val" data-var="POST /atomic-note/{id}/reinforce">👍 « garder »</span> réactive une note en cours d'oubli.` },
+      { h: "Oubli gracieux", body: `<code>memory_strength = exp(-Δjours / τ)</code> recalculé
         depuis <code>last_reactivated_at</code> (τ = <span class="var" data-var="SYNAPSE_DECAY_TAU_DAYS" data-val="30">30j</span>).
         Réactivation : une mention dans une nouvelle capture = bump fort ; un hit dans search = bump léger.
         <code>apply_decay</code> tourne en fin de cycle + <code>python -m dream_cycle.decay</code> (cron nuits à inbox vide).
         Recalcul depuis le temps écoulé → indépendant de la cadence du job.` },
       { h: "Lien aux entités", body: `<b>N:M logique par nom canonique</b>, pas par FK : la liste
-        est mise à jour automatiquement quand une entité est mergée (SYN-39 le gère via swap de nom).` },
+        est mise à jour automatiquement quand une entité est mergée (la fusion s'en charge par un swap de nom).` },
     ],
   },
   atomic_notes_vec: {
@@ -1245,12 +1245,12 @@ validation_strategy, created_at</pre>` },
   entity_merge_proposals: {
     title: "entity_merge_proposals : file de dédoublonnage",
     tags: ["store"],
-    ref: "db/__init__.py · core schema.rs + routing.rs (SYN-39 + SYN-61)",
+    ref: "db/__init__.py · core schema.rs + routing.rs",
     body: `
       <p>Quand le cycle crée une entité qui ressemble à une existante, une proposition est inscrite
       ici. L'utilisateur tranche : qui devient canonique, l'autre est soft-merged.</p>
       <p><code>similarity_reason</code> indique la couche qui a détecté la paire :
-      <code>"name_substring"</code> (SYN-39) ou <code>"embedding_X.XX"</code> (fallback cosine SYN-61,
+      <code>"name_substring"</code> ou <code>"embedding_X.XX"</code> (fallback cosine,
       le score étant la similarité).</p>
     `,
     sections: [
@@ -1264,7 +1264,7 @@ status, created_at, resolved_at, resolved_canonical_id</pre>` },
   entity_type_proposals: {
     title: "entity_type_proposals + active_entity_types : vocab dynamique",
     tags: ["store"],
-    ref: "db/__init__.py · core schema.rs + routing.rs · api/app.py (SYN-58)",
+    ref: "db/__init__.py · core schema.rs + routing.rs · api/app.py",
     body: `
       <p><code>active_entity_types</code> est le vocabulaire vivant des types d'entité (6 built-in
       seedés au boot + types validés par l'user, <code>source='builtin'|'user'</code>). Le prompt
@@ -1315,7 +1315,7 @@ similarity_score, status, created_at, resolved_at</pre>` },
     sections: [
       { h: "Colonnes clés", body: `<pre>id, content, ttl_hours (défaut 48), resolved, created_at</pre>` },
       { h: "Note dogfood", body: `Le LLM peut tagger ephemeral à tort (recettes Udon).
-        SYN-58 va traiter ce point via vocab dynamique + status pending sur les entités douteuses.` },
+        Le vocabulaire dynamique + le status pending vont traiter ce point sur les entités douteuses.` },
     ],
   },
   node_positions: {
@@ -1335,7 +1335,7 @@ similarity_score, status, created_at, resolved_at</pre>` },
     ],
   },
   cluster_labels: {
-    title: "cluster_labels : labels de cluster (cache Haiku, SYN-70)",
+    title: "cluster_labels : labels de cluster (cache Haiku)",
     tags: ["store", "LLM"],
     ref: "graph_clusters.py",
     body: `
@@ -1381,7 +1381,7 @@ const GRAPH_DETAILS = {
   filter: {
     title: "Filtres anti-hairball",
     tags: ["compute"],
-    ref: "api/app.py · SYN-71",
+    ref: "api/app.py",
     body: `<p>Borne ce qui est renvoyé pour ne jamais noyer la carte.</p>`,
     sections: [
       { h: "Leviers", body: `<span class="var no-val" data-var="memory_strength_min">vivacité minimale</span> ·
@@ -1416,14 +1416,14 @@ const GRAPH_DETAILS = {
         contraste de densité, donc plus de zones lisibles. Mesuré sur la mémoire réelle (80 nœuds, 7 zones),
         la silhouette des zones passe de <b>0,189 à 0,347</b>. À 1200 nœuds, de −0,320 (zones entièrement
         mélangées) à 0,107.` },
-      { h: "Ressorts sémantiques (SYN-64)", body: `Des <b>ressorts souples kNN sur embeddings</b> (<span class="var" data-var="SYNAPSE_SEMANTIC_K" data-val="4">top-4</span> cosinus ≥ <span class="var" data-var="SYNAPSE_SEMANTIC_MIN_SCORE" data-val="0.62">0.62</span>, poids <span class="var" data-var="SYNAPSE_SEMANTIC_WEIGHT" data-val="0.45">0.45×score</span>) rapprochent les entités proches sémantiquement, sans relation explicite. Ils nourrissent <b>la disposition ET les communautés</b>, et le core en calcule les mêmes (<span class="var no-val" data-var="snapshot.rs::semantic_edges">snapshot.rs</span>). <b>Jamais renvoyés</b> au client, jamais comptés dans le degré. <span class="var" data-var="semantic_layout" data-val="true">semantic_layout=false</span> pour couper.` },
+      { h: "Ressorts sémantiques", body: `Des <b>ressorts souples kNN sur embeddings</b> (<span class="var" data-var="SYNAPSE_SEMANTIC_K" data-val="4">top-4</span> cosinus ≥ <span class="var" data-var="SYNAPSE_SEMANTIC_MIN_SCORE" data-val="0.62">0.62</span>, poids <span class="var" data-var="SYNAPSE_SEMANTIC_WEIGHT" data-val="0.45">0.45×score</span>) rapprochent les entités proches sémantiquement, sans relation explicite. Ils nourrissent <b>la disposition ET les communautés</b>, et le core en calcule les mêmes (<span class="var no-val" data-var="snapshot.rs::semantic_edges">snapshot.rs</span>). <b>Jamais renvoyés</b> au client, jamais comptés dans le degré. <span class="var" data-var="semantic_layout" data-val="true">semantic_layout=false</span> pour couper.` },
       { h: "Pourquoi 0,62", body: `Le seuil était à 0,80, très au-dessus des données : la médiane du meilleur voisin vaut 0,626, donc la production ne fabriquait que <b>2 arêtes</b>. Mesuré sur la mémoire réelle (63 entités, 37 relations) : 0,80 → 39 arêtes et 40 % d'orphelins ; <b>0,62 → 67 arêtes, 29 % d'orphelins, 6 zones au lieu de 5</b> ; 0,55 → 122 arêtes mais la modularité s'effondre (0,669) car les arêtes relient n'importe quoi. Bande étroite, pas un réglage libre.` },
     ],
   },
   labels: {
     title: "Zones nommées",
     tags: ["LLM"],
-    ref: "graph_clusters.py · SYN-70",
+    ref: "graph_clusters.py",
     body: `<p>Chaque communauté reçoit un nom court (<span class="var" data-var="CLAUDE_MODEL" data-val="claude-haiku-4-5">Haiku</span>)
       et un contour (<span class="var no-val" data-var="_convex_hull">enveloppe convexe pure-Python</span>).</p>`,
     sections: [
@@ -1436,9 +1436,9 @@ const GRAPH_DETAILS = {
     tags: ["I/O"],
     ref: "openapi.json · /graph",
     body: `<p>Renvoie <code>{nodes, edges, clusters}</code> : nœuds positionnés et colorés, arêtes, et zones
-      <code>{label, hull}</code>. C'est le contrat que lit le rendu frontend (SYN-64).</p>`,
+      <code>{label, hull}</code>. C'est le contrat que lit le rendu frontend.</p>`,
     sections: [
-      { h: "Rendu (SYN-64)", body: `Le frontend dessine un <b>cerveau</b> : nœuds = neurones (soma + noyau ; note = anneau), arêtes = axones (+ bulbe synaptique). Clusters = simple <b>couleur</b> de nœud (communauté Louvain). Les régions Voronoï dessinées ont été <b>retirées</b> (déformaient le graphe). Zones « soft » par-dessus = piste future.` },
+      { h: "Rendu", body: `Le frontend dessine un <b>cerveau</b> : nœuds = neurones (soma + noyau; note = anneau), arêtes = axones (+ bulbe synaptique). Clusters = simple <b>couleur</b> de nœud (communauté Louvain). Les régions Voronoï dessinées ont été <b>retirées</b> (déformaient le graphe). Zones « soft » par-dessus = piste future.` },
       { h: "Ouvrir un nœud", body: `Clic entité → fiche <code>/entity/{id}</code> ; clic note → <code>GET /atomic-note/{id}</code> (contenu + capture d'origine).` },
     ],
   },

@@ -1,5 +1,5 @@
 """
-SYN-111 golden corpus, step 2: freeze the CURRENT Python routing reference.
+Golden corpus, step 2: freeze the CURRENT Python routing reference.
 
 Sequentially replays the frozen corpus (recorded classifications) through the
 unmodified Python routing (`_process_entry` with `classified=` pre-computed +
@@ -66,7 +66,7 @@ def main() -> int:
     all_new_facts = []
     try:
         for item in corpus["entries"]:
-            # SYN-112: uuid TEXT pks — historical integer corpus ids are
+            # uuid TEXT pks — historical integer corpus ids are
             # replayed as their text form (same convention as the Rust runner).
             cid = str(item["capture_id"])
             conn.execute(

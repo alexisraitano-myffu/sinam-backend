@@ -1,7 +1,7 @@
 """
-SYN-19 — Ebbinghaus graceful forgetting for atomic_notes (+ entities, SYN-68).
+Ebbinghaus graceful forgetting for atomic_notes (+ entities).
 
-T5 (SYN-114): the implementation lives in the Rust core (`decay.rs` — the same
+T5: the implementation lives in the Rust core (`decay.rs` — the same
 module the routing path uses for mention reactivation; one implementation, zero
 drift). This module is the host-side shim: historical signatures preserved
 (`now` as datetime for the tests' fixed clock), writes run on the CALLER's
@@ -39,7 +39,7 @@ def apply_decay(conn, *, tau_days: float | None = None, now: datetime | None = N
 
 def apply_entity_decay(conn, *, tau_days: float | None = None,
                        now: datetime | None = None) -> int:
-    """Same cadence-free law for entities, anchored on `last_mentioned` (SYN-68)."""
+    """Same cadence-free law for entities, anchored on `last_mentioned`."""
     return conn.apply_entity_decay(tau_days, _now_sql(now))
 
 

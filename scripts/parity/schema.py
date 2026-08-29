@@ -1,4 +1,4 @@
-"""SYN-171 — le schéma de sortie du classifieur, pour le décodage contraint.
+"""Le schéma de sortie du classifieur, pour le décodage contraint.
 
 Pourquoi ce fichier existe. Mesuré le 2026-08-19 : Gemma E2B passait 10 des 12
 cas du gate et échouait les DEUX cas « action à faire », toujours de la même
@@ -51,7 +51,7 @@ _ENTITY = {
         "type": {"type": "string"},
         "type_proposal": _TYPE_PROPOSAL,
         "aliases": {"type": "array", "items": {"type": "string"}},
-        # SYN-188 — nullable, et null est la réponse quasi toujours correcte.
+        # nullable, et null est la réponse quasi toujours correcte.
         "renamed_to": {"type": ["string", "null"]},
         "summary": {"type": ["string", "null"]},
         "attributes": {"type": "object"},
@@ -92,7 +92,7 @@ _PROJECT_ENTRY = {
     "required": ["project_canonical", "content", "is_new"],
 }
 
-# SYN-189 — ce que la capture dit avoir CESSÉ d'être vrai. `value` est nullable
+# ce que la capture dit avoir CESSÉ d'être vrai. `value` est nullable
 # à dessein : nul veut dire « toute l'affirmation », pas « valeur oubliée ».
 _OBSOLETED_FACT = {
     "type": "object",
@@ -130,7 +130,7 @@ CLASSIFY_SCHEMA = {
     "type": "object",
     "properties": {
         "language": {"type": "string"},
-        # SYN-207 — une capture peut laisser PLUSIEURS souvenirs. Le champ
+        # une capture peut laisser PLUSIEURS souvenirs. Le champ
         # était singulier, donc le moteur en jetait un : mesuré sur quatre
         # captures, il gardait toujours le souvenir DATÉ et actionnable, et
         # quand les deux étaient de même nature il les FUSIONNAIT, ce qui est
@@ -149,7 +149,7 @@ CLASSIFY_SCHEMA = {
                     # autorisé, dégradait une tâche en note.
                     "kind": {"type": "string",
                              "enum": ["note", "task", "event", "episode"]},
-                    # SYN-182 — null = l'auteur, un nom = l'action appartient à
+                    # null = l'auteur, un nom = l'action appartient à
                     # quelqu'un d'autre (discours rapporté).
                     "owner": {"type": ["string", "null"]},
                     "event_date": {"type": ["string", "null"]},

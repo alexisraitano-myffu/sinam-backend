@@ -1,4 +1,4 @@
-"""SYN-171 — figer une baseline, puis diffé deux baselines.
+"""Figer une baseline, puis diffé deux baselines.
 
 Le gate dit « utilisable / inutilisable ». Ce module-ci ne juge rien : il
 enregistre ce qu'un modèle répond sur TOUT le corpus, avec l'empreinte du
@@ -278,7 +278,7 @@ def cmd_rescore(args) -> int:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="SYN-171 — baselines de parité")
+    ap = argparse.ArgumentParser(description="baselines de parité")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("run", help="jouer le corpus et figer une baseline")

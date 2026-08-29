@@ -1,5 +1,5 @@
 """
-Access to the Rust core's storage substrate (SYN-110 / T1).
+Access to the Rust core's storage substrate.
 
 The compiled core (`sinam_core`, the sinam-core PyO3 wheel) owns the
 SQLite schema and every vector read/write: the vec0 KNN over atomic_notes and

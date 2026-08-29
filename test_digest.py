@@ -1,5 +1,5 @@
 """
-SYN-23 — weekly digest tests.
+weekly digest tests.
 
 Offline: `gather_week` bucketing (retrospective window + forward-looking events
 / tasks, incl. recurring-birthday resolution) and idempotent `write_digest_note`.
@@ -125,7 +125,7 @@ def test_recurring_birthday_resolves_into_window(isolated_db):
 
 
 def test_birthday_fact_surfaces_as_upcoming(isolated_db):
-    # SYN-97 — a has_birthday fact within 7 days must appear under « à venir ».
+    # a has_birthday fact within 7 days must appear under « à venir ».
     now = datetime(2026, 6, 17, 12, 0, tzinfo=timezone.utc)
     today = now.date()
     soon = (today.replace(year=1990) + timedelta(days=2)).strftime("%Y-%m-%d")  # 2 days out
@@ -142,7 +142,7 @@ def test_birthday_fact_surfaces_as_upcoming(isolated_db):
     finally:
         conn.close()
     bdays = [e for e in week["upcoming_events"] if e["kind"] == "birthday"]
-    # SYN-119/171 — libellé EN-base comme tout le squelette : il voyage DANS la
+    # libellé EN-base comme tout le squelette : il voyage DANS la
     # charge utile du digest, et une étiquette française sur une matière anglaise
     # entraîne le rendu vers le français (mesuré sur Gemma E2B). Le prompt le rend
     # dans la langue dominante du contenu.
@@ -230,7 +230,7 @@ def test_summarize_digest_live(isolated_db):
     finally:
         conn.close()
     md = summarize_digest(week)
-    # SYN-119 (multilingue) : les en-têtes du digest suivent désormais la langue
+    # Multilingue : les en-têtes du digest suivent désormais la langue
     # dominante du contenu (plus de FR hardcodé) → on assert la STRUCTURE (deux
     # sections H2 « cette semaine » / « à venir ») et non les libellés français.
     headers = [ln for ln in md.splitlines() if ln.startswith("## ")]

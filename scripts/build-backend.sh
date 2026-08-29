@@ -26,7 +26,7 @@ fi
 echo "[clean] removing previous build/dist..."
 rm -rf dist build sinam-backend.spec
 
-# Post-migration coeur Rust (SYN-110/111/112) : stockage, cerveau et sync
+# Post-migration coeur Rust : stockage, cerveau et sync
 # vivent dans le module compilé sinam_core (wheel maturin du repo
 # sinam-core, pas sur PyPI). fastembed/apsw/sqlite_vec/dateparser ont quitté
 # requirements.txt. Les fichiers modèle ne sont PAS bundlés : le backend les
@@ -74,7 +74,7 @@ echo "[prompts] $(ls dist/sinam-backend/prompts | wc -l | tr -d ' ') fichiers em
 # Stamp the bundle with a version marker. The desktop app compares this against the
 # installed backend at launch and auto-reinstalls when they differ, so a new .dmg's
 # backend reaches testers even if their old one is still running under KeepAlive
-# (SYN-105). ~/.synapse data is untouched by reinstall. Timestamped so every rebuild
+# ~/.synapse data is untouched by reinstall. Timestamped so every rebuild
 # (even same commit, e.g. a venv-sync fix) is treated as a new version.
 VERSION="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)-$(date +%Y%m%d%H%M%S)"
 echo "$VERSION" > dist/sinam-backend/BACKEND_VERSION

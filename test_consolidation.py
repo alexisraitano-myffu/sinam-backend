@@ -1,5 +1,5 @@
 """
-SYN-93 — working-memory context block + batched consolidation trigger.
+working-memory context block + batched consolidation trigger.
 
 Offline: `_build_day_context` (transcript assembly for coreference) and
 `_should_consolidate` (the scheduler's batch policy). No API calls.
@@ -109,9 +109,9 @@ def test_should_consolidate_scheduled_fires_once(monkeypatch, tmp_path):
 # ── Batch API classify (offline, mocked client) ──────────────────────────────
 
 def test_classify_params_shape_with_working_memory(isolated_db):
-    # SYN-111: the params are built by the core (prompt-as-data + live DB
+    # the params are built by the core (prompt-as-data + live DB
     # blocks, always read from the core's own connection).
-    # SYN-171: one call per half, so the shape is asserted per half.
+    # one call per half, so the shape is asserted per half.
     for half in ("note", "graph"):
         params = _classify_params({"id": 1, "content": "Coucou"}, conn=None,
                                   day_context="CTX", half=half)
@@ -122,7 +122,7 @@ def test_classify_params_shape_with_working_memory(isolated_db):
         assert sysblocks[0]["cache_control"] == {"type": "ephemeral"}
         assert any(b.get("text") == "CTX" and b.get("cache_control") for b in sysblocks)
 
-    # SYN-171 — le vocabulaire vivant et la liste des projets ne pilotent que des
+    # le vocabulaire vivant et la liste des projets ne pilotent que des
     # champs que la moitié GRAPHE écrit (`entities[].type`,
     # `project_entries[].project_canonical`). Les envoyer à la moitié note
     # dépenserait de l'entrée pour des champs absents de son schéma : une moitié
@@ -194,7 +194,7 @@ class _Client:
 
 
 def test_batch_classify_maps_success_and_falls_back_on_error():
-    # SYN-171 — deux requêtes par capture, `custom_id = e{id}#{half}`.
+    # deux requêtes par capture, `custom_id = e{id}#{half}`.
     entries = [{"id": 1, "content": "A"}, {"id": 2, "content": "B"}]
     client = _Client([
         _Res("e1#note", "succeeded", _Msg('{"atomic_note":"A","language":"fr"}')),

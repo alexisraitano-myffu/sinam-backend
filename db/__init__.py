@@ -1,5 +1,5 @@
 """
-Database access, backed by the Rust core (SYN-110).
+Database access, backed by the Rust core.
 
 The core (`sinam_core`) owns BOTH the schema and the only SQLite library in
 the process. That single-library rule is not a style choice: two SQLite
@@ -96,7 +96,7 @@ class Connection:
     def insert_fact(self, *, entity_id, predicate, value, confidence,
                     source_inbox_id=None, persistence_value=3,
                     provenance_capture_id=None, category=None) -> str:
-        """Fact write via the core (dedup-reinforce + SYN-37 supersede,
+        """Fact write via the core (dedup-reinforce + supersede,
         `routing::insert_fact`) executed on THIS connection: an open
         `with conn:` transaction wraps it. T5: the Python implementation
         (facts_store) is gone."""
@@ -107,7 +107,7 @@ class Connection:
             json.dumps(source_inbox_id), persistence_value,
             provenance_capture_id, json.dumps(category))
 
-    # SYN-19/68 decay (core decay.rs), executed on THIS connection — the
+    # decay (core decay.rs), executed on THIS connection — the
     # caller's open transaction wraps the writes. `now` = 'YYYY-MM-DD HH:MM:SS'
     # or None (system clock).
     def apply_decay(self, tau_days=None, now=None) -> int:
@@ -123,7 +123,7 @@ class Connection:
         return self._conn.reactivate_notes_for_entities(list(entity_names), now)
 
     def gather_week(self, now=None, days=7) -> str:
-        """SYN-23 — the digest's structured week as a JSON string (pure SQL in
+        """The digest's structured week as a JSON string (pure SQL in
         the core, `digest.rs::gather_week`, on THIS connection)."""
         return self._conn.gather_week(now, days)
 
@@ -177,7 +177,7 @@ def first_row(cursor: Cursor) -> dict | None:
 
 
 def init_db() -> None:
-    """Create/migrate the schema, now owned by the Rust core (SYN-110).
+    """Create/migrate the schema, now owned by the Rust core.
 
     The DDL lives in sinam-core (`crates/sinam-core/src/schema.rs`), the
     exact port of the idempotent CREATE/ALTER sequence that used to live here.

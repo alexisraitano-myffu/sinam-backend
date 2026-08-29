@@ -3,8 +3,8 @@
 Re-embed every stored vector with the current local model: atomic_notes into
 atomic_notes_vec, entities.embedding (composite text) and resources.embedding.
 
-Run this after changing EMBEDDING_MODEL or the model files' truncation
-(SYN-118) — old vectors live in a different space and must be regenerated, or
+Run this after changing EMBEDDING_MODEL or the model files' truncation:
+old vectors live in a different space and must be regenerated, or
 vector search mixes incompatible embeddings. Idempotent: notes use INSERT OR
 REPLACE keyed on the note id, entities/resources overwrite their BLOB column.
 """

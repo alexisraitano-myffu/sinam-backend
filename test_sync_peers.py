@@ -1,5 +1,5 @@
 """
-Offline tests for the P2P sync transport (SYN-112 T3 phase 3): /sync/*
+Offline tests for the P2P sync transport: /sync/*
 endpoints, owner-lock run-guard, peer pull (HTTP stubbed — the "peer" is a
 second real core Storage in a temp dir), cursor advance and the
 double-routed-rows dedup pass. No network, no Claude API.
@@ -79,7 +79,7 @@ def test_owner_implicit_claim_then_guard_blocks_foreign_device(client):
         getattr(exc.value, "status_code", None) == 409
     r = client.post("/dream-cycle/run")
     assert r.status_code == 409
-    # SYN-129: the guard's detail is structured so clients render a human
+    # the guard's detail is structured so clients render a human
     # message (code + owner identity + epoch).
     detail = r.json()["detail"]
     assert detail["code"] == "not_cycle_owner"
@@ -419,7 +419,7 @@ def test_dedup_collapses_twin_derived_rows(client):
     assert dedup_after_pull() == {}
 
 
-# ── Push (SYN-113: the phone sends its pages, it can't be pulled from) ───────
+# ── Push (the phone sends its pages, it can't be pulled from) ────────────────
 
 def test_sync_push_applies_a_peer_changeset(client, peer):
     store, gate = peer
@@ -459,7 +459,7 @@ def test_sync_push_rejects_garbage(client):
     assert r.status_code == 400
 
 
-# ── Espace + registre d'appareils (SYN-127) ──────────────────────────────────
+# ── Espace + registre d'appareils ────────────────────────────────────────────
 
 def test_register_self_device_seeds_then_only_refreshes(client):
     from api.sync_peers import register_self_device
@@ -577,7 +577,7 @@ def test_space_and_devices_endpoints(client):
     assert client.patch("/device/inconnu", json={"name": "x"}).status_code == 404
 
 
-# ── Appairage (SYN-128) ──────────────────────────────────────────────────────
+# ── Appairage ────────────────────────────────────────────────────────────────
 
 def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     """Member offers a QR → joiner scans (real core crypto) → member approves

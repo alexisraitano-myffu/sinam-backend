@@ -519,7 +519,7 @@
     "/sync/push": {
       "post": {
         "summary": "Sync Push",
-        "description": "SYN-113 — accept one protocol-v1 changeset page pushed by a peer that\ncan't be pulled from (the phone: no HTTP server on iOS/Android). Body =\nthe changeset verbatim; merge report back. Errors from the core (bad\nprotocol, malformed JSON) surface as 400.",
+        "description": "Accept one protocol-v1 changeset page pushed by a peer that\ncan't be pulled from (the phone: no HTTP server on iOS/Android). Body =\nthe changeset verbatim; merge report back. Errors from the core (bad\nprotocol, malformed JSON) surface as 400.",
         "operationId": "sync_push_sync_push_post",
         "parameters": [
           {
@@ -1077,7 +1077,7 @@
     "/pair/join": {
       "post": {
         "summary": "Pair Join",
-        "description": "THIS device joins another space with a displayed code (SYN-137).\nv1: virgin installs only (no captures, no entities).",
+        "description": "THIS device joins another space with a displayed code.\nv1: virgin installs only (no captures, no entities).",
         "operationId": "pair_join_pair_join_post",
         "parameters": [
           {
@@ -1177,7 +1177,7 @@
     "/space": {
       "get": {
         "summary": "Space Get",
-        "description": "The memory space (SYN-127): replicated singleton + who we are and who\ntisses. `space` is null until the owner founds it (first cycle).",
+        "description": "The memory space: replicated singleton + who we are and who\ntisses. `space` is null until the owner founds it (first cycle).",
         "operationId": "space_get_space_get",
         "parameters": [
           {
@@ -1275,7 +1275,7 @@
     "/devices": {
       "get": {
         "summary": "Devices List",
-        "description": "Every device of the mesh (SYN-127), replicated registry + local pull\ntimes. `is_owner` marks the device that tisses the memory.",
+        "description": "Every device of the mesh, replicated registry + local pull\ntimes. `is_owner` marks the device that tisses the memory.",
         "operationId": "devices_list_devices_get",
         "parameters": [
           {
@@ -1320,7 +1320,7 @@
     "/device/{device_id}": {
       "patch": {
         "summary": "Device Patch",
-        "description": "Rename or revoke/restore a device (SYN-127). Guards: a device cannot\nrevoke itself, and the current owner must hand the cycle over first.",
+        "description": "Rename or revoke/restore a device. Guards: a device cannot\nrevoke itself, and the current owner must hand the cycle over first.",
         "operationId": "device_patch_device__device_id__patch",
         "parameters": [
           {
@@ -1493,7 +1493,7 @@
     "/inbox/{entry_id}/requeue": {
       "post": {
         "summary": "Inbox Requeue",
-        "description": "Put a failed entry back in the queue (SYN-77 — user-driven retry).",
+        "description": "Put a failed entry back in the queue (user-driven retry).",
         "operationId": "inbox_requeue_inbox__entry_id__requeue_post",
         "parameters": [
           {
@@ -1601,7 +1601,7 @@
     "/graph": {
       "get": {
         "summary": "Graph",
-        "description": "Nodes = entities (size ~ mention_count), edges = relations.\n`include_archived=true` also returns user-archived entities (SYN-59).\n\nLiving-map options (SYN-66/68/69), all default off so the legacy entity-list /\nego consumers keep the original shape:\n- `include_notes=true` adds atomic_notes as a second node kind (id `n:<id>`,\n  kind `atomic_note`) plus `mentions` edges note→entity (resolved from each\n  note's entities_mentioned).\n- `cluster=true` runs community detection and tags every node with a\n  `community_id` (entities and notes share the colouring).\n- `layout=true` attaches `x`/`y` map positions (ForceAtlas2Based, computed by\n  the core). Positions are NOT persisted: the solver is deterministic, so the\n  same graph draws the same map, and the map is free to move as the memory\n  grows. `relayout=true` is accepted and ignored — every call recomputes.\n\nAnti-hairball filters (SYN-71), composable — the UI tightens them by default\nand reveals more on demand:\n- `node_types`: `entities` | `atomic_notes` | `both` (default both).\n- `memory_strength_min`: drop nodes below this liveness.\n- `since`: ISO date — keep only nodes active since then (by last_mentioned).\n- `top_pct_per_cluster`: keep the top fraction (e.g. 0.2) per community.\n- `include_isolated`: keep degree-0 nodes (default true).\n- `max_nodes`: hard ceiling (default 1000) — the densest-by-salience survive,\n  so the endpoint never returns an unbounded hairball.\n\n`clusters=true` (SYN-70) adds a top-level `clusters: [{community_id, label,\nsize, hull}]` — a short Haiku label per community (cached) and a convex hull\naround its node positions. Implies clustering + layout.\n\n**The living map is served by the core**, not assembled here: one\nimplementation of the projection, so the map answered over HTTP and the map\nan app rebuilds offline from the same database are the same map. The Python\npath below still serves everything else — the ego view, the entity list, and\nthe anti-hairball filters, which have no core equivalent.",
+        "description": "Nodes = entities (size ~ mention_count), edges = relations.\n`include_archived=true` also returns user-archived entities.\n\nLiving-map options, all default off so the legacy entity-list /\nego consumers keep the original shape:\n- `include_notes=true` adds atomic_notes as a second node kind (id `n:<id>`,\n  kind `atomic_note`) plus `mentions` edges note→entity (resolved from each\n  note's entities_mentioned).\n- `cluster=true` runs community detection and tags every node with a\n  `community_id` (entities and notes share the colouring).\n- `layout=true` attaches `x`/`y` map positions (ForceAtlas2Based, computed by\n  the core). Positions are NOT persisted: the solver is deterministic, so the\n  same graph draws the same map, and the map is free to move as the memory\n  grows. `relayout=true` is accepted and ignored — every call recomputes.\n\nAnti-hairball filters, composable — the UI tightens them by default\nand reveals more on demand:\n- `node_types`: `entities` | `atomic_notes` | `both` (default both).\n- `memory_strength_min`: drop nodes below this liveness.\n- `since`: ISO date — keep only nodes active since then (by last_mentioned).\n- `top_pct_per_cluster`: keep the top fraction (e.g. 0.2) per community.\n- `include_isolated`: keep degree-0 nodes (default true).\n- `max_nodes`: hard ceiling (default 1000) — the densest-by-salience survive,\n  so the endpoint never returns an unbounded hairball.\n\n`clusters=true` adds a top-level `clusters: [{community_id, label,\nsize, hull}]` — a short Haiku label per community (cached) and a convex hull\naround its node positions. Implies clustering + layout.\n\n**The living map is served by the core**, not assembled here: one\nimplementation of the projection, so the map answered over HTTP and the map\nan app rebuilds offline from the same database are the same map. The Python\npath below still serves everything else — the ego view, the entity list, and\nthe anti-hairball filters, which have no core equivalent.",
         "operationId": "graph_graph_get",
         "parameters": [
           {
@@ -1888,7 +1888,7 @@
       },
       "patch": {
         "summary": "Update Entity",
-        "description": "User edit of the fiche (SYN-82): type (closed enum) and/or rename.\n\nA rename keeps the old canonical_name as an alias so the resolver still\nmatches future mentions of the old name.",
+        "description": "User edit of the fiche: type (closed enum) and/or rename.\n\nA rename keeps the old canonical_name as an alias so the resolver still\nmatches future mentions of the old name.",
         "operationId": "update_entity_entity__entity_id__patch",
         "parameters": [
           {
@@ -1952,7 +1952,7 @@
     "/entity/{entity_id}/similar": {
       "get": {
         "summary": "Entity Similar",
-        "description": "SYN-62: soft semantic neighbours of an entity — links the user never\nstated explicitly ('Escalade' ↔ 'Bouldering', 'Schopenhauer' ↔ 'Nietzsche').\n\nSuggestion only, never a materialized relation: each call recomputes against\nthe current graph (no cache — fastembed is local and the scan is sub-ms), so\nresults evolve as new entities/summaries appear. `same_type=true` restricts\nto the entity's own type. Soft-merged entities are excluded by the search.",
+        "description": "Soft semantic neighbours of an entity — links the user never\nstated explicitly ('Escalade' ↔ 'Bouldering', 'Schopenhauer' ↔ 'Nietzsche').\n\nSuggestion only, never a materialized relation: each call recomputes against\nthe current graph (no cache — fastembed is local and the scan is sub-ms), so\nresults evolve as new entities/summaries appear. `same_type=true` restricts\nto the entity's own type. Soft-merged entities are excluded by the search.",
         "operationId": "entity_similar_entity__entity_id__similar_get",
         "parameters": [
           {
@@ -2036,7 +2036,7 @@
     "/projects": {
       "get": {
         "summary": "Projects List",
-        "description": "List entities of type=project with synthesis preview (SYN-53).\n\nOne row per project, joined to its current_state (if any) and counted\nagainst project_entries. Single trip — avoids the N+1 /entity/{id} +\n/project/{id}/state walk a client would otherwise do.",
+        "description": "List entities of type=project with synthesis preview.\n\nOne row per project, joined to its current_state (if any) and counted\nagainst project_entries. Single trip — avoids the N+1 /entity/{id} +\n/project/{id}/state walk a client would otherwise do.",
         "operationId": "projects_list_projects_get",
         "parameters": [
           {
@@ -2081,7 +2081,7 @@
     "/atomic-notes": {
       "get": {
         "summary": "Atomic Notes List",
-        "description": "List atomic_notes for the Notes view (SYN-52).\n\nFilters are AND-combined and best-effort:\n- q: substring match on title or content (case-insensitive)\n- entity: matches any note whose entities_mentioned JSON array contains\n  the canonical name (LIKE on the serialized list — cheap, no JSON1)\n- kind: note | task | event (SYN-85)\n- review_status: 'pending' to fetch the « À valider » queue. Omitted ⇒ the\n  normal view, which HIDES pending tasks (they only surface in validation).\nUser-archived notes are hidden (SYN-85 \"rendre obsolète\").",
+        "description": "List atomic_notes for the Notes view.\n\nFilters are AND-combined and best-effort:\n- q: substring match on title or content (case-insensitive)\n- entity: matches any note whose entities_mentioned JSON array contains\n  the canonical name (LIKE on the serialized list — cheap, no JSON1)\n- kind: note | task | event\n- review_status: 'pending' to fetch the « À valider » queue. Omitted ⇒ the\n  normal view, which HIDES pending tasks (they only surface in validation).\nUser-archived notes are hidden (\"rendre obsolète\").",
         "operationId": "atomic_notes_list_atomic_notes_get",
         "parameters": [
           {
@@ -2200,7 +2200,7 @@
     "/atomic-note/{note_id}": {
       "get": {
         "summary": "Atomic Note Detail",
-        "description": "A single atomic_note for the map / notes detail (SYN-64).\n\nSame shape as the list rows, plus the source capture's content when the\nprovenance link resolves — so the client can show where the note came from.",
+        "description": "A single atomic_note for the map / notes detail.\n\nSame shape as the list rows, plus the source capture's content when the\nprovenance link resolves — so the client can show where the note came from.",
         "operationId": "atomic_note_detail_atomic_note__note_id__get",
         "parameters": [
           {
@@ -2254,7 +2254,7 @@
     "/atomic-note/{note_id}/archive": {
       "post": {
         "summary": "Atomic Note Archive",
-        "description": "SYN-85 — user gesture « rendre obsolète » : hide a note (task done /\nevent passé / pensée périmée) without deleting it (reversible).",
+        "description": "User gesture « rendre obsolète » : hide a note (task done /\nevent passé / pensée périmée) without deleting it (reversible).",
         "operationId": "atomic_note_archive_atomic_note__note_id__archive_post",
         "parameters": [
           {
@@ -2479,7 +2479,7 @@
     "/atomic-note/{note_id}/reinforce": {
       "post": {
         "summary": "Atomic Note Reinforce",
-        "description": "SYN-23 (digest) — user gesture 👍 « garder ça » on a fading note: full\nreactivation. Moves last_reactivated_at to now so Ebbinghaus springs the\nmemory_strength back up; sets it to 1.0 immediately for the UI.",
+        "description": "Digest — user gesture 👍 « garder ça » on a fading note: full\nreactivation. Moves last_reactivated_at to now so Ebbinghaus springs the\nmemory_strength back up; sets it to 1.0 immediately for the UI.",
         "operationId": "atomic_note_reinforce_atomic_note__note_id__reinforce_post",
         "parameters": [
           {
@@ -2533,7 +2533,7 @@
     "/atomic-note/{note_id}/date": {
       "post": {
         "summary": "Atomic Note Set Date",
-        "description": "SYN-23 (dated tasks) — set (or clear) a note's date. Lets a task carry an\n`event_date` without becoming an event, so it surfaces in « À venir » like an\nevent. `event_date=null` clears it. Absolute date (YYYY-MM-DD) expected.",
+        "description": "Dated tasks — set (or clear) a note's date. Lets a task carry an\n`event_date` without becoming an event, so it surfaces in « À venir » like an\nevent. `event_date=null` clears it. Absolute date (YYYY-MM-DD) expected.",
         "operationId": "atomic_note_set_date_atomic_note__note_id__date_post",
         "parameters": [
           {
@@ -2613,7 +2613,7 @@
     "/merge-proposals": {
       "get": {
         "summary": "Merge Proposals List",
-        "description": "List entity merge proposals filtered by status (SYN-39).\n\nJoins the two side entities + their fact previews so the client can render\na side-by-side card without follow-up requests.",
+        "description": "List entity merge proposals filtered by status.\n\nJoins the two side entities + their fact previews so the client can render\na side-by-side card without follow-up requests.",
         "operationId": "merge_proposals_list_merge_proposals_get",
         "parameters": [
           {
@@ -2786,7 +2786,7 @@
     "/predicate-proposals": {
       "get": {
         "summary": "Predicate Proposals List",
-        "description": "Les rapprochements de prédicats en attente d'arbitrage (SYN-190).\n\nUn prédicat vu pour la première fois est comparé à ceux déjà en usage ; un\nquasi-doublon devient une proposition. Renvoie de quoi trancher sans requête\nde suivi : combien de faits chaque nom porte, et sur combien d'entités\ndistinctes, parce que c'est le second chiffre qui dit lequel est du\nvocabulaire et lequel est une phrase déguisée en nom.",
+        "description": "Les rapprochements de prédicats en attente d'arbitrage.\n\nUn prédicat vu pour la première fois est comparé à ceux déjà en usage ; un\nquasi-doublon devient une proposition. Renvoie de quoi trancher sans requête\nde suivi : combien de faits chaque nom porte, et sur combien d'entités\ndistinctes, parce que c'est le second chiffre qui dit lequel est du\nvocabulaire et lequel est une phrase déguisée en nom.",
         "operationId": "predicate_proposals_list_predicate_proposals_get",
         "parameters": [
           {
@@ -2841,7 +2841,7 @@
     "/predicate-proposals/{proposal_id}/accept": {
       "post": {
         "summary": "Predicate Proposal Accept",
-        "description": "Renommer le prédicat candidat vers l'existant, partout où il est écrit.\n\nAucune suppression : seul le NOM change, les faits et leurs valeurs restent.\nLe résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits,\nSYN-89) — sans ça la fiche continuerait d'afficher une phrase construite sur\nl'ancien nom et plus rien ne la régénérerait.",
+        "description": "Renommer le prédicat candidat vers l'existant, partout où il est écrit.\n\nAucune suppression : seul le NOM change, les faits et leurs valeurs restent.\nLe résumé des entités touchées est marqué obsolète (il est DÉRIVÉ des faits) — sans ça la fiche continuerait d'afficher une phrase construite sur\nl'ancien nom et plus rien ne la régénérerait.",
         "operationId": "predicate_proposal_accept_predicate_proposals__proposal_id__accept_post",
         "parameters": [
           {
@@ -2949,7 +2949,7 @@
     "/rename-proposals": {
       "get": {
         "summary": "Rename Proposals List",
-        "description": "Les renommages déclarés en capture, en attente de confirmation (SYN-188).\n\nLe nom canonique titre la fiche, sort dans le digest et remonte en recherche :\nc'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le\npropose, une personne l'applique — même porte que pour un type d'entité neuf.\n\nLa liste rend de quoi trancher sans requête de suivi : le poids de l'entité\n(faits, relations) et l'extrait de la capture qui a déclaré le renommage.",
+        "description": "Les renommages déclarés en capture, en attente de confirmation.\n\nLe nom canonique titre la fiche, sort dans le digest et remonte en recherche :\nc'est le nom que l'utilisateur LIT comme étant sa mémoire. Un modèle le\npropose, une personne l'applique — même porte que pour un type d'entité neuf.\n\nLa liste rend de quoi trancher sans requête de suivi : le poids de l'entité\n(faits, relations) et l'extrait de la capture qui a déclaré le renommage.",
         "operationId": "rename_proposals_list_rename_proposals_get",
         "parameters": [
           {
@@ -3004,7 +3004,7 @@
     "/rename-proposals/{proposal_id}/accept": {
       "post": {
         "summary": "Rename Proposal Accept",
-        "description": "Appliquer le renommage : l'ancien nom canonique devient un alias.\n\nMême écriture que `PATCH /entity` (SYN-82), pour qu'il n'existe qu'un seul\nchemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,\nle nouveau nom étant retiré de la liste au passage.",
+        "description": "Appliquer le renommage : l'ancien nom canonique devient un alias.\n\nMême écriture que `PATCH /entity`, pour qu'il n'existe qu'un seul\nchemin de renommage. Idempotent : accepter deux fois n'accrète pas les alias,\nle nouveau nom étant retiré de la liste au passage.",
         "operationId": "rename_proposal_accept_rename_proposals__proposal_id__accept_post",
         "parameters": [
           {
@@ -3275,7 +3275,7 @@
     "/negation-proposals": {
       "get": {
         "summary": "Negation Proposals List",
-        "description": "Les négations que le core n'a pas su appliquer seul (SYN-189).\n\nUne négation dont la cible est certaine est appliquée à la capture : le fait\nest périmé, et `POST /fact/{id}/restore` l'annule. N'arrivent ici que les\ntrois cas où viser serait deviner, et le motif dit lequel :\n\n* `valeur_differente` — la capture nie une valeur, la mémoire en porte une\n  autre sous le même prédicat. Les deux se contredisent sur ce qui était\n  vrai ; trancher sans regarder serait pire que ne rien faire.\n* `approximatif` — aucun prédicat exact, mais un nom voisin. C'est le résidu\n  que laisse la gouvernance des prédicats (SYN-190) sur les noms libres.\n* `introuvable` — rien ne correspond sur une entité qui porte pourtant des\n  faits, ce qui signale en général une dérive de nommage.\n\nLes faits candidats sont résolus ici, pas laissés en ids : une file qui\ndemande d'arbitrer sans montrer sur quoi n'est pas arbitrable. Quand il n'y\na aucun candidat (`introuvable`), ce sont les faits vivants de l'entité qui\nsont renvoyés — c'est précisément là que se cache celui qui était visé.",
+        "description": "Les négations que le core n'a pas su appliquer seul.\n\nUne négation dont la cible est certaine est appliquée à la capture : le fait\nest périmé, et `POST /fact/{id}/restore` l'annule. N'arrivent ici que les\ntrois cas où viser serait deviner, et le motif dit lequel :\n\n* `valeur_differente` — la capture nie une valeur, la mémoire en porte une\n  autre sous le même prédicat. Les deux se contredisent sur ce qui était\n  vrai ; trancher sans regarder serait pire que ne rien faire.\n* `approximatif` — aucun prédicat exact, mais un nom voisin. C'est le résidu\n  que laisse la gouvernance des prédicats sur les noms libres.\n* `introuvable` — rien ne correspond sur une entité qui porte pourtant des\n  faits, ce qui signale en général une dérive de nommage.\n\nLes faits candidats sont résolus ici, pas laissés en ids : une file qui\ndemande d'arbitrer sans montrer sur quoi n'est pas arbitrable. Quand il n'y\na aucun candidat (`introuvable`), ce sont les faits vivants de l'entité qui\nsont renvoyés — c'est précisément là que se cache celui qui était visé.",
         "operationId": "negation_proposals_list_negation_proposals_get",
         "parameters": [
           {
@@ -3330,7 +3330,7 @@
     "/negation-proposals/{proposal_id}/accept": {
       "post": {
         "summary": "Negation Proposal Accept",
-        "description": "Périmer le fait désigné, et clore la proposition.\n\n`fact_id` est OBLIGATOIRE : accepter une négation, c'est choisir laquelle\ndes lectures possibles était la bonne, et c'est justement ce que le core a\nrefusé de deviner. Le fait doit appartenir à l'entité de la proposition,\nfaute de quoi accepter une question sur Pierre pourrait périmer un fait de\nMarie.\n\nRien n'est supprimé. `obsoleted_at` est posé, `obsoleted_by` reste NULL —\naucun fait n'a remplacé celui-ci, il a cessé — et `POST /fact/{id}/restore`\nle rappelle. Le résumé de l'entité est marqué obsolète, étant dérivé des\nfaits vivants (SYN-89).",
+        "description": "Périmer le fait désigné, et clore la proposition.\n\n`fact_id` est OBLIGATOIRE : accepter une négation, c'est choisir laquelle\ndes lectures possibles était la bonne, et c'est justement ce que le core a\nrefusé de deviner. Le fait doit appartenir à l'entité de la proposition,\nfaute de quoi accepter une question sur Pierre pourrait périmer un fait de\nMarie.\n\nRien n'est supprimé. `obsoleted_at` est posé, `obsoleted_by` reste NULL —\naucun fait n'a remplacé celui-ci, il a cessé — et `POST /fact/{id}/restore`\nle rappelle. Le résumé de l'entité est marqué obsolète, étant dérivé des\nfaits vivants.",
         "operationId": "negation_proposal_accept_negation_proposals__proposal_id__accept_post",
         "parameters": [
           {
@@ -3447,7 +3447,7 @@
     "/entity-type-proposals": {
       "get": {
         "summary": "Type Proposals List",
-        "description": "List entity-type proposals filtered by status (SYN-58).\n\nJoins the candidate entity + the evidence capture so the client can render\nthe card (\"create type `recipe` for entity X?\") without follow-up requests.",
+        "description": "List entity-type proposals filtered by status.\n\nJoins the candidate entity + the evidence capture so the client can render\nthe card (\"create type `recipe` for entity X?\") without follow-up requests.",
         "operationId": "type_proposals_list_entity_type_proposals_get",
         "parameters": [
           {
@@ -3995,7 +3995,7 @@
     "/fact/{fact_id}/obsolete": {
       "post": {
         "summary": "Fact Obsolete",
-        "description": "Manual obsolescence (no replacement): obsoleted_by stays NULL — that's\nSYN-37's job when a newer fact supersedes.",
+        "description": "Manual obsolescence (no replacement): obsoleted_by stays NULL — that's\nthe supersede rule's job when a newer fact arrives.",
         "operationId": "fact_obsolete_fact__fact_id__obsolete_post",
         "parameters": [
           {
@@ -4157,7 +4157,7 @@
     "/capture/{capture_id}/generated": {
       "get": {
         "summary": "Capture Generated",
-        "description": "SYN-92 — the reverse provenance index: what the Dream Cycle produced from\none capture. Every derived table carries provenance_capture_id (the inbox row\nthat first created the entity / fact / relation / note), so this is a uniform\nfan-out. Powers the app's \"ce qui en est sorti\" panel under a journal line.\n\nEntities are listed only when this capture *created* them (a capture that merely\nre-mentions an existing entity won't appear) — which is exactly \"ce qui a été créé\".\nFacts/relations carry resolved entity names so the client can render readable lines.",
+        "description": "The reverse provenance index: what the Dream Cycle produced from\none capture. Every derived table carries provenance_capture_id (the inbox row\nthat first created the entity / fact / relation / note), so this is a uniform\nfan-out. Powers the app's \"ce qui en est sorti\" panel under a journal line.\n\nEntities are listed only when this capture *created* them (a capture that merely\nre-mentions an existing entity won't appear) — which is exactly \"ce qui a été créé\".\nFacts/relations carry resolved entity names so the client can render readable lines.",
         "operationId": "capture_generated_capture__capture_id__generated_get",
         "parameters": [
           {
@@ -4211,7 +4211,7 @@
     "/project-entries/{entry_id}/move": {
       "post": {
         "summary": "Move Project Entry",
-        "description": "Reassign a project_entry to a different project.\n\nSYN-45: the immutable capture (inbox row) is never touched — we only\nreassign the projection. Caller is expected to trigger a refinement\nlater if the synthesis on either project needs updating.",
+        "description": "Reassign a project_entry to a different project.\n\nThe immutable capture (inbox row) is never touched — we only\nreassign the projection. Caller is expected to trigger a refinement\nlater if the synthesis on either project needs updating.",
         "operationId": "move_project_entry_project_entries__entry_id__move_post",
         "parameters": [
           {
@@ -4275,7 +4275,7 @@
     "/project-entries/{entry_id}/attach-to-project": {
       "post": {
         "summary": "Attach Entry To Project",
-        "description": "Add a parallel rattachement to another project (additive, not move).\n\nSYN-55 + SYN-57: a capture can belong to N projects (the schema already\nallows multiple project_entries per capture_id, and the classifier emits\nproject_entries in batch). This manual endpoint mirrors that capability\nfor the UI: it takes an existing entry as a template and INSERTs a new\nrow pointing to the target project, keeping the source row intact. The\nimmutable inbox row is never touched.",
+        "description": "Add a parallel rattachement to another project (additive, not move).\n\nA capture can belong to N projects (the schema already\nallows multiple project_entries per capture_id, and the classifier emits\nproject_entries in batch). This manual endpoint mirrors that capability\nfor the UI: it takes an existing entry as a template and INSERTs a new\nrow pointing to the target project, keeping the source row intact. The\nimmutable inbox row is never touched.",
         "operationId": "attach_entry_to_project_project_entries__entry_id__attach_to_project_post",
         "parameters": [
           {
@@ -4339,7 +4339,7 @@
     "/project-entries/{entry_id}/detach": {
       "post": {
         "summary": "Detach Project Entry",
-        "description": "Remove the project rattachement; the capture in inbox is preserved.\n\nSYN-45: the projection is destroyed but the source-of-truth capture stays\nin inbox. The user can re-route later from another correction endpoint,\nor capture again.",
+        "description": "Remove the project rattachement; the capture in inbox is preserved.\n\nThe projection is destroyed but the source-of-truth capture stays\nin inbox. The user can re-route later from another correction endpoint,\nor capture again.",
         "operationId": "detach_project_entry_project_entries__entry_id__detach_post",
         "parameters": [
           {
@@ -4393,7 +4393,7 @@
     "/project-entries/{entry_id}/reclassify-as-fact": {
       "post": {
         "summary": "Reclassify Entry As Fact",
-        "description": "Turn a project_entry into an explicit fact on a target entity.\n\nSYN-45: the entry is removed (the projection), the capture stays in inbox,\nand a new fact is created with confidence=1.0 (the user vouches for it).\nProvenance points back to the capture that originally spawned the entry.",
+        "description": "Turn a project_entry into an explicit fact on a target entity.\n\nThe entry is removed (the projection), the capture stays in inbox,\nand a new fact is created with confidence=1.0 (the user vouches for it).\nProvenance points back to the capture that originally spawned the entry.",
         "operationId": "reclassify_entry_as_fact_project_entries__entry_id__reclassify_as_fact_post",
         "parameters": [
           {
@@ -4457,7 +4457,7 @@
     "/project/{project_id}/state": {
       "get": {
         "summary": "Project State",
-        "description": "Live synthesis of a project entity (SYN-43).\n\nReturns the current summary_md + metadata, plus a small recent-entries slice\nso the client can show the timeline without a second round-trip.",
+        "description": "Live synthesis of a project entity.\n\nReturns the current summary_md + metadata, plus a small recent-entries slice\nso the client can show the timeline without a second round-trip.",
         "operationId": "project_state_project__project_id__state_get",
         "parameters": [
           {
@@ -4511,7 +4511,7 @@
     "/relation": {
       "post": {
         "summary": "Create Relation",
-        "description": "SYN-84 — user-created relation (the cycle only extracts from new notes;\na fact edit never regenerates relations, so wrong/missing ones are fixed here).\nBoth entities must already exist; user origin → confidence 1.0.",
+        "description": "User-created relation (the cycle only extracts from new notes;\na fact edit never regenerates relations, so wrong/missing ones are fixed here).\nBoth entities must already exist; user origin → confidence 1.0.",
         "operationId": "create_relation_relation_post",
         "parameters": [
           {
@@ -4566,7 +4566,7 @@
     "/relation/{relation_id}": {
       "patch": {
         "summary": "Update Relation",
-        "description": "SYN-84 — user correction of a relation's predicate (authoritative → 1.0).",
+        "description": "User correction of a relation's predicate (authoritative → 1.0).",
         "operationId": "update_relation_relation__relation_id__patch",
         "parameters": [
           {
@@ -4628,7 +4628,7 @@
       },
       "delete": {
         "summary": "Delete Relation",
-        "description": "SYN-84 — remove a wrongly-extracted relation (provenance stays in the capture).\nDoubles as the « À valider » reject: dropping a pending relation discards it.",
+        "description": "Remove a wrongly-extracted relation (provenance stays in the capture).\nDoubles as the « À valider » reject: dropping a pending relation discards it.",
         "operationId": "delete_relation_relation__relation_id__delete",
         "parameters": [
           {
@@ -4781,7 +4781,7 @@
     "/fact/{fact_id}": {
       "patch": {
         "summary": "Update Fact",
-        "description": "User correction of a fact (SYN-82) — authoritative: confidence → 1.0.",
+        "description": "User correction of a fact — authoritative: confidence → 1.0.",
         "operationId": "update_fact_fact__fact_id__patch",
         "parameters": [
           {
@@ -4953,7 +4953,7 @@
     "/dream-cycle/run": {
       "post": {
         "summary": "Dream Cycle Run",
-        "description": "Run the cycle now (manual/testing). Guarded by a single-instance lock.\nSYN-93: use_batch routes the classify step through the Message Batches API\n(~-50%) — set for the scheduled nightly \"sleep\" pass, off for size-valve /\nmanual runs where immediacy matters.",
+        "description": "Run the cycle now (manual/testing). Guarded by a single-instance lock.\nuse_batch routes the classify step through the Message Batches API\n(~-50%) — set for the scheduled nightly \"sleep\" pass, off for size-valve /\nmanual runs where immediacy matters.",
         "operationId": "dream_cycle_run_dream_cycle_run_post",
         "parameters": [
           {

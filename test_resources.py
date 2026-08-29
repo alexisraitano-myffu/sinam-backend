@@ -1,5 +1,5 @@
 """
-Offline tests for SYN-21 — resource fetch + summary pipeline.
+Offline tests for resource fetch + summary pipeline.
 
 T5: the pipeline (URL scan, HTML extraction, fetch, store) lives in the core,
 so the network seam is a local http.server stub instead of a monkeypatch —

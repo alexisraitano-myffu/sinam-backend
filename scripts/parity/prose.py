@@ -1,4 +1,4 @@
-"""SYN-171 — les CINQ AUTRES prompts. Ceux qui écrivent, pas celui qui lit.
+"""Les CINQ AUTRES prompts. Ceux qui écrivent, pas celui qui lit.
 
 Le classifieur rend du JSON : on compare des branches. Les cinq autres rendent de
 la PROSE, et jusqu'ici aucun garde-fou ne les couvrait — alors que ce sont eux qui
@@ -225,7 +225,7 @@ def _project_cases() -> list[dict]:
     )
     # Miroir ANGLAIS. `project-summary.md` et `project-refinement.md` ne disaient
     # RIEN de la langue jusqu'au 20/08 — seuls prompts sur six dans ce cas, alors
-    # que SYN-119 pose que la sortie suit la langue du contenu. Haiku s'en sortait
+    # que la bascule multilingue pose que la sortie suit la langue du contenu. Haiku s'en sortait
     # par bon sens ; Qwen et Llama viennent de démontrer qu'ils n'en ont pas
     # (l'un répond EN sur matière FR, l'autre FR sur directive EN). La règle a été
     # ajoutée aux deux prompts, ce qui rend ce contrôle exigible.
@@ -410,7 +410,7 @@ def run(model: str, only: str | None, temperature: float) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="SYN-171 — les cinq prompts qui écrivent")
+    ap = argparse.ArgumentParser(description="les cinq prompts qui écrivent")
     ap.add_argument("model", help="provider:modèle")
     ap.add_argument("--only", help="filtre sur l'id (resum, resource, project, digest)")
     ap.add_argument("--temperature", type=float, default=0.0)

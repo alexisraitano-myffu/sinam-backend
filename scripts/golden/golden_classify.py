@@ -1,5 +1,5 @@
 """
-SYN-111 golden corpus, step 1: record real classifications.
+Golden corpus, step 1: record real classifications.
 
 Replays every processed capture of the production inbox through the CURRENT
 Python classifier (one live Haiku call each, day_context=None for

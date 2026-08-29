@@ -1,5 +1,5 @@
 """
-SYN-112 (T3, phase 3) — Mac↔Mac transport on top of the core sync engine.
+Mac↔Mac transport on top of the core sync engine.
 
 Pull-based mesh: each backend periodically pulls `/sync/changes` from its
 peers (mDNS-discovered and/or `SYNAPSE_SYNC_PEERS`), merges through the
@@ -61,7 +61,7 @@ def _headers() -> dict:
     return h
 
 
-# ── Mesh token (SYN-137) ─────────────────────────────────────────────────────
+# ── Mesh token ───────────────────────────────────────────────────────────────
 # The mesh's shared bearer, adopted at join time. Lives in LOCAL sync_meta
 # (the engine's own table, never replicated) so a joined desktop keeps its
 # original per-install token for its own app while accepting + presenting the
@@ -165,7 +165,7 @@ def ensure_cycle_owner() -> None:
         conn.close()
     if owner is None:
         claim_owner(me)
-        ensure_space()  # SYN-127: the first owner also founds the space
+        ensure_space()  # the first owner also founds the space
         return
     if owner["device_id"] != me:
         conn = get_connection()
@@ -177,7 +177,7 @@ def ensure_cycle_owner() -> None:
             owner_name = row[0] if row and row[0] else None
         finally:
             conn.close()
-        # SYN-129: structured detail so clients can render a human message
+        # structured detail so clients can render a human message
         # (« C'est {name} qui tisse votre mémoire ») and offer the transfer.
         raise HTTPException(
             status_code=409,
@@ -193,7 +193,7 @@ def ensure_cycle_owner() -> None:
         )
 
 
-# ── Space + device registry (SYN-127) ────────────────────────────────────────
+# ── Space + device registry ──────────────────────────────────────────────────
 
 def register_self_device() -> None:
     """Upsert OUR row in the replicated device registry (pk = our sync
@@ -362,7 +362,7 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
     # Ni l'un ni l'autre n'a d'espace : rien à cloisonner encore (aucun cycle
     # n'a tourné nulle part), on garde le comportement d'avant.
 
-    # SYN-127 — a revoked device is out of the mesh: don't pull its rows.
+    # a revoked device is out of the mesh: don't pull its rows.
     # (Symmetric enforcement — refusing to SERVE a revoked puller — needs the
     # per-device tokens of the pairing ticket; single shared token until then.)
     if revoked:
@@ -404,7 +404,7 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
 
     reembedded = reembed_notes(sorted(notes))
     deduped = dedup_after_pull()
-    # SYN-127 — remember WHEN we last pulled this peer (local sync_meta, for
+    # remember WHEN we last pulled this peer (local sync_meta, for
     # the Appareils screen) and refresh our replicated last_seen.
     conn = get_connection()
     try:
@@ -428,7 +428,7 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
 
 
 def apply_pushed(changes_json: str) -> dict:
-    """SYN-113: merge one changeset PUSHED by a peer (a phone is not
+    """Merge one changeset PUSHED by a peer (a phone is not
     reachable over HTTP, so unlike the Mac↔Mac pull mesh it must send its
     pages). Same post-merge machinery as a pull: re-embed + twin dedup. The
     payload goes to the core verbatim — the protocol check lives there."""
@@ -473,7 +473,7 @@ def reembed_notes(note_ids) -> int:
 # ── Dedup of double-routed derived rows (post-merge safety net) ──────────────
 
 # The (table, guard, natural-identity) rules live in the core (sync.rs
-# DEDUP_RULES) since SYN-133 — one copy, every host.
+# DEDUP_RULES) — one copy, every host.
 
 
 def dedup_after_pull() -> dict:
@@ -483,7 +483,7 @@ def dedup_after_pull() -> dict:
     Entities are NOT deduped here: the existing merge-proposal machinery
     (embedding similarity) already handles same-name entities gracefully.
 
-    SYN-133: shim over the core (`Storage.dedup_after_pull`, sync.rs) so a
+    Shim over the core (`Storage.dedup_after_pull`, sync.rs) so a
     Mac-less mobile mesh runs the exact same pass; rules live in the core's
     DEDUP_RULES. The core also sweeps the doomed notes' vec0 rows (chunked
     keys included)."""

@@ -26,15 +26,15 @@ ici, alors qu'il teste la même chose que `g-type-resource`.
 
 ## `hard.jsonl` — les vingt-neuf cas durs
 
-Portés depuis le harnais de SYN-124 (juillet 2026), qui ne survivait que
+Portés depuis le harnais de juillet 2026, qui ne survivait que
 recopié dans un document Linear. Ils couvrent les familles de routage une par
 une : tâche adressée, événement nominal, intention triviale, note réflexive,
 projet, fait contre relation, formulation prudente, ressource, épisode.
 
 ## `atomicity.jsonl` — une capture, plusieurs sorties
 
-Ajoutés à SYN-171 : l'atomicité (SYN-98) n'était couverte par aucun cas de
-SYN-124. La règle qu'ils protègent est toujours la même — une capture mixte
+Ajoutés avec le classifieur en deux appels : l'atomicité n'était couverte
+par aucun cas du harnais de juillet. La règle qu'ils protègent est toujours la même — une capture mixte
 doit produire la note ET les faits, jamais l'un À LA PLACE de l'autre.
 
 ## `adversarial.jsonl` — ce que le prompt ne dit nulle part
@@ -44,12 +44,12 @@ le scoring ne savait pas vérifier au moment où ils ont été écrits : ils ét
 là quand même, pour observer ce que les modèles font quand personne ne leur dit
 rien. Un cas qu'on n'a pas encore joué est un cas dont on ne sait rien.
 
-Depuis SYN-184, `score.py` sait lire tous leurs axes.
+Depuis la mise en corpus étiqueté, `score.py` sait lire tous leurs axes.
 
 ## `scenario.jsonl` — la capture n'est pas seule
 
 Les autres étages classent une capture dans le vide. La production, elle, ajoute
-la MÉMOIRE DE TRAVAIL (SYN-93) : le fil des captures récentes, avec la consigne
+la MÉMOIRE DE TRAVAIL : le fil des captures récentes, avec la consigne
 explicite « n'extrais rien de ce bloc ». La consigne est respectée à la lettre —
 rien n'est extrait du bloc — et pourtant le bloc DÉPLACE la décision prise sur
 la capture courante.

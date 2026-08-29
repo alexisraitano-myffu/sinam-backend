@@ -1,6 +1,6 @@
 """
 mDNS / Bonjour advertising + browsing — phones on the same LAN find this
-server without having to type an IP, and (SYN-112 T3) sibling Macs find each
+server without having to type an IP, and sibling Macs find each
 other for P2P sync. Publishes a `_synapse._tcp.local.` service from the
 FastAPI lifespan; mobile clients (NsdManager on Android, NetServiceBrowser on
 iOS) discover it and offer it as a one-tap pick in Settings. The browser
@@ -109,7 +109,7 @@ async def stop_advertising(azc: AsyncZeroconf | None) -> None:
     await azc.async_close()
 
 
-# ── Peer browsing (SYN-112 T3) ───────────────────────────────────────────────
+# ── Peer browsing ────────────────────────────────────────────────────────────
 
 async def _resolve_peer(zc, service_type: str, name: str) -> None:
     info = AsyncServiceInfo(service_type, name)

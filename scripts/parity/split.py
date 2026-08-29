@@ -1,4 +1,4 @@
-"""SYN-171 — étage 5 : le classifieur en DEUX appels, mesuré comme un seul.
+"""Étage 5 : le classifieur en DEUX appels, mesuré comme un seul.
 
 Pourquoi. Mesuré le 2026-08-20 sur les 59 cas, tableau 2×2 complet (prompt v14/v23 ×
 schéma contraint/libre) : E2B émet 33-34 notes sous le prompt v14 et 22 sous le v23,
@@ -42,7 +42,7 @@ sys.path.insert(0, str(_REPO))
 from scripts.parity import context, providers  # noqa: E402
 from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
-# Les deux moitiés du classifieur. Depuis leur adoption (SYN-171, 2026-08-21)
+# Les deux moitiés du classifieur. Depuis leur adoption (2026-08-21)
 # elles sont des prompts de PRODUCTION comme les autres : versionnées dans
 # sinam-core, lues à l'exécution par le core. Le harnais lit les mêmes
 # fichiers — il ne teste pas une variante, il teste ce qui tourne.
@@ -118,7 +118,7 @@ def bloc_dates_identique() -> None:
 def _system(prompt_file: str) -> list[str]:
     """Prompt de la moitié + l'échafaudage, dans l'ordre où le core l'assemble.
 
-    ⚠ Corrigé le 2026-08-24 (trouvé en instruisant SYN-190). Cette fonction
+    ⚠ Corrigé le 2026-08-24 (trouvé en instruisant la gouvernance des prédicats). Cette fonction
     envoyait le bloc des types aux DEUX moitiés et le bloc projets à AUCUNE, alors
     que le core (`Brain::build_classify_params`) réserve types et projets à la
     moitié GRAPHE et n'envoie l'auteur aux deux. C'est la divergence exacte que le
@@ -141,7 +141,7 @@ def _system(prompt_file: str) -> list[str]:
     if prompt_file == "graph.md":
         blocks += [context.static_types_block(), context.static_projects_block()]
     # L'auteur compte pour les deux : la moitié note en a besoin pour distinguer
-    # une action rapportée de celle de l'auteur (SYN-182), la graphe pour résoudre
+    # une action rapportée de celle de l'auteur, la graphe pour résoudre
     # « je »/« mon » sur la bonne entité.
     blocks.append(context.static_owner_block())
     return blocks

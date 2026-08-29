@@ -4,6 +4,20 @@ Valider un modèle candidat **avant** de l'intégrer, et pouvoir rejouer la mesu
 d'une commande. Trois fois de suite — Gemma E4B, le `.litertlm` mobile, E2B — la
 décision s'est prise sur un harnais jeté après usage. Celui-ci est versionné.
 
+## D'où viennent les règles qu'on mesure
+
+Depuis le 2026-08-29, les règles ne vivent plus dans le prompt. Elles vivent
+dans **`sinam-core/docs/regles.md`**, une par ligne, ancrée au moment du
+traitement où elle s'applique, avec son importance et sa destination : le code,
+le prompt, ou les exemples. C'est la source ; le prompt, le corpus et le code en
+découlent.
+
+Conséquence directe pour ce harnais : **une étiquette de corpus se justifie
+désormais par un identifiant de règle** (`N7-c`, `G1-b`), pas par une citation du
+prompt. Et quand le rouge vient d'une règle que le prompt n'applique pas encore,
+c'est l'écart qui est mesuré, pas une erreur d'étiquetage. Le journal des règles,
+`regles-journal.md` à côté, dit lesquelles sont dans ce cas.
+
 ## Trois étages
 
 | | Ce que ça répond | Coût |

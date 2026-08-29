@@ -627,7 +627,7 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     assert payload["token"] == "member-token"
     assert payload["space_id"]
     assert payload["anthropic_key"] == "sk-ant-secret"
-    # SYN-169 — l'empreinte du certificat ne peut voyager que par ce canal :
+    # L'empreinte du certificat ne peut voyager que par ce canal :
     # c'est le seul qui soit authentifié par le QR. Le certificat existe depuis
     # le début du test, donc c'est bien une empreinte et pas un champ vide.
     from api import tls

@@ -37,6 +37,22 @@ import re
 
 from scripts.parity.context import TODAY
 
+
+def _liste(valeur) -> list[str]:
+    """Une chaîne, une liste de chaînes, ou rien. Toujours une liste en sortie.
+
+    Une valeur qui n'est pas une chaîne est IGNORÉE plutôt que castée : un
+    `no_entity: 1` casté en "1" mesurerait une entité nommée « 1 », qui
+    n'existe jamais, et le cas passerait pour vert sans rien tester.
+    """
+    if valeur is None:
+        return []
+    if isinstance(valeur, str):
+        return [valeur] if valeur.strip() else []
+    if isinstance(valeur, (list, tuple)):
+        return [v for v in valeur if isinstance(v, str) and v.strip()]
+    return []
+
 VALID_NOTE_KINDS = {"note", "task", "event", "episode"}
 
 # Miroir de `routing.rs:39` (REVIEW_CONFIDENCE_THRESHOLD_DEFAULT). Le prompt, lui,
@@ -519,9 +535,13 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
 
     # P-PERS — l'échelle de persistance décide du nœud. Les deux côtés existaient
     # dans le corpus depuis le 21/08 et n'étaient lus par personne.
-    if case.get("entity_expected"):
-        if case["entity_expected"].strip().lower() not in _entity_names(parsed):
-            out.append(f"entité '{case['entity_expected']}' absente")
+    # Une capture nomme souvent DEUX choses qui méritent chacune leur fiche
+    # (« Léa m'a recommandé la pizzeria Chez Gino »), et le champ n'en tenait
+    # qu'une : la seconde n'était pas mesurée. Les trois axes acceptent donc
+    # une chaîne OU une liste, comme `rel` le fait déjà.
+    for nom in _liste(case.get("entity_expected")):
+        if nom.strip().lower() not in _entity_names(parsed):
+            out.append(f"entité '{nom}' absente")
 
     # RES — un lien appartient à quelque chose, et ce quelque chose dit tout.
     # Le type de l'entité qui le reçoit distingue les deux formes : « le lien
@@ -554,11 +574,10 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
                     out.append(f"les mots de l'auteur sur le lien sont perdus "
                                f"(attendu {attendu!r}, vu {got or 'rien'!r})")
 
-    if case.get("entity_proposed"):
-        vu = porte_de_creation(parsed, case["entity_proposed"])
+    for nom in _liste(case.get("entity_proposed")):
+        vu = porte_de_creation(parsed, nom)
         if vu != "proposée":
-            out.append(f"entité '{case['entity_proposed']}' : {vu} au lieu "
-                       f"d'être proposée")
+            out.append(f"entité '{nom}' : {vu} au lieu d'être proposée")
 
     # P-BDAY — la troisième marche de l'échelle anniversaire. « fait interdit »
     # et « fait asserté » ne suffisaient pas à dire la seule bonne réponse quand
@@ -596,9 +615,9 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
             out.append(f"type proposé de trop sur {vus}, alors que le type "
                        f"attendu est déjà actif")
 
-    if case.get("no_entity"):
-        if case["no_entity"].strip().lower() in _entity_names(parsed):
-            out.append(f"entité '{case['no_entity']}' créée alors qu'elle est "
+    for nom in _liste(case.get("no_entity")):
+        if nom.strip().lower() in _entity_names(parsed):
+            out.append(f"entité '{nom}' créée alors qu'elle est "
                        f"sous le seuil de persistance")
 
     # P-DEDUC / P-BDAY — dire qu'un fait ne doit PAS naître. Sans ces deux axes,

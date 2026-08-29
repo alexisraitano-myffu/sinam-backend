@@ -352,6 +352,11 @@ def valider(cas: dict, capture: dict | None) -> int:
     return alertes
 
 
+def _sans_accent(s: str) -> str:
+    plat = unicodedata.normalize("NFD", s.lower())
+    return "".join(c for c in plat if unicodedata.category(c) != "Mn")
+
+
 def nom_present(cas: dict) -> int:
     """`entity_expected` et `no_entity` nomment quelque chose que la capture DIT.
 
@@ -371,9 +376,22 @@ def nom_present(cas: dict) -> int:
     alertes = 0
     nu = unicodedata.normalize("NFD", cas.get("text", "").lower())
     nu = "".join(c for c in nu if unicodedata.category(c) != "Mn")
-    for champ in ("entity_expected", "no_entity"):
+    for champ in ("entity_expected", "no_entity", "entity_proposed"):
         val = cas.get(champ)
         if val is None:
+            continue
+        if isinstance(val, (list, tuple)):
+            gardes = [v for v in val if isinstance(v, str)
+                      and _sans_accent(v) in nu]
+            if len(gardes) != len(val):
+                print(f"⚠ {cas.get('id')} : `{champ}` contenait des noms absents "
+                      f"de la capture — {len(val) - len(gardes)} retiré(s)",
+                      file=sys.stderr)
+                alertes += 1
+            if gardes:
+                cas[champ] = gardes
+            else:
+                cas.pop(champ)
             continue
         if not isinstance(val, str) or not val.strip():
             print(f"⚠ {cas.get('id')} : `{champ}` = {val!r} n'est pas un nom, "
@@ -381,9 +399,7 @@ def nom_present(cas: dict) -> int:
             cas.pop(champ)
             alertes += 1
             continue
-        cible = unicodedata.normalize("NFD", val.lower())
-        cible = "".join(c for c in cible if unicodedata.category(c) != "Mn")
-        if cible not in nu:
+        if _sans_accent(val) not in nu:
             print(f"⚠ {cas.get('id')} : `{champ}` = {val!r} n'apparaît pas dans "
                   f"la capture — retiré", file=sys.stderr)
             cas.pop(champ)

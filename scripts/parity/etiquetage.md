@@ -107,19 +107,52 @@ l'auteur ?**
 `entity_expected` quand la réponse est oui — un proche, un collègue, l'animal
 de la maison, un projet, un lieu où l'on retourne, un livre qu'on lit.
 
-`no_entity` quand la réponse est non, et **c'est le cas le plus fréquent des
-deux dans une capture ordinaire**, contrairement à ce que l'instinct dit. Une
-marque citée parce qu'un colis arrive, une enseigne où l'on passe une fois, une
-ville de destination pour un aller-retour, un commerce nommé en passant : rien
-de tout ça ne mérite une fiche, et le nom propre n'y change rien. Un nom écrit
-avec une majuscule n'est pas une preuve de durabilité, c'est une convention
-typographique.
+`no_entity` quand la réponse est non. Un nom écrit avec une majuscule n'est pas
+une preuve de durabilité, c'est une convention typographique.
 
-Mesuré le 2026-08-29 sur un paquet de 69 captures : 31 `entity_expected` pour
-1 seul `no_entity`, et ce seul-là posé sur « bathroom », qui n'est même pas un
-nom. Ce déséquilibre est le défaut à corriger. Si tu poses trente fiches et une
-seule non-fiche sur un paquet, relis-le : tu as presque sûrement créé des
-fiches pour des passants.
+**Pour un LIEU ou un COMMERCE, le test est plus précis, et il a été arbitré le
+2026-08-29 : l'endroit est-il CE DONT PARLE la capture, ou n'est-il qu'un
+détail négligeable de ce qui s'y passe ?**
+
+Fiche : le restaurant où l'on a dîné, le garagiste qu'un proche a conseillé, le
+café où l'on déjeune avec quelqu'un, l'atelier où la voiture est en révision.
+La capture parle de cet endroit, ou c'est l'endroit qu'on cherchera pour y
+revenir.
+
+Pas de fiche : « le colis Amazon doit arriver mercredi » parle du colis, pas
+d'Amazon. « book train tickets to Manchester » parle des billets, pas de
+Manchester. « might need to drop by the Apple store » parle de la batterie, pas
+du magasin. Ce sont des détails de circonstance, et ils resteraient vrais avec
+un autre transporteur, une autre ville, une autre enseigne.
+
+**La PRÉCISION renverse la décision.** « l'Apple store de Lyon » est un endroit
+identifié et mérite sa fiche, là où « l'Apple store » ne nomme qu'une enseigne.
+Un nom d'enseigne n'est pas un lieu ; une enseigne SITUÉE en est un.
+
+**Il y a un TROISIÈME cran entre les deux, et c'est `entity_proposed`** : la
+fiche ne naît pas toute seule, elle part en file se faire valider. Il existait
+depuis le début et n'était posé que sur 4 cas des 270 — c'est lui qui manquait
+pour éviter le choix binaire.
+
+Ce qui fait monter d'un cran, arbitré le 2026-08-29 : **l'auteur en dit quelque
+chose.** Une recommandation, un jugement, une raison d'y revenir. « Léa m'a
+recommandé la pizzeria Chez Gino » et « Ben m'a conseillé un bon garagiste
+appelé Joe's Auto » sont des adresses qu'on cherchera dans six mois : la
+recommandation est une preuve de durabilité, donc `entity_expected`. « resto
+avec Camille au café de la gare » nomme l'endroit sans rien en dire : c'est le
+sujet de la capture, donc pas `no_entity`, mais rien ne dit qu'on y retournera
+— `entity_proposed`, et un humain tranchera.
+
+Le résumé des trois crans pour un lieu :
+
+| l'auteur en dit quelque chose | il le nomme sans le juger | c'est un détail de circonstance |
+|---|---|---|
+| `entity_expected` | `entity_proposed` | `no_entity` |
+
+**Les trois champs acceptent une LISTE**, pas seulement un nom. Une capture en
+nomme souvent deux qui méritent chacune leur sort (« Léa m'a recommandé la
+pizzeria Chez Gino » : Léa ET Chez Gino), et n'en poser qu'un laisse l'autre
+non mesuré. Écris `["Léa", "Chez Gino"]` quand c'est le cas.
 
 `no_entity` se pose avec le nom concerné, comme l'autre. Une capture peut
 porter les deux, sur deux noms différents.

@@ -11,6 +11,29 @@ l'écriture est obligatoire ici.
 
 ---
 
+## La règle qui départage tous les doutes
+
+**Entre garder et jeter, on garde. Entre affirmer et faire valider, on fait
+valider.** Arbitré par Alexis le 2026-08-29, et ça tranche tout cas où deux
+étiquettes se défendent également.
+
+La raison est dissymétrique, et c'est ce qui rend la règle simple. Une capture
+jetée ne laisse **aucune trace** : rien n'arrive en file, rien ne signale que
+quelque chose a disparu, et l'utilisateur ne découvre le trou que le jour où il
+cherche. Un souvenir de trop, une fiche de trop, un fait de trop se voient, se
+ferment et s'oublient. Le coût d'une erreur n'est pas le même dans les deux
+sens, donc le doute ne penche pas au milieu.
+
+La même dissymétrie vaut d'un cran plus bas : quand on hésite à créer une fiche
+ou un lien, `entity_proposed` et `relation_proposed` coûtent une question, tandis
+que `no_entity` coûte l'information elle-même.
+
+⚠ Cette règle a un prix qu'il faut assumer : elle remplit la file de validation.
+C'est le bon échange tant que la file reste lisible, et c'est pour ça que le
+nombre de captures qui y atterrissent se surveille.
+
+---
+
 ## D'où vient une étiquette
 
 **Strictement des prompts qu'on te donne.** Pas de ton intuition, pas de ce qui
@@ -149,6 +172,28 @@ Le résumé des trois crans pour un lieu :
 |---|---|---|
 | `entity_expected` | `entity_proposed` | `no_entity` |
 
+**UN NOM COMMUN NE DEVIENT JAMAIS UNE FICHE**, arbitré le 2026-08-29. « les
+enfants », « le comptable », « le kiné », « la hotte », « almond milk » ne
+nomment rien : ce sont des rôles et des objets, pas des identités. Ils prennent
+`no_entity` quand la capture les met en avant, et rien du tout sinon. La seule
+exception est la MENTION EXPLICITE, celle qui vaut déjà pour les lieux : « le
+comptable » est un rôle, « le cabinet Fiducial » est une identité.
+
+**UN OBJET CONSOMMÉ NE PREND UNE FICHE QUE S'IL EST LE SUJET.** Même test que
+pour les lieux, arbitré le 2026-08-29 sur le médicament. « j'ai pris du
+Paracétamol et annulé la gym » parle du mal de tête, pas du médicament :
+`no_entity`. « j'ai trouvé un nouveau médicament, le Paracétamol » en fait le
+sujet : la fiche se justifie. Le nom de marque ne décide pas, la place dans la
+phrase décide.
+
+**UN LIEN NU NE NOMME RIEN**, arbitré le 2026-08-29. Ni l'URL entière ni son
+dernier segment ne sont des noms de fiche : ce sont des adresses. Le lien est
+déjà porté par `resource_url`, que l'autre passe remplit, et une fiche nommée
+« https://example.com/guide-compost-balcon » ne serait jamais retrouvée par
+personne. Pose `no_entity` avec l'URL. Une fiche ne devient possible que le
+jour où le titre de la page est connu, et il ne l'est pas au moment de la
+capture.
+
 **Les trois champs acceptent une LISTE**, pas seulement un nom. Une capture en
 nomme souvent deux qui méritent chacune leur sort (« Léa m'a recommandé la
 pizzeria Chez Gino » : Léa ET Chez Gino), et n'en poser qu'un laisse l'autre
@@ -203,13 +248,19 @@ vie :
 Les deux étaient étiquetées `aucun` avant cet arbitrage, et perdaient tout.
 
 **UNE LISTE DE COURSES EST UNE TÂCHE PERMANENTE**, pas un rappel qui expire en
-48 h. Arbitré le 2026-08-29 (SYN-224). Un article unique reste une course
+48 h. Arbitré le 2026-08-29. Un article unique reste une course
 triviale qui ne laisse rien : « buy bread », « sortir les poubelles ». Une
 ÉNUMÉRATION de plusieurs articles se prépare et se coche article par article,
 elle survit largement à deux jours : `souvenir: task`, et `ephemeral: false`.
 ⚠ Le prompt de production ne le fait PAS encore, il les rend éphémères ou
 vides. C'est voulu : l'étiquette dit ce qui DOIT arriver, le rouge qui en
 résulte est la mesure du défaut, pas une erreur d'étiquetage.
+
+**UNE ÉNUMÉRATION DE CORVÉES SUIT LA MÊME RÈGLE**, arbitré le 2026-08-29.
+« changer l'ampoule du couloir et vider le lave-vaisselle » n'est pas plus
+éphémère qu'une liste de courses : deux corvées listées, c'est une intention de
+session de bricolage qui se coche ligne à ligne, pas un réflexe qui s'évapore.
+`souvenir: task`, `ephemeral: false`. Une corvée SEULE reste une corvée seule.
 
 Un second souvenir n'est dû que si la capture demanderait deux LIGNES dans un
 carnet : parce que l'une est faite et l'autre pas, parce qu'elles sont dues à

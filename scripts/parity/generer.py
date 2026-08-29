@@ -143,6 +143,13 @@ def main() -> None:
                          "modèle dessus, et ses proportions deviennent alors "
                          "l'a priori du modèle : un corpus fait uniquement de "
                          "bords enseignerait un monde où tout est ambigu.")
+    ap.add_argument("--deja", type=Path,
+                    help="un fichier de captures DÉJÀ générées mais pas encore "
+                         "versées au corpus, à exclure aussi. Sans lui, deux "
+                         "appels du même paquet ne se voient pas et réécrivent "
+                         "les mêmes captures : la garde anti-doublon ne lit que "
+                         "le corpus sur disque, et rien n'y est écrit avant la "
+                         "revue humaine.")
     ap.add_argument("--langue", default="fr",
                     help="fr, en, … La cible du corpus est 30 %% d'anglais, et "
                          "il en portait 11 %% au 2026-08-29 : la proportion "
@@ -158,10 +165,17 @@ def main() -> None:
             "n'ont pas de sens, aucun des deux non plus.")
 
     systeme = (_ICI / "generation.md").read_text()
+    en_attente: list[str] = []
+    if args.deja and args.deja.is_file():
+        for ligne in args.deja.read_text().splitlines():
+            ligne = ligne.strip()
+            if ligne:
+                en_attente.append(json.loads(ligne)["text"])
     if args.ordinaire:
         # Tout le corpus sert de garde anti-doublon : sans frontière visée, il
         # n'y a plus de « ici » et « ailleurs », il n'y a qu'un seul tas.
-        ici, ailleurs = [], [c["text"] for jeu in corpus.SETS.values() for c in jeu]
+        ici, ailleurs = [], ([c["text"] for jeu in corpus.SETS.values()
+                             for c in jeu] + en_attente)
         entete = [
             f"Mode ORDINAIRE. Aucune frontière à viser. Langue : {args.langue}.",
             "",
@@ -172,6 +186,7 @@ def main() -> None:
         ]
     else:
         ici, ailleurs = textes_existants(args.frontiere)
+        ailleurs = ailleurs + en_attente
         detail = precisions(args.frontiere)
         entete = [
             f"Frontière à couvrir : {args.frontiere}",

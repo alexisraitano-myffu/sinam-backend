@@ -38,9 +38,23 @@ log = logging.getLogger(__name__)
 SYNC_PAGE_LIMIT = 5000
 
 
+# En-tête par lequel un pair annonce l'espace dont il se réclame. Le serveur
+# s'en sert comme second verrou, indépendant du jeton (qui, partagé par tout
+# le mesh, ne distingue pas ses appelants).
+SPACE_HEADER = "X-Sinam-Space"
+
+
 def _headers() -> dict:
     token = get_mesh_token() or os.environ.get("SYNAPSE_API_TOKEN")
-    return {"Authorization": f"Bearer {token}"} if token else {}
+    h = {"Authorization": f"Bearer {token}"} if token else {}
+    conn = get_connection()
+    try:
+        space = expected_space_id(conn)
+    finally:
+        conn.close()
+    if space:
+        h[SPACE_HEADER] = space
+    return h
 
 
 # ── Mesh token (SYN-137) ─────────────────────────────────────────────────────
@@ -249,6 +263,42 @@ def ensure_space() -> None:
         conn.close()
 
 
+# L'espace dont nous nous réclamons. Normalement la ligne `space` répliquée ;
+# le temps d'un appairage, l'identifiant annoncé dans la charge scellée, car
+# l'espace n'arrive justement que par la première réplication.
+
+def expected_space_id(conn) -> str | None:
+    space = get_space(conn)
+    if space and space.get("space_id"):
+        return str(space["space_id"])
+    row = conn.execute(
+        "SELECT v FROM sync_meta WHERE k = 'joining_space_id'").fetchone()
+    return str(row[0]) if row and row[0] else None
+
+
+def set_joining_space_id(space_id: str) -> None:
+    """Poser l'espace visé avant le tir de bootstrap d'un appairage. Local
+    (`sync_meta` n'est jamais répliquée), et effacé dès que la vraie ligne
+    `space` est arrivée."""
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO sync_meta (k, v) VALUES ('joining_space_id', ?)",
+                (space_id,))
+    finally:
+        conn.close()
+
+
+def clear_joining_space_id() -> None:
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute("DELETE FROM sync_meta WHERE k = 'joining_space_id'")
+    finally:
+        conn.close()
+
+
 def device_revoked(conn, device_id: str) -> bool:
     row = first_row(conn.execute(
         "SELECT revoked_at FROM devices WHERE device_id = ?", (device_id,)))
@@ -270,17 +320,49 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
     peer_device = status.get("device_id")
     if not peer_device:
         return {"url": base, "error": "peer exposes no sync device_id"}
+    if peer_device == me:
+        return {"url": base, "peer_device": peer_device, "skipped": "self"}
+
+    # Le pair doit se réclamer de NOTRE espace. mDNS ne trouve pas des membres,
+    # il trouve des instances : sans ce contrôle, deux mémoires étrangères qui
+    # se croisent sur un même Wi-Fi fusionnent. Le seul cas où un espace absent
+    # est légitime est l'install vierge qui bootstrappe (l'espace lui arrive par
+    # cette réplication même) ; une install habitée qui n'a pas encore fondé son
+    # espace, elle, n'a rien à tirer de personne.
+    conn = get_connection()
+    try:
+        expected = expected_space_id(conn)
+        revoked = device_revoked(conn, peer_device)
+    finally:
+        conn.close()
+    peer_space = status.get("space_id")
+    if expected is not None:
+        if peer_space != expected:
+            log.warning(
+                "sync: refus de tirer de %s (device %s) : il se réclame de l'espace "
+                "%s, le nôtre est %s", base, peer_device, peer_space or "aucun", expected)
+            return {"url": base, "peer_device": peer_device, "skipped": "other_space"}
+    elif peer_space is not None:
+        # Lui a un espace, pas nous. Légitime pour une install vierge qui
+        # bootstrappe, jamais pour une install habitée : celle-là a une mémoire
+        # à elle et n'a aucune raison d'avaler celle d'un inconnu.
+        from api.join import is_virgin
+
+        if not is_virgin():
+            log.warning(
+                "sync: refus de tirer de %s (device %s) : il se réclame de l'espace "
+                "%s et nous n'en avons aucun", base, peer_device, peer_space)
+            return {"url": base, "peer_device": peer_device, "skipped": "no_space"}
+        log.info("sync: bootstrap de l'espace %s depuis %s (device %s), install vierge",
+                 peer_space, base, peer_device)
+    # Ni l'un ni l'autre n'a d'espace : rien à cloisonner encore (aucun cycle
+    # n'a tourné nulle part), on garde le comportement d'avant.
+
     # SYN-127 — a revoked device is out of the mesh: don't pull its rows.
     # (Symmetric enforcement — refusing to SERVE a revoked puller — needs the
     # per-device tokens of the pairing ticket; single shared token until then.)
-    conn = get_connection()
-    try:
-        if device_revoked(conn, peer_device):
-            return {"url": base, "peer_device": peer_device, "skipped": "revoked"}
-    finally:
-        conn.close()
-    if peer_device == me:
-        return {"url": base, "peer_device": peer_device, "skipped": "self"}
+    if revoked:
+        return {"url": base, "peer_device": peer_device, "skipped": "revoked"}
 
     conn = get_connection()
     try:
@@ -329,6 +411,13 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
     finally:
         conn.close()
     touch_self_device()
+    conn = get_connection()
+    try:
+        arrived = get_space(conn) is not None
+    finally:
+        conn.close()
+    if arrived:
+        clear_joining_space_id()
     return {"url": base, "peer_device": peer_device, "pages": pages,
             "cursor": cursor, "reembedded": reembedded, "deduped": deduped,
             **agg}

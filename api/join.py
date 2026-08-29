@@ -174,6 +174,12 @@ def _apply(payload: dict, base: str) -> None:
     if key:
         set_anthropic_key(key)
     _adopt_reset()
+    # `_adopt_reset` vient de supprimer notre ligne `space` : sans repère, la
+    # garde d'espace du tir refuserait le bootstrap. L'identifiant visé était
+    # dans la charge scellée, on le pose le temps de la première réplication.
+    space_id = payload.get("space_id")
+    if space_id:
+        sync_peers.set_joining_space_id(str(space_id))
     sync_peers.pull_from_peer(base)
     sync_peers.register_self_device()
 

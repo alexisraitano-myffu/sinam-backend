@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 load_dotenv()
 
+import logging
 from typing import Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
@@ -274,6 +275,8 @@ async def lifespan(_app):
             await stop_advertising(azc)
 
 
+log = logging.getLogger(__name__)
+
 app = FastAPI(title="sinam API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -293,6 +296,45 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
         return  # dev mode — auth disabled
     if authorization not in {f"Bearer {t}" for t in accepted}:
         raise HTTPException(status_code=401, detail="invalid or missing bearer token")
+
+
+def require_same_space(
+    request: Request,
+    x_sinam_space: str | None = Header(default=None),
+) -> None:
+    """Ne servir le journal qu'à un appelant qui se réclame de notre espace.
+
+    Le jeton, partagé par tout le mesh, dit qu'on a le droit d'entrer, pas
+    qui entre : il ne distingue pas un appareil apparié d'une instance
+    étrangère qui aurait le même. L'en-tête d'espace tranche cela.
+
+    Fenêtre de migration : un pair qui n'annonce rien est toléré et journalisé,
+    le temps que tous les clients envoient l'en-tête. `SYNAPSE_SYNC_STRICT_SPACE=1`
+    referme cette tolérance, et c'est le levier de repli si le refus mordait
+    un appareil légitime.
+    """
+    from api import sync_peers
+
+    conn = get_connection()
+    try:
+        ours = sync_peers.expected_space_id(conn)
+    finally:
+        conn.close()
+    if ours is None:
+        return  # espace pas encore fondé : il n'y a rien à cloisonner
+    who = request.client.host if request.client else "?"
+    if x_sinam_space is None:
+        if os.environ.get("SYNAPSE_SYNC_STRICT_SPACE"):
+            log.warning("sync: %s refusé sur %s : aucun espace annoncé",
+                        who, request.url.path)
+            raise HTTPException(status_code=403, detail="no space declared")
+        log.warning("sync: %s n'annonce aucun espace sur %s (toléré)",
+                    who, request.url.path)
+        return
+    if x_sinam_space != ours:
+        log.warning("sync: %s refusé sur %s : espace %s, le nôtre est %s",
+                    who, request.url.path, x_sinam_space, ours)
+        raise HTTPException(status_code=403, detail="other space")
 
 
 # ── Cycle lock (single-instance guard) ───────────────────────────────────────
@@ -574,7 +616,8 @@ def put_owner(body: OwnerIn):
 
 # ── P2P sync (SYN-112 T3) — Mac↔Mac transport over the core engine ──────────
 
-@app.get("/sync/changes", dependencies=[Depends(require_auth)])
+@app.get("/sync/changes",
+         dependencies=[Depends(require_auth), Depends(require_same_space)])
 def sync_changes(since: int = 0, limit: int = 5000):
     """Protocol-v1 changeset straight from the core (verbatim passthrough:
     the JSON the engine produced is what goes on the wire)."""
@@ -594,10 +637,12 @@ def sync_status():
         seq = conn.execute("SELECT COALESCE(max(seq), 0) FROM sync_log").fetchone()[0]
         owner = sync_peers.get_owner(conn)
         cursors = sync_peers.all_cursors(conn)
+        space_id = sync_peers.expected_space_id(conn)
     finally:
         conn.close()
     return {"device_id": me, "journal_seq": seq, "owner": owner,
             "is_owner": bool(owner) and owner["device_id"] == me,
+            "space_id": space_id,
             "peers": sync_peers.known_peers(), "cursors": cursors,
             "interval_seconds": sync_peers.sync_interval()}
 
@@ -614,7 +659,8 @@ def sync_pull(body: SyncPullIn | None = None):
     return {"reports": reports}
 
 
-@app.post("/sync/push", dependencies=[Depends(require_auth)])
+@app.post("/sync/push",
+          dependencies=[Depends(require_auth), Depends(require_same_space)])
 async def sync_push(request: Request):
     """SYN-113 — accept one protocol-v1 changeset page pushed by a peer that
     can't be pulled from (the phone: no HTTP server on iOS/Android). Body =

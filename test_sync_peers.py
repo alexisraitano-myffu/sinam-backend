@@ -47,6 +47,7 @@ def test_sync_status_shape(client):
     assert status["owner"] is None          # fresh install: nobody owns the cycle
     assert status["is_owner"] is False
     assert status["cursors"] == {}
+    assert status["space_id"] is None       # fresh install: no space founded yet
 
 
 # ── Owner-lock + run-guard ───────────────────────────────────────────────────
@@ -117,10 +118,15 @@ def stubbed_http(peer, monkeypatch):
     store, _ = peer
 
     class _Requests:
+        # L'espace dont le pair se réclame, que les tests de cloisonnement
+        # déplacent : None = un pair d'avant les espaces.
+        space_id = None
+
         @staticmethod
         def get(url, params=None, headers=None, timeout=None):
             if url.endswith("/sync/status"):
-                return _Resp(json.dumps({"device_id": store.sync_device_id()}))
+                return _Resp(json.dumps({"device_id": store.sync_device_id(),
+                                         "space_id": _Requests.space_id}))
             if url.endswith("/sync/changes"):
                 return _Resp(store.sync_changes_since(
                     int(params["since"]), int(params["limit"])))
@@ -187,6 +193,141 @@ def test_pull_skips_self(client, monkeypatch):
     monkeypatch.setattr(sync_peers, "requests", _Requests)
     report = sync_peers.pull_from_peer("http://loop.test:8000")
     assert report["skipped"] == "self"
+
+
+# ── Cloisonnement des espaces ────────────────────────────────────────────────
+
+def _found_space(space_id: str) -> None:
+    """Fonder notre espace sans passer par le cycle (claim_owner + ensure_space
+    en tireraient un au hasard)."""
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT OR REPLACE INTO space (id, space_id, name) "
+                         "VALUES ('space', ?, 'Ma mémoire')", (space_id,))
+    finally:
+        conn.close()
+
+
+def test_pull_refuses_a_peer_from_another_space(client, peer, stubbed_http):
+    """Le scénario de la fuite : deux mémoires étrangères sur un même Wi-Fi.
+    mDNS les fait se voir, le jeton ne les distingue pas, l'espace si."""
+    store, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('etranger', 'sa mémoire', 'test')", [])
+    _found_space("le-mien")
+    stubbed_http.space_id = "le-sien"
+
+    from api.sync_peers import pull_from_peer
+    report = pull_from_peer("http://peer.test:8000")
+    assert report["skipped"] == "other_space"
+
+    conn = _conn()
+    try:
+        assert conn.execute(
+            "SELECT count(*) FROM inbox WHERE id='etranger'").fetchone()[0] == 0
+    finally:
+        conn.close()
+
+
+def test_pull_accepts_a_peer_from_our_space(client, peer, stubbed_http):
+    store, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('nôtre', 'même espace', 'test')", [])
+    _found_space("partagé")
+    stubbed_http.space_id = "partagé"
+
+    from api.sync_peers import pull_from_peer
+    report = pull_from_peer("http://peer.test:8000")
+    assert report["rows_created"] >= 1
+
+
+def test_pull_refuses_a_space_we_never_joined_when_not_virgin(client, peer, stubbed_http):
+    """Nous n'avons pas d'espace mais nous avons vécu : rien ne justifie
+    d'avaler la mémoire d'un inconnu qui, lui, en a un."""
+    _, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('inconnu', 'chez lui', 'test')", [])
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT INTO inbox (id, content, source) "
+                         "VALUES ('à moi', 'déjà vécu', 'test')")
+    finally:
+        conn.close()
+    stubbed_http.space_id = "le-sien"
+
+    from api.sync_peers import pull_from_peer
+    assert pull_from_peer("http://peer.test:8000")["skipped"] == "no_space"
+
+
+def test_virgin_install_bootstraps_the_space_then_forgets_the_hint(client, peer, stubbed_http):
+    """L'appairage pose l'espace visé, le bootstrap l'utilise, et la vraie
+    ligne `space` arrivée le remplace."""
+    _, gate = peer
+    gate.execute("INSERT INTO space (id, space_id, name) "
+                 "VALUES ('space', 'espace-du-membre', 'Sa mémoire')", [])
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('du-membre', 'sa capture', 'test')", [])
+    stubbed_http.space_id = "espace-du-membre"
+
+    from api.sync_peers import (clear_joining_space_id, expected_space_id,
+                                pull_from_peer, set_joining_space_id)
+    set_joining_space_id("espace-du-membre")
+    conn = _conn()
+    try:
+        assert expected_space_id(conn) == "espace-du-membre"
+    finally:
+        conn.close()
+
+    report = pull_from_peer("http://peer.test:8000")
+    assert report["rows_created"] >= 1
+
+    conn = _conn()
+    try:
+        assert conn.execute(
+            "SELECT space_id FROM space WHERE id='space'").fetchone()[0] == "espace-du-membre"
+        # L'indice provisoire a été effacé : c'est la ligne répliquée qui parle.
+        assert conn.execute(
+            "SELECT count(*) FROM sync_meta WHERE k='joining_space_id'").fetchone()[0] == 0
+    finally:
+        conn.close()
+    clear_joining_space_id()
+
+
+def test_sync_changes_refuses_a_caller_from_another_space(client):
+    _found_space("le-mien")
+    assert client.get("/sync/changes", params={"since": 0},
+                      headers={"X-Sinam-Space": "le-sien"}).status_code == 403
+    # Sans en-tête : toléré le temps de la migration des clients.
+    assert client.get("/sync/changes", params={"since": 0}).status_code == 200
+    assert client.get("/sync/changes", params={"since": 0},
+                      headers={"X-Sinam-Space": "le-mien"}).status_code == 200
+
+
+def test_sync_changes_strict_mode_refuses_a_silent_caller(client, monkeypatch):
+    _found_space("le-mien")
+    monkeypatch.setenv("SYNAPSE_SYNC_STRICT_SPACE", "1")
+    assert client.get("/sync/changes", params={"since": 0}).status_code == 403
+    assert client.get("/sync/changes", params={"since": 0},
+                      headers={"X-Sinam-Space": "le-mien"}).status_code == 200
+
+
+def test_sync_push_refuses_a_caller_from_another_space(client, peer):
+    store, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('poussé', 'chez lui', 'test')", [])
+    changes = store.sync_changes_since(0, 1000)
+    _found_space("le-mien")
+
+    assert client.post("/sync/push", content=changes,
+                       headers={"X-Sinam-Space": "le-sien"}).status_code == 403
+    conn = _conn()
+    try:
+        assert conn.execute(
+            "SELECT count(*) FROM inbox WHERE id='poussé'").fetchone()[0] == 0
+    finally:
+        conn.close()
 
 
 # ── Dedup of double-routed derived rows ──────────────────────────────────────

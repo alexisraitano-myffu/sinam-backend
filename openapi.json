@@ -5577,6 +5577,17 @@
             "type": "string",
             "title": "Accept Pub B64"
           },
+          "offer_pub_b64": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offer Pub B64"
+          },
           "name": {
             "anyOf": [
               {

@@ -638,6 +638,106 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
     assert client.get(f"/pair/result/{request_id}").json()["status"] == "expired"
 
 
+def test_a_second_offer_does_not_kill_the_first(client, monkeypatch):
+    """Le défaut du 29/08 : l'écran « Ajouter un appareil » demande une offre
+    dès son ouverture, depuis n'importe quel appareil de l'espace. La première
+    devenait caduque en silence et le joiner lisait « QR invalide » alors que
+    son QR était bon."""
+    import base64
+    import json
+
+    from sinam_core import pairing_accept, pairing_open
+
+    from api.sync_peers import claim_owner, ensure_space
+    from core_store import get_store
+
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
+    claim_owner(get_store().sync_device_id())
+    ensure_space()
+    auth = {"Authorization": "Bearer member-token"}
+
+    # Une première offre est affichée et scannée...
+    qr1 = client.post("/pair/offer", headers=auth).json()["qr"]
+    accept_pub, joiner_key = pairing_accept(qr1)
+    offer_pub = base64.b64decode(_offer_pub_from_qr(qr1))
+
+    # ...puis un autre appareil de l'espace en demande une seconde.
+    qr2 = client.post("/pair/offer", headers=auth).json()["qr"]
+    assert qr2 != qr1
+
+    # Le joiner de la PREMIÈRE offre annonce laquelle il a scannée.
+    req = client.post("/pair/request", json={
+        "accept_pub_b64": base64.b64encode(accept_pub).decode(),
+        "offer_pub_b64": base64.b64encode(offer_pub).decode(),
+        "name": "Pixel", "platform": "android"}).json()
+    assert "request_id" in req, req
+
+    assert client.post("/pair/approve", headers=auth, json={
+        "request_id": req["request_id"], "include_key": False}).status_code == 200
+
+    res = client.get(f"/pair/result/{req['request_id']}").json()
+    assert res["status"] == "approved"
+    opened = pairing_open(joiner_key, offer_pub, accept_pub, res["sealed"])
+    assert opened is not None, "la charge doit s'ouvrir malgré l'offre concurrente"
+    assert json.loads(opened)["space_id"]
+
+
+def test_a_pending_request_survives_a_new_offer(client, monkeypatch):
+    """Une demande déjà déposée ne doit pas disparaître parce qu'une autre
+    offre a démarré : c'est `_requests.clear()` qui la tuait."""
+    import base64
+
+    from sinam_core import pairing_accept
+
+    from api.sync_peers import claim_owner, ensure_space
+    from core_store import get_store
+
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
+    claim_owner(get_store().sync_device_id())
+    ensure_space()
+    auth = {"Authorization": "Bearer member-token"}
+
+    qr1 = client.post("/pair/offer", headers=auth).json()["qr"]
+    accept_pub, _ = pairing_accept(qr1)
+    rid = client.post("/pair/request", json={
+        "accept_pub_b64": base64.b64encode(accept_pub).decode(),
+        "offer_pub_b64": _offer_pub_from_qr(qr1),
+        "name": "Pixel", "platform": "android"}).json()["request_id"]
+
+    client.post("/pair/offer", headers=auth)  # un autre écran s'ouvre
+
+    pending = client.get("/pair/pending", headers=auth).json()["requests"]
+    assert any(p["request_id"] == rid for p in pending), \
+        "la demande en cours a été effacée par la nouvelle offre"
+
+
+def test_a_joiner_that_names_no_offer_still_works(client, monkeypatch):
+    """Repli pour un client d'une version antérieure : sans `offer_pub_b64`,
+    on retombe sur l'offre la plus récente, comme avant."""
+    import base64
+
+    from sinam_core import pairing_accept, pairing_open
+
+    from api.sync_peers import claim_owner, ensure_space
+    from core_store import get_store
+
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
+    claim_owner(get_store().sync_device_id())
+    ensure_space()
+    auth = {"Authorization": "Bearer member-token"}
+
+    qr = client.post("/pair/offer", headers=auth).json()["qr"]
+    accept_pub, joiner_key = pairing_accept(qr)
+    rid = client.post("/pair/request", json={
+        "accept_pub_b64": base64.b64encode(accept_pub).decode(),
+        "name": "Ancien", "platform": "android"}).json()["request_id"]
+    client.post("/pair/approve", headers=auth,
+                json={"request_id": rid, "include_key": False})
+    res = client.get(f"/pair/result/{rid}").json()
+    offer_pub = base64.b64decode(_offer_pub_from_qr(qr))
+    assert pairing_open(joiner_key, offer_pub, accept_pub, res["sealed"]) is not None
+
+
 def test_pairing_denied_and_key_optout(client, monkeypatch):
     import base64
     import json

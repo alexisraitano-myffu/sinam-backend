@@ -47,8 +47,15 @@ _REQUEST_TTL = 120.0
 _CODE_MAX_ATTEMPTS = 3
 
 _lock = threading.Lock()
-# One active offer per process (the member shows one QR at a time).
-_offer: dict | None = None
+# Les offres QR vivantes, indexées par leur clé publique.
+#
+# C'était un emplacement unique, et une offre en écrasait une autre. Or l'écran
+# « Ajouter un appareil » demande une offre dès son ouverture, depuis n'importe
+# quel appareil de l'espace : un QR affiché ailleurs devenait caduc en silence,
+# et le joiner qui l'avait scanné recevait une charge scellée sous une clé qu'il
+# ne pouvait pas dériver. Il lisait « QR invalide », alors que son QR était bon.
+# Plusieurs offres peuvent donc coexister ; le TTL les nettoie.
+_offers: dict[bytes, dict] = {}
 # SYN-137: one active 6-digit code offer (Mac↔Mac, no camera).
 _code_offer: dict | None = None
 # request_id -> pending/approved/denied request dict.
@@ -62,9 +69,9 @@ def _now() -> float:
 def _prune(now: float) -> None:
     """Drop the offer + requests that have outlived their TTL. Caller holds
     the lock."""
-    global _offer, _code_offer
-    if _offer is not None and now - _offer["created"] > _OFFER_TTL:
-        _offer = None
+    global _code_offer
+    for pub in [k for k, o in _offers.items() if now - o["created"] > _OFFER_TTL]:
+        _offers.pop(pub, None)
     if _code_offer is not None and now - _code_offer["created"] > _OFFER_TTL:
         _code_offer = None
     stale = [rid for rid, r in _requests.items() if now - r["created"] > _REQUEST_TTL]
@@ -102,14 +109,14 @@ def _local_addrs() -> list[str]:
 def start_offer() -> dict:
     """Begin showing a QR (member side). Replaces any prior offer. Returns
     `{qr}` — render `qr` as a QR code for the joiner to scan."""
-    global _offer
     session, qr = PairingSession.offer(_local_addrs())
     with _lock:
         _prune(_now())
-        _offer = {"session": session, "qr": qr, "offer_pub": session.offer_pub(),
-                  "created": _now()}
-        # A fresh offer invalidates requests aimed at the previous one.
-        _requests.clear()
+        pub = session.offer_pub()
+        _offers[pub] = {"session": session, "qr": qr, "offer_pub": pub,
+                        "created": _now()}
+        # Les demandes en cours ne sont PAS vidées : elles visent une autre
+        # offre, qui reste vivante à côté de celle-ci.
     return {"qr": qr}
 
 
@@ -183,19 +190,36 @@ def confirm_code_request(request_id: str, mac: bytes) -> dict:
         return {"status": "pending"}
 
 
-def submit_request(accept_pub: bytes, name: str, platform: str) -> dict:
+def submit_request(accept_pub: bytes, name: str, platform: str,
+                   offer_pub: bytes | None = None) -> dict:
     """Joiner side (unauthenticated): submit the scanner's public key + who we
-    are. Returns `{request_id}`. The member must still approve."""
+    are. Returns `{request_id}`. The member must still approve.
+
+    `offer_pub` dit QUELLE offre a été scannée : sans lui on ne pourrait que
+    deviner, et se tromper d'offre donne une clé de canal différente donc une
+    charge que le joiner ne peut pas ouvrir. Absent (client d'une version
+    antérieure) : on retombe sur la plus récente, ce qui est le comportement
+    d'avant et reste juste tant qu'il n'y a qu'une offre.
+    """
     with _lock:
         _prune(_now())
-        if _offer is None:
+        if not _offers:
             raise _PairingError(409, "no active pairing offer")
-        channel_key = _offer["session"].channel_key(accept_pub)
+        if offer_pub is not None:
+            offer = _offers.get(offer_pub)
+            if offer is None:
+                raise _PairingError(409, "offer expired or replaced — restart pairing")
+        else:
+            offer = max(_offers.values(), key=lambda o: o["created"])
+        channel_key = offer["session"].channel_key(accept_pub)
         request_id = str(uuid.uuid4())
         _requests[request_id] = {
             "name": (name or "").strip()[:80] or "Nouvel appareil",
             "platform": (platform or "").strip()[:32] or "unknown",
             "accept_pub": accept_pub,
+            # L'offre visée voyage AVEC la demande : l'approbation scelle sous
+            # cette offre-là, même si une autre est apparue entre-temps.
+            "offer_pub": offer["offer_pub"],
             "channel_key": channel_key,
             "status": "pending",
             "sealed": None,
@@ -230,10 +254,11 @@ def approve(request_id: str, include_key: bool) -> dict:
             # SYN-137 code channel: the AAD pair travelled with the request.
             aad_a, aad_b = req["aad_a"], req["aad_b"]
         else:
-            # QR channel: bound to the currently displayed offer.
-            if _offer is None:
+            # Canal QR : lié à l'offre que le joiner a scannée, pas à celle
+            # qui se trouve affichée maintenant.
+            if req.get("offer_pub") is None:
                 raise _PairingError(409, "offer expired — restart pairing")
-            aad_a, aad_b = _offer["offer_pub"], req["accept_pub"]
+            aad_a, aad_b = req["offer_pub"], req["accept_pub"]
         payload = _build_payload(include_key)
         sealed = pairing_seal(req["channel_key"], aad_a, aad_b, payload)
         req["status"] = "approved"

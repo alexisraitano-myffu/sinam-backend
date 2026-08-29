@@ -439,6 +439,11 @@ class SyncOwnerClaimIn(BaseModel):
 # SYN-128 — device pairing (member side)
 class PairRequestIn(BaseModel):
     accept_pub_b64: str          # the scanner's ephemeral public key (base64)
+    # Quelle offre a été scannée. Plusieurs peuvent être vivantes en même temps
+    # (deux appareils du même espace peuvent en demander une chacun) ; sans ce
+    # champ le membre ne peut que deviner. Optionnel : un client d'une version
+    # antérieure ne l'envoie pas et retombe sur l'offre la plus récente.
+    offer_pub_b64: str | None = None
     name: str | None = None
     platform: str | None = None
 
@@ -736,9 +741,11 @@ def pair_request(body: PairRequestIn):
     """Joiner (no auth): submit the scanned key + who we are → {request_id}."""
     try:
         accept_pub = _base64.b64decode(body.accept_pub_b64)
+        offer_pub = _base64.b64decode(body.offer_pub_b64) if body.offer_pub_b64 else None
     except Exception:
         raise HTTPException(status_code=422, detail="accept_pub_b64 not base64")
-    return _pair_guard(lambda: _pairing.submit_request(accept_pub, body.name or "", body.platform or ""))
+    return _pair_guard(lambda: _pairing.submit_request(
+        accept_pub, body.name or "", body.platform or "", offer_pub))
 
 
 @app.get("/pair/pending", dependencies=[Depends(require_auth)])

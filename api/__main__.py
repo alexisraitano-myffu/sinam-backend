@@ -35,18 +35,28 @@ async def _serve() -> None:
     host = os.environ.get("SYNAPSE_API_HOST", "0.0.0.0")
     port = int(os.environ.get("SYNAPSE_API_PORT", "8000"))
 
-    configs = [_config(app, host, port, lifespan="on")]
+    pair = None if os.environ.get("SYNAPSE_TLS_DISABLE") else ensure_cert()
+    if pair is None:
+        log.warning("pas de TLS : le lien local reste en clair sur %s", host)
 
-    if os.environ.get("SYNAPSE_TLS_DISABLE"):
-        log.warning("TLS désactivé par SYNAPSE_TLS_DISABLE : lien local en clair")
-    else:
-        pair = ensure_cert()
-        if pair is not None:
-            cert, key = pair
-            configs.append(_config(
-                app, host, tls_port(), lifespan="off",
-                ssl={"ssl_certfile": str(cert), "ssl_keyfile": str(key)},
-            ))
+    # Le clair n'écoute plus le réseau dès que le chiffré est disponible : il ne
+    # sert plus qu'à l'app desktop, qui parle à sa boucle locale. Un appareil du
+    # réseau n'a donc plus qu'un seul chemin, le chiffré, et ce qui n'a pas
+    # migré se voit tout de suite au lieu de continuer en clair sans bruit.
+    # Sans TLS on retombe sur l'ancien comportement plutôt que de couper tout
+    # le monde, et le log le dit.
+    clear_host = os.environ.get(
+        "SYNAPSE_API_CLEARTEXT_HOST", "127.0.0.1" if pair is not None else host)
+    configs = [_config(app, clear_host, port, lifespan="on")]
+
+    if pair is not None:
+        cert, key = pair
+        configs.append(_config(
+            app, host, tls_port(), lifespan="off",
+            ssl={"ssl_certfile": str(cert), "ssl_keyfile": str(key)},
+        ))
+        log.info("clair sur %s:%d (boucle locale), chiffré sur %s:%d",
+                 clear_host, port, host, tls_port())
 
     servers = [uvicorn.Server(c) for c in configs]
     await asyncio.gather(*(s.serve() for s in servers))

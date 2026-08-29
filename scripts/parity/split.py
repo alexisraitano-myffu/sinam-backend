@@ -197,7 +197,16 @@ def classify_split(model: str, text: str, schema: bool, temperature: float) -> t
 # $/Mtok (entrée, lecture de cache, sortie). Une mesure dont on ignore le prix
 # finit par se relancer sans qu'on sache ce qu'elle coûte : c'est ce qui est
 # arrivé le 2026-08-21, 22 baselines Haiku plus tard.
-_TARIFS = {"claude-haiku-4-5-20251001": (1.00, 0.10, 5.00)}
+_TARIFS = {"claude-haiku-4-5-20251001": (1.00, 0.10, 5.00),
+           # Gemini, relevé le 2026-08-29 sur ai.google.dev/gemini-api/docs/pricing.
+           # Les deux Flash sont au tarif promotionnel valable jusqu'au 31/12/2026 :
+           # il DOUBLE le 01/01/2027, donc un chiffrage recopié en janvier sera
+           # faux de moitié sans que rien ne le signale.
+           "gemini-3.7-flash": (0.75, 0.075, 3.75),
+           "gemini-3.6-flash": (0.75, 0.075, 3.75),
+           "gemini-3.5-flash": (1.50, 0.15, 9.00),
+           "gemini-3.5-flash-lite": (0.30, 0.03, 2.50),
+           "gemini-3.1-flash-lite": (0.25, 0.025, 1.50)}
 
 
 def _cout(model: str, cases: dict) -> str:

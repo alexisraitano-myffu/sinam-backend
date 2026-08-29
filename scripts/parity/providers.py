@@ -20,12 +20,19 @@ avalé ce qu'on lui a envoyé (`Reply.prompt_tokens`).
 from __future__ import annotations
 
 import json
+import os
 import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
+# L'endpoint compatible OpenAI de Gemini, et pas l'API native : la forme de
+# `Reply` se remplit alors avec les mêmes champs que partout ailleurs
+# (`finish_reason`, `usage.prompt_tokens`), donc un cas mesuré sur Gemini se
+# compare à un cas mesuré sur Haiku sans traduction au milieu.
+GEMINI_URL = ("https://generativelanguage.googleapis.com/v1beta/openai/"
+              "chat/completions")
 # Assez large pour le classifieur (~4 500 tokens) + la capture + la sortie JSON.
 # Volontairement pas énorme : un num_ctx géant réserve du KV-cache pour rien et
 # fausse la mesure d'empreinte mémoire (leçon SYN-154, cf. maxNumTokens 8192→6144).
@@ -59,7 +66,7 @@ def parse_spec(spec: str) -> tuple[str, str]:
     if ":" not in spec:
         raise ValueError(f"spec de modèle invalide : {spec!r} (attendu 'provider:model')")
     provider, model = spec.split(":", 1)
-    if provider not in ("anthropic", "ollama"):
+    if provider not in ("anthropic", "ollama", "gemini"):
         raise ValueError(f"provider inconnu : {provider!r}")
     return provider, model
 
@@ -79,6 +86,9 @@ def call(spec: str, system_blocks: list[str], user: str, max_tokens: int,
     try:
         if provider == "anthropic":
             return _call_anthropic(model, system_blocks, user, max_tokens, temperature)
+        if provider == "gemini":
+            return _call_gemini(model, system_blocks, user, max_tokens, schema,
+                                temperature)
         return _call_ollama(model, system_blocks, user, max_tokens, num_ctx, schema,
                             temperature)
     except Exception as exc:  # noqa: BLE001 — un modèle qui casse EST un résultat
@@ -180,4 +190,92 @@ def _call_ollama(model: str, system_blocks: list[str], user: str,
         output_tokens=resp.get("eval_count"),
         extra={"eval_s": round(resp.get("eval_duration", 0) / 1e9, 2),
                "num_ctx": num_ctx},
+    )
+
+
+def _call_gemini(model: str, system_blocks: list[str], user: str, max_tokens: int,
+                 schema: dict | None = None, temperature: float = 0.0) -> Reply:
+    """Gemini par son endpoint compatible OpenAI (2026-08-29).
+
+    Pourquoi il existe : ce provider ne sert PAS à mesurer. Il sert à ÉCRIRE le
+    corpus, générer les captures et poser les étiquettes. La mesure de parité
+    reste sur le modèle de production, sinon elle ne mesure plus le produit.
+    Écrire le corpus avec une autre famille de modèle est même le but : un
+    corpus dérivé du modèle qu'il évalue graverait les défauts de ce modèle
+    dans les poids, là où ils ne se corrigent plus en éditant un fichier.
+
+    Les blocs système sont aplatis avec le MÊME séparateur que côté Ollama et
+    que côté core (\n\n). Un jour où l'on comparera deux providers sur le même
+    cas, la seule variable devra être le modèle, jamais la mise en page.
+
+    ⚠ PIÈGE MESURÉ LE 2026-08-29, et il ne lève aucune erreur. Gemini 3.x
+    réfléchit par défaut, et `max_tokens` plafonne la RÉFLEXION PLUS la sortie
+    alors que `completion_tokens` ne compte que la sortie visible. Avec
+    max_tokens=64, la même question rend un texte VIDE, zéro jeton de sortie et
+    `finish_reason=length` : tout le budget est parti dans le raisonnement. Avec
+    2048, elle rend « Bruxelles » en 3 jetons. Donc une réponse vide ici se
+    diagnostique en remontant le budget AVANT de soupçonner le prompt, et un
+    budget serré ne fait pas économiser, il fait perdre l'appel. `reasoning_effort`
+    ("low"/"medium"/"high") borne la réflexion ; la valeur "none" est ACCEPTÉE
+    par flash-lite et REFUSÉE en HTTP 400 par 3.6-flash, donc on ne peut pas
+    l'éteindre partout.
+
+    ⚠ Le cache de Gemini est IMPLICITE : il n'y a pas de `cache_control` à
+    poser, le préfixe se met en cache tout seul quand il se répète. On lit donc
+    ce qu'il a mordu dans `usage.prompt_tokens_details.cached_tokens` au lieu de
+    le décider. Zéro sur un lot entier ne veut pas dire que le cache est cassé,
+    ça veut dire que le préfixe a bougé entre deux appels — c'est le même
+    diagnostic qu'ailleurs, à la cause près.
+    """
+    cle = os.environ.get("GEMINI_API_KEY")
+    if not cle:
+        raise RuntimeError(
+            "GEMINI_API_KEY absente. Elle se pose dans sinam-backend/.env, qui "
+            "est ignoré par git — jamais dans un fichier suivi.")
+    payload = {
+        "model": model,
+        "messages": [{"role": "system", "content": "\n\n".join(system_blocks)},
+                     {"role": "user", "content": user}],
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if schema is not None:
+        # Décodage contraint, même intention que le `format` d'Ollama : les
+        # valeurs hors schéma deviennent impossibles au lieu d'être corrigées
+        # après coup. Gemini refuse certaines constructions JSON Schema ; un
+        # refus est une donnée de mesure, il remonte tel quel dans `error`.
+        payload["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {"name": "sortie", "schema": schema, "strict": True},
+        }
+    req = urllib.request.Request(
+        GEMINI_URL, data=json.dumps(payload).encode("utf-8"),
+        headers={"content-type": "application/json",
+                 "authorization": f"Bearer {cle}"})
+    t0 = time.time()
+    try:
+        resp = json.loads(urllib.request.urlopen(req, timeout=900).read())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", "replace")[:400]
+        raise RuntimeError(f"Gemini HTTP {exc.code} : {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Gemini injoignable ({exc})") from exc
+    choix = (resp.get("choices") or [{}])[0]
+    fin = choix.get("finish_reason")
+    usage = resp.get("usage") or {}
+    caches = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0) or 0
+    entree = usage.get("prompt_tokens")
+    return Reply(
+        text=(choix.get("message") or {}).get("content") or "",
+        # `length` est l'orthographe OpenAI du `max_tokens` d'Anthropic. Le
+        # garde de troncature du harnais ne connaît que le second.
+        stop_reason="max_tokens" if fin == "length" else fin,
+        latency_s=round(time.time() - t0, 2),
+        prompt_tokens=entree,
+        output_tokens=usage.get("completion_tokens"),
+        # Même clé que côté Anthropic : ce qui a VRAIMENT été facturé plein
+        # tarif. `prompt_tokens` inclut déjà le cache chez Gemini, donc la
+        # soustraction est ici, pas dans l'addition.
+        extra={"uncached_input_tokens": (entree - caches) if entree else None,
+               "cached_tokens": caches},
     )

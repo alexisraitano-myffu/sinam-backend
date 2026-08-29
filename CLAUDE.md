@@ -417,7 +417,7 @@ The HTTP API has known clients beyond MCP:
 - A **mobile app** (Android + iOS, Kotlin Multiplatform + Compose Multiplatform) lives in a separate **private/proprietary** repo `synapse-app` and talks to this backend over the LAN (`POST /capture`, `GET /feed`, `GET /changes`, `POST /pending/{id}/validate`). The frozen contract it codes against is the generated `openapi.json` in this repo. Keep that file up to date when endpoints change.
 - (Future) a desktop app and a managed sync relay are part of the wider product but live outside this repo.
 
-The roadmap (Phase C: memory_strength decay, coreference window, resource fetch, weekly digest, etc.) is tracked in an **internal task tracker outside this repo**. Don't reference internal tooling URLs from this file (public repo).
+The roadmap (Phase C: memory_strength decay, coreference window, resource fetch, weekly digest, etc.) is tracked in an **internal task tracker outside this repo**. This repo is public: no tracker URL and **no bare ticket identifier** — not in the committed files, not in commit messages. An identifier teaches a reader nothing (it points at a board they cannot open) and it publishes the cadence of a private backlog. Write the reason instead: « the supersede rule », « the predicate governance », « the 2026-08-21 change ». The same rule is written in `sinam-core`'s `CLAUDE.md`; they have to say the same thing, or the identifiers grow back through whichever repo forgot.
 
 ## Engine map
 

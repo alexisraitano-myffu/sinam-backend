@@ -29,6 +29,7 @@ import datetime as dt
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parent.parent.parent
@@ -351,6 +352,45 @@ def valider(cas: dict, capture: dict | None) -> int:
     return alertes
 
 
+def nom_present(cas: dict) -> int:
+    """`entity_expected` et `no_entity` nomment quelque chose que la capture DIT.
+
+    Deux défauts mesurés le 2026-08-29 sur un paquet de 70, tous deux
+    invisibles à la relecture rapide et tous deux calculables :
+
+    - neuf `no_entity` valaient `1` au lieu d'un nom. `score.py` fait
+      `.strip().lower()` dessus : l'axe ne mesure rien et le cas passe pour
+      vert. C'est le pire état possible pour un corpus.
+    - « Manchester » a été posé sur la capture de la porte de garage d'Alex,
+      qui ne parle pas de Manchester. Un nom emprunté à la capture d'à côté
+      teste une entité qui n'existe nulle part.
+
+    On ne demande donc pas au modèle de faire attention, on vérifie. Le nom
+    doit apparaître dans le texte, aux accents et à la casse près.
+    """
+    alertes = 0
+    nu = unicodedata.normalize("NFD", cas.get("text", "").lower())
+    nu = "".join(c for c in nu if unicodedata.category(c) != "Mn")
+    for champ in ("entity_expected", "no_entity"):
+        val = cas.get(champ)
+        if val is None:
+            continue
+        if not isinstance(val, str) or not val.strip():
+            print(f"⚠ {cas.get('id')} : `{champ}` = {val!r} n'est pas un nom, "
+                  f"l'axe ne mesurera rien — retiré", file=sys.stderr)
+            cas.pop(champ)
+            alertes += 1
+            continue
+        cible = unicodedata.normalize("NFD", val.lower())
+        cible = "".join(c for c in cible if unicodedata.category(c) != "Mn")
+        if cible not in nu:
+            print(f"⚠ {cas.get('id')} : `{champ}` = {val!r} n'apparaît pas dans "
+                  f"la capture — retiré", file=sys.stderr)
+            cas.pop(champ)
+            alertes += 1
+    return alertes
+
+
 def cout(spec: str, r: providers.Reply) -> str:
     """Ce que le lot a coûté. Une mesure dont on ignore le prix se relance sans
     qu'on sache ce qu'elle coûte, et c'est déjà arrivé 22 fois cet été."""
@@ -447,6 +487,7 @@ def main() -> None:
             mauvais += 1
             continue
         mauvais += traduire_souvenir(cas)
+        mauvais += nom_present(cas)
         mauvais += recoller_why(cas, par_id.get(cas.get("id")))
         mauvais += normaliser_type(cas)
         mauvais += corriger_jour(cas, par_id.get(cas.get("id")))

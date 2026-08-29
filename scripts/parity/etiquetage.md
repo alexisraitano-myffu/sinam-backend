@@ -91,6 +91,43 @@ Thibault et elle habite à Rennes » vaut `facts_min: 2`, la relation plus la
 ville. Une capture qui n'enseigne rien de durable ne la porte pas ; c'est le
 seul cas où l'omettre est juste.
 
+**`entity_expected` et `no_entity` sont les deux plus oubliés de tous**, mesuré
+le 2026-08-29 : sur 270 captures versées, 18 disent qu'une fiche doit naître et
+3 qu'elle ne doit pas. Sur un paquet de 69 captures ordinaires, 32 nommaient
+quelqu'un et 2 le vérifiaient. Une capture qui cite un nom et n'asserte rien
+laisse la naissance de la fiche entièrement non mesurée, et c'est la décision
+la plus lourde du moteur : une fiche créée à tort encombre la mémoire pour
+toujours, une fiche manquée perd la personne.
+
+Donc : **dès qu'une capture nomme une personne, un lieu, une entreprise, un
+animal ou un outil, tu poses l'un des deux.** Le test est UNE question, et ce
+n'est pas « est-ce un nom propre » : **est-ce que ça reviendra dans la vie de
+l'auteur ?**
+
+`entity_expected` quand la réponse est oui — un proche, un collègue, l'animal
+de la maison, un projet, un lieu où l'on retourne, un livre qu'on lit.
+
+`no_entity` quand la réponse est non, et **c'est le cas le plus fréquent des
+deux dans une capture ordinaire**, contrairement à ce que l'instinct dit. Une
+marque citée parce qu'un colis arrive, une enseigne où l'on passe une fois, une
+ville de destination pour un aller-retour, un commerce nommé en passant : rien
+de tout ça ne mérite une fiche, et le nom propre n'y change rien. Un nom écrit
+avec une majuscule n'est pas une preuve de durabilité, c'est une convention
+typographique.
+
+Mesuré le 2026-08-29 sur un paquet de 69 captures : 31 `entity_expected` pour
+1 seul `no_entity`, et ce seul-là posé sur « bathroom », qui n'est même pas un
+nom. Ce déséquilibre est le défaut à corriger. Si tu poses trente fiches et une
+seule non-fiche sur un paquet, relis-le : tu as presque sûrement créé des
+fiches pour des passants.
+
+`no_entity` se pose avec le nom concerné, comme l'autre. Une capture peut
+porter les deux, sur deux noms différents.
+
+Le nom que tu poses est celui de la capture, sous sa forme la plus complète
+(« Joe's Auto », pas « Joe »). Une capture qui ne nomme personne ne porte
+aucun des deux, et c'est le seul cas où les omettre est juste.
+
 C'est un **plancher**, pas un compte exact : pose le nombre dont tu es SÛR, pas
 celui que tu espères. Sur une capture dense qui pourrait rendre quatre faits,
 `facts_min: 2` passe dès que le moteur en rend deux ou plus, tandis que

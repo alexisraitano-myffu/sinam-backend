@@ -98,6 +98,7 @@ def main() -> None:
     langues = _melange(args.combien)
     brut = args.sortie.with_name(args.sortie.name + "-captures.jsonl")
     brut.write_text("")
+    vus_ids: set[str] = set()
 
     # Un appel par langue et par tranche, pour que chacun reste sous le budget
     # et pour que `--deja` ait le temps de croître entre deux.
@@ -119,10 +120,21 @@ def main() -> None:
             print(r.stderr[-600:], file=sys.stderr)
             raise SystemExit(f"génération échouée à la tranche {i}")
         sys.stderr.write(r.stderr)
+        # ⚠ Le générateur numérote ses cas à partir de 1 À CHAQUE APPEL
+        # (`ord-en-001`…), donc deux tranches de la même langue se marchent
+        # dessus. `corpus.py` refuse un id en double — les baselines sont
+        # indexées dessus — et le versement a silencieusement perdu 15 captures
+        # au paquet 1, dont les TEXTES étaient pourtant uniques. On désambiguïse
+        # ici, où l'on sait de quelle tranche on parle.
         with brut.open("a") as f:
             for ligne in r.stdout.splitlines():
-                if ligne.strip():
-                    f.write(ligne.strip() + "\n")
+                if not ligne.strip():
+                    continue
+                cas = json.loads(ligne)
+                if cas.get("id") in vus_ids:
+                    cas["id"] = f"{cas['id']}-{i}"
+                vus_ids.add(cas.get("id"))
+                f.write(json.dumps(cas, ensure_ascii=False) + "\n")
 
     n_brut = sum(1 for l in brut.read_text().splitlines() if l.strip())
     print(f"\n{n_brut} captures écrites dans {brut.name}", file=sys.stderr)

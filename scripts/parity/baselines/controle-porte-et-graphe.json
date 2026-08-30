@@ -1,0 +1,1629 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "b0f46381d47c+da27eda1c6f9",
+  "label": "controle-porte-et-graphe",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "emo-good-day-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Bonne journée aujourd'hui",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis a eu une bonne journée"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "emotion",
+      "text": "Bonne journée aujourd'hui",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.86,
+      "prompt_tokens": 6747,
+      "input_tokens": 13397,
+      "uncached_tokens": 309,
+      "output_tokens": 196,
+      "confidence": 1.0,
+      "gaps": [
+        "kind attendu=episode obtenu=note",
+        "event_date attendu=2026-07-13 obtenu=[None]"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "forbidden_predicate"
+      ]
+    },
+    "ez-reread-notes-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "facile",
+      "text": "J'ai relu mes notes de la semaine",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.43,
+      "prompt_tokens": 6749,
+      "input_tokens": 13401,
+      "uncached_tokens": 313,
+      "output_tokens": 189,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral"
+      ]
+    },
+    "ord-en-04": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Great dinner at the new Thai place downtown",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Had a great dinner at the new Thai place downtown"
+          },
+          {
+            "note": "Order the green curry next time at the Thai place downtown",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Remember to order green curry on the next visit to the Thai restaurant"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "Great dinner at the new Thai place downtown, order the green curry next time",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.28,
+      "prompt_tokens": 6754,
+      "input_tokens": 13411,
+      "uncached_tokens": 323,
+      "output_tokens": 474,
+      "confidence": 0.85,
+      "gaps": [
+        "kind attendu=note obtenu=episode, task",
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
+        "entité 'Thai place' : absente au lieu d'être proposée",
+        "entité 'Thai place' : absente au lieu d'être proposée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "facts_min",
+        "entity_proposed"
+      ]
+    },
+    "ord-en-005": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Mark suggested pushing the launch date to next month because testing isn't done yet",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Spoke with Mark about delaying the launch due to incomplete testing."
+          },
+          {
+            "note": "Launch date postponed to next month",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Decision made to move the launch to the following month."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Mark",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "position_on_launch_delay",
+                "value": "testing incomplete, recommends pushing launch date to next month",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "so uh spoke to Mark this afternoon and he suggested pushing the launch date to next month because the testing isn't done yet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.15,
+      "prompt_tokens": 6764,
+      "input_tokens": 13431,
+      "uncached_tokens": 343,
+      "output_tokens": 422,
+      "confidence": 0.85,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "needs_review",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "ord-en-009": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "cool library for handling date parsing in typescript",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis found a cool TypeScript library for date parsing."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "example/repo",
+            "type": "resource",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "TypeScript library for date parsing that Alexis found useful.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "programming_language",
+                "value": "TypeScript",
+                "persistence_value": 5,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": [
+          {
+            "url": "https://github.com/example/repo",
+            "category": "page",
+            "entity_canonical": "example/repo",
+            "user_comment": "cool library for handling date parsing in typescript"
+          }
+        ]
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "https://github.com/example/repo cool library for handling date parsing in typescript",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.93,
+      "prompt_tokens": 6756,
+      "input_tokens": 13415,
+      "uncached_tokens": 327,
+      "output_tokens": 401,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "needs_review",
+        "no_entity"
+      ]
+    },
+    "g-ord-02-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Le voisin a dit que les travaux finissent la semaine prochaine.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Discussion avec le voisin sur la fin des travaux."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          },
+          {
+            "canonical_name": "voisin",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "discussed_with",
+            "to": "voisin",
+            "confidence": 1.0
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "euh alors ce matin j'ai discuté avec le voisin du bruit des travaux il a dit qu'ils finissaient la semaine prochaine",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.85,
+      "prompt_tokens": 6777,
+      "input_tokens": 13457,
+      "uncached_tokens": 369,
+      "output_tokens": 405,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "g-ord-10-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La mutuelle a remboursé le virement ce matin mais n'a pas couvert la partie ostéo.",
+            "kind": "note",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Remboursement partiel de la mutuelle : ostéo non couverte."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.75,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "j'ai bien reçu le virement de la mutuelle ce matin par contre ils ont pas remboursé la partie ostéo",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.04,
+      "prompt_tokens": 6770,
+      "input_tokens": 13443,
+      "uncached_tokens": 355,
+      "output_tokens": 301,
+      "confidence": 0.75,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "ord-en-005-3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "The new bakery on 4th Street has amazing sourdough but mediocre croissants.",
+            "kind": "note",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Visited a new bakery on 4th Street this morning and formed opinions on their sourdough and croissants."
+          },
+          {
+            "note": "Tried the new bakery on 4th Street this morning.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Visited a new bakery on 4th Street in the morning."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Bakery on 4th Street",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "A bakery on 4th Street where Alexis tried sourdough and croissants.",
+            "attributes": {
+              "street": "4th Street"
+            },
+            "facts": [
+              {
+                "predicate": "sourdough_quality",
+                "value": "amazing",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "preferences"
+              },
+              {
+                "predicate": "croissants_quality",
+                "value": "mediocre",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "preferences"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "so uh tried that new bakery on 4th street this morning, sourdough was amazing but the croissants were pretty mediocre",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.54,
+      "prompt_tokens": 6770,
+      "input_tokens": 13443,
+      "uncached_tokens": 355,
+      "output_tokens": 541,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "owner",
+        "language",
+        "needs_review",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "o-en-dictated-sarah-coffee": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Sarah is planning a trip to Italy in September",
+            "kind": "note",
+            "owner": "Sarah",
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Sarah told Alexis about her planned trip to Italy in September"
+          },
+          {
+            "note": "Bumped into Sarah near the office this morning",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis ran into Sarah near the office"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sarah",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "so uh bumped into Sarah near the office this morning she mentioned she is planning a trip to Italy in September",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.88,
+      "prompt_tokens": 6762,
+      "input_tokens": 13427,
+      "uncached_tokens": 339,
+      "output_tokens": 349,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "o-en-short-wifi-password": {
+      "parsed": {
+        "language": "en",
+        "memories": [],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "wifi password for the guest network: Summer2026!",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.69,
+      "prompt_tokens": 6750,
+      "input_tokens": 13403,
+      "uncached_tokens": 315,
+      "output_tokens": 273,
+      "confidence": 1.0,
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-1-boulangerie-bruit": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La rue sera fermée toute la semaine prochaine pour travaux.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Information du boulanger : fermeture de la rue pour travaux la semaine prochaine."
+          },
+          {
+            "note": "Suis passé chercher des viennoiseries ce matin.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Achat de viennoiseries chez le boulanger ce matin."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit que la rue allait être fermée toute la semaine prochaine pour travaux",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.3,
+      "prompt_tokens": 6782,
+      "input_tokens": 13467,
+      "uncached_tokens": 379,
+      "output_tokens": 378,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "g-ord-04-link-note-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Article utile sur la taille des rosiers en juillet",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis a trouvé des conseils pertinents sur la taille des rosiers pour juillet"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "https://example.com/article-jardinage-juillet",
+            "type": "resource",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": [
+          {
+            "url": "https://example.com/article-jardinage-juillet",
+            "category": "article",
+            "entity_canonical": "https://example.com/article-jardinage-juillet",
+            "user_comment": "conseils sur la taille des rosiers"
+          }
+        ]
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "https://example.com/article-jardinage-juillet pour les conseils sur la taille des rosiers",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.39,
+      "prompt_tokens": 6762,
+      "input_tokens": 13427,
+      "uncached_tokens": 339,
+      "output_tokens": 368,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    },
+    "ord-en-05-b3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Kid had a mild fever last night, kept him home today.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Child had a mild fever and stayed home from school or activities."
+          },
+          {
+            "note": "Feeling exhausted today.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis is exhausted."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.9,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "kid had a mild fever last night so kept him home today, feeling a bit exhausted myself",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 3.38,
+      "prompt_tokens": 6758,
+      "input_tokens": 13419,
+      "uncached_tokens": 331,
+      "output_tokens": 278,
+      "confidence": 0.9,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "ord-en-01-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Mark recommended a plumber in Brooklyn for the leaky sink",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Mark gave a plumber recommendation in Brooklyn"
+          },
+          {
+            "note": "Call the plumber about the leaky sink",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Contact the plumber to fix the leaky sink"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Mark",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "recommended_plumber",
+                "value": "plumber in Brooklyn",
+                "persistence_value": 2,
+                "evidence_strength": "explicit",
+                "category": "preferences"
+              }
+            ]
+          },
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_issue",
+                "value": "leaky sink",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "Mark",
+            "predicate": "knows",
+            "to": "Alexis",
+            "confidence": 0.6
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 2,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "got a recommendation from Mark for a good plumber in Brooklyn, need to call him about the leaky sink",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 5.81,
+      "prompt_tokens": 6761,
+      "input_tokens": 13425,
+      "uncached_tokens": 337,
+      "output_tokens": 572,
+      "confidence": 0.85,
+      "gaps": [
+        "entité 'Brooklyn' : absente au lieu d'être proposée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "facts_min",
+        "entity_expected",
+        "entity_proposed"
+      ]
+    },
+    "ord-en-003-b3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Check the 8-mile loop route in the Catskills for the August trip.",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Review the 8-mile loop hiking route for the planned August trip."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 0.85,
+        "entities": [
+          {
+            "canonical_name": "Catskills",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Mountain region in New York State.",
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Catskills trip",
+            "content": "Check the 8-mile loop route for the trip in August.",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": [
+          {
+            "url": "https://example.com/hiking-trails-catskills",
+            "category": "page",
+            "entity_canonical": "Catskills",
+            "user_comment": "8-mile loop route to check for August trip"
+          }
+        ]
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "https://example.com/hiking-trails-catskills check the 8-mile loop route for our trip in August",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.94,
+      "prompt_tokens": 6765,
+      "input_tokens": 13433,
+      "uncached_tokens": 345,
+      "output_tokens": 409,
+      "confidence": 0.85,
+      "gaps": [
+        "entité 'Catskills' : créée au lieu d'être proposée"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "entity_proposed"
+      ]
+    },
+    "dicte-maitresse-leo-bibliotheque": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La maîtresse de Léo dit que la kermesse s'est super bien passée.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Croisé la maîtresse de Léo ce matin, elle rapporte que la kermesse s'est très bien déroulée."
+          },
+          {
+            "note": "Rendre le livre de la bibliothèque.",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-18",
+            "event_recurring": false,
+            "summary": "Rendre le livre de la bibliothèque vendredi."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Léo",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "euh alors j'ai croisé la maîtresse de Léo ce matin elle dit que la kermesse s'est super bien passée et faut pas oublier de rendre le livre de la bibliothèque vendredi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.25,
+      "prompt_tokens": 6795,
+      "input_tokens": 13493,
+      "uncached_tokens": 405,
+      "output_tokens": 396,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-07-17 obtenu=['2026-07-13', '2026-07-18']",
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "lien-tuto-css-grid": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Bon résumé des nouvelles fonctions de mise en page CSS Grid",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis a trouvé un bon résumé sur les nouvelles fonctions CSS Grid"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "CSS Grid tutorial",
+            "type": "resource",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": [
+          {
+            "url": "https://example.com/tuto-css-grid",
+            "category": "article",
+            "entity_canonical": "CSS Grid tutorial",
+            "user_comment": "bon résumé des nouvelles fonctions de mise en page"
+          }
+        ]
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "https://example.com/tuto-css-grid bon résumé des nouvelles fonctions de mise en page",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.64,
+      "prompt_tokens": 6764,
+      "input_tokens": 13431,
+      "uncached_tokens": 343,
+      "output_tokens": 356,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "liste-courses-diner-marcel": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Acheter : sacs poubelle, sopalin, eau gazeuse et des pâtes pour le dîner avec Marcel",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Liste de courses pour le dîner avec Marcel"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Marcel",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "social_connection",
+            "to": "Marcel",
+            "confidence": 0.8
+          }
+        ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "sacs poubelle, sopalin, eau gazeuse et des pates pour le diner avec marcel",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.42,
+      "prompt_tokens": 6763,
+      "input_tokens": 13429,
+      "uncached_tokens": 341,
+      "output_tokens": 335,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "facts_min",
+        "entity_expected",
+        "memories"
+      ]
+    },
+    "o-fr-boulot-fatigue": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Le carrelage aura trois jours de retard selon le conducteur de travaux",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Retard annoncé de trois jours pour la livraison du carrelage"
+          },
+          {
+            "note": "Frustration face aux délais répétés du chantier",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis est exaspéré par l'accumulation des retards"
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Renovation",
+            "content": "Carrelage retardé de trois jours selon le conducteur de travaux.",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "Réunion de chantier ce matin avec le conducteur de travaux, il dit que le carrelage aura trois jours de retard... franchement marre de ces délais",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.65,
+      "prompt_tokens": 6782,
+      "input_tokens": 13467,
+      "uncached_tokens": 379,
+      "output_tokens": 424,
+      "confidence": 1.0,
+      "gaps": [
+        "kind attendu=episode obtenu=note, note",
+        "event_date attendu=2026-07-13 obtenu=[None, None]"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "ordinary-vie-perso-calme": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Les enfants sont chez la sœur pour le week-end.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis a déposé les enfants chez sa sœur pour le week-end."
+          },
+          {
+            "note": "Alexis apprécie d'avoir du calme pour se concentrer sur le travail.",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis valorise le temps libre et tranquille pour travailler."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "j'ai déposé les enfants chez ma sœur pour le week-end, enfin un peu de calme pour bosser",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.44,
+      "prompt_tokens": 6770,
+      "input_tokens": 13443,
+      "uncached_tokens": 355,
+      "output_tokens": 381,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "ordinary-comptable-dictation": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La réunion avec le comptable est décalée à mercredi après-midi.",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-15",
+            "event_recurring": false,
+            "summary": "Réunion avec le comptable reportée à mercredi après-midi."
+          },
+          {
+            "note": "Finir la facture d'Axiom.",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Terminer la facture d'Axiom."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "euh la réunion avec le comptable est décalée à mercredi après-midi du coup j'ai du temps pour finir la facture d'Axiom",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 6.24,
+      "prompt_tokens": 6778,
+      "input_tokens": 13459,
+      "uncached_tokens": 371,
+      "output_tokens": 511,
+      "confidence": 1.0,
+      "gaps": [
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
+        "entité 'Axiom' absente"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date",
+        "language",
+        "facts_min",
+        "entity_expected",
+        "no_entity"
+      ]
+    },
+    "ordinary-sante-gym": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Maux de tête en fin d'après-midi, pris du Paracétamol",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis a eu des maux de tête en fin d'après-midi et a pris du Paracétamol."
+          },
+          {
+            "note": "Annulation de la séance de gym de ce soir",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Alexis a décidé d'annuler sa séance de gym du soir."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": "séance de gym de ce soir",
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "ordinaire",
+      "text": "Maux de tête en fin d'aprem, j'ai pris du Paracétamol et annulé la séance de gym de ce soir",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.58,
+      "prompt_tokens": 6777,
+      "input_tokens": 13457,
+      "uncached_tokens": 369,
+      "output_tokens": 330,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language",
+        "no_entity"
+      ]
+    },
+    "g-status-eaten-en": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Already ate",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis ate today."
+          }
+        ],
+        "is_ephemeral": false,
+        "ephemeral_content": null,
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "ephemeral": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 11,
+      "set": "porte",
+      "text": "Already ate",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "latency_s": 4.43,
+      "prompt_tokens": 6741,
+      "input_tokens": 13385,
+      "uncached_tokens": 297,
+      "output_tokens": 267,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "ephemeral",
+        "language"
+      ]
+    }
+  },
+  "ecarts": 9,
+  "par_frontiere": {
+    "routage": [
+      "emo-good-day-fr",
+      "ez-reread-notes-fr",
+      "o-en-short-wifi-password",
+      "o-fr-boulot-fatigue",
+      "ord-en-04"
+    ],
+    "R2d": [
+      "dicte-maitresse-leo-bibliotheque",
+      "emo-good-day-fr",
+      "o-fr-boulot-fatigue"
+    ],
+    "X-ONE": [
+      "dicte-maitresse-leo-bibliotheque",
+      "ord-en-04",
+      "ordinary-comptable-dictation"
+    ],
+    "P-PERS": [
+      "ord-en-003-b3",
+      "ord-en-01-2",
+      "ord-en-04",
+      "ordinary-comptable-dictation"
+    ]
+  },
+  "prompt_tokens_max": 6795
+}

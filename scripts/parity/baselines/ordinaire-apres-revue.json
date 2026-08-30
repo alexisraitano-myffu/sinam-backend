@@ -385,10 +385,14 @@
       "uncached_tokens": 317,
       "output_tokens": 177,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
-        "language"
+        "kind",
+        "language",
+        "needs_review"
       ]
     },
     "ord-en-07": {
@@ -999,9 +1003,13 @@
       "uncached_tokens": 305,
       "output_tokens": 128,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
         "language",
         "needs_review"
@@ -1253,10 +1261,12 @@
       "output_tokens": 122,
       "confidence": 1.0,
       "gaps": [
+        "note attendue=True obtenue=False",
         "ne doit PAS encombrer « À valider » : confiance 1.0 (seuil 0.7), trace laissée=aucune"
       ],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
         "language",
         "needs_review"
@@ -1888,7 +1898,9 @@
       "uncached_tokens": 341,
       "output_tokens": 244,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
         "kind",
@@ -2133,11 +2145,12 @@
       "uncached_tokens": 377,
       "output_tokens": 237,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=False obtenue=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -2587,7 +2600,8 @@
       "output_tokens": 412,
       "confidence": 1.0,
       "gaps": [
-        "note attendue=True obtenue=False"
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
       ],
       "axes": [
         "note",
@@ -3977,7 +3991,9 @@
       "uncached_tokens": 315,
       "output_tokens": 278,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
         "kind",
@@ -4180,9 +4196,13 @@
       "uncached_tokens": 313,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -4230,10 +4250,12 @@
       "output_tokens": 278,
       "confidence": 0.7,
       "gaps": [
-        "note attendue=False obtenue=True"
+        "kind attendu=episode obtenu=note"
       ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -4944,9 +4966,13 @@
       "uncached_tokens": 321,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -5042,9 +5068,7 @@
       "uncached_tokens": 347,
       "output_tokens": 582,
       "confidence": 0.85,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -5310,7 +5334,6 @@
       "output_tokens": 205,
       "confidence": 1.0,
       "gaps": [
-        "ephemeral attendu=True",
         "entité 'CVS' absente"
       ],
       "axes": [
@@ -5962,11 +5985,12 @@
       "uncached_tokens": 337,
       "output_tokens": 216,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=False obtenue=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -6078,8 +6102,7 @@
       "output_tokens": 210,
       "confidence": 1.0,
       "gaps": [
-        "kind attendu=task obtenu=note",
-        "ephemeral attendu=True"
+        "kind attendu=task obtenu=note"
       ],
       "axes": [
         "note",
@@ -6122,9 +6145,13 @@
       "uncached_tokens": 301,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -6331,9 +6358,7 @@
       "uncached_tokens": 323,
       "output_tokens": 275,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -6537,9 +6562,15 @@
       "uncached_tokens": 327,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -7733,9 +7764,13 @@
       "uncached_tokens": 361,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -7784,10 +7819,15 @@
       "uncached_tokens": 347,
       "output_tokens": 194,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
+        "event_date",
         "language",
         "no_entity"
       ]
@@ -7835,9 +7875,7 @@
       "uncached_tokens": 341,
       "output_tokens": 225,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -8072,11 +8110,10 @@
       "uncached_tokens": 351,
       "output_tokens": 232,
       "confidence": 0.9,
-      "gaps": [
-        "note attendue=False obtenue=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
         "language"
       ]
@@ -8136,9 +8173,7 @@
       "uncached_tokens": 375,
       "output_tokens": 321,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -8508,9 +8543,15 @@
       "uncached_tokens": 357,
       "output_tokens": 122,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -9348,10 +9389,15 @@
       "uncached_tokens": 351,
       "output_tokens": 309,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -9662,11 +9708,16 @@
       "output_tokens": 122,
       "confidence": 1.0,
       "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]",
         "ne doit PAS encombrer « À valider » : confiance 1.0 (seuil 0.7), trace laissée=aucune"
       ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "owner",
+        "event_date",
         "language",
         "needs_review",
         "no_entity"
@@ -10115,9 +10166,7 @@
       "uncached_tokens": 325,
       "output_tokens": 268,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -10837,9 +10886,13 @@
       "uncached_tokens": 335,
       "output_tokens": 234,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -10897,9 +10950,7 @@
       "uncached_tokens": 325,
       "output_tokens": 275,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -11289,6 +11340,7 @@
       "confidence": 0.85,
       "gaps": [
         "kind attendu=task obtenu=note",
+        "ephemeral attendu=False",
         "event_date attendu=2026-07-14 obtenu=[None]"
       ],
       "axes": [
@@ -11746,9 +11798,7 @@
       "uncached_tokens": 331,
       "output_tokens": 408,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -11987,9 +12037,7 @@
       "uncached_tokens": 353,
       "output_tokens": 316,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -12164,9 +12212,15 @@
       "uncached_tokens": 339,
       "output_tokens": 253,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language"
       ]
     },
@@ -12351,9 +12405,7 @@
       "uncached_tokens": 331,
       "output_tokens": 303,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -13022,9 +13074,7 @@
       "uncached_tokens": 327,
       "output_tokens": 208,
       "confidence": 1.0,
-      "gaps": [
-        "ephemeral attendu=True"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -13685,6 +13735,7 @@
       "confidence": 1.0,
       "gaps": [
         "note attendue=True obtenue=False",
+        "ephemeral attendu=False",
         "entité 'joint silicone' créée alors qu'elle est sous le seuil de persistance"
       ],
       "axes": [
@@ -14144,6 +14195,7 @@
       "confidence": 1.0,
       "gaps": [
         "kind attendu=task obtenu=note",
+        "ephemeral attendu=False",
         "event_date attendu=2026-07-14 obtenu=[None]"
       ],
       "axes": [
@@ -14892,7 +14944,6 @@
       "output_tokens": 319,
       "confidence": 1.0,
       "gaps": [
-        "ephemeral attendu=True",
         "event_date attendu=2026-07-17 obtenu=[None, '2026-07-14']"
       ],
       "axes": [
@@ -16147,17 +16198,23 @@
       ]
     }
   },
-  "ecarts": 117,
+  "ecarts": 118,
   "par_frontiere": {
     "R2d": [
       "dicte-maitresse-leo-bibliotheque",
+      "g-ord-07",
       "g-ord-08-fr",
+      "g-ord-09-sports-detail-fr",
       "g-ord-humeur-sport-fr",
+      "o-en-005",
       "o-en-1",
+      "o-en-feeling-slept-bad",
       "o-en-multi-car-mechanic",
       "o-fr-boulot-fatigue",
       "o-fr-lien-recette-partage",
       "o-point-contrat-veloce-fr",
+      "o-tronque-voiture-fr",
+      "ord-6-sport-session-fr",
       "ord-depot-colis-mathieu",
       "ord-en-001-4",
       "ord-en-002",
@@ -16174,16 +16231,21 @@
     "routage": [
       "g-ord-01-shopping-fr",
       "g-ord-02",
+      "g-ord-07",
+      "g-ord-09-sports-detail-fr",
+      "g-ord-en-001",
       "g-ord-en-004",
       "g-ord-en-010",
       "g-ord-liste-bricolage-fr",
       "g-ord-recommandation-resto-fr",
       "liste-courses-diner-marcel",
       "o-en-004",
+      "o-en-005",
       "o-en-1",
       "o-en-3-8",
       "o-en-4-8",
       "o-en-5",
+      "o-en-feeling-slept-bad",
       "o-en-groceries-dog",
       "o-en-short-wifi-password",
       "o-en-work-standup-notes",
@@ -16191,29 +16253,35 @@
       "o-fr-court-brico",
       "o-liste-courses-maison",
       "o-point-contrat-veloce-fr",
-      "ord-10-train-horaire-fr",
+      "o-tronque-voiture-fr",
       "ord-2-courses-bricolage",
+      "ord-5-sante-dictee-fr",
+      "ord-6-sport-session-fr",
       "ord-9-bureau-cafetiere-fr",
       "ord-achat-bricolage-ampoules",
-      "ord-dicte-boulangerie-garage",
       "ord-en-001-3",
       "ord-en-002-4",
       "ord-en-003-3",
       "ord-en-004",
       "ord-en-004-b3",
+      "ord-en-005-2",
       "ord-en-005-3",
       "ord-en-005-b3",
+      "ord-en-006",
       "ord-en-006-2",
       "ord-en-007",
-      "ord-en-007-3",
       "ord-en-009-3",
+      "ord-en-010",
       "ord-en-010-2",
+      "ord-en-010-3",
       "ord-en-02-2",
       "ord-en-03",
       "ord-en-04",
       "ord-en-04-2",
       "ord-en-04-3",
       "ord-en-05-2",
+      "ord-en-05-3",
+      "ord-en-06",
       "ord-en-07",
       "ord-en-08",
       "ord-en-groceries-and-pickup",
@@ -16277,48 +16345,42 @@
       "ordinary-podcast-recommendation-en"
     ],
     "X-EPH": [
-      "g-ord-01",
       "g-ord-01-shopping-fr",
       "g-ord-02",
       "g-ord-04-fr",
-      "g-ord-en-002",
       "g-ord-en-004",
-      "g-ord-en-006",
       "g-ord-liste-bricolage-fr",
+      "g-ord-pense-bete-velo-fr",
       "liste-courses-diner-marcel",
       "o-dicte-courses-fr",
-      "o-en-002",
       "o-en-004",
-      "o-en-2",
       "o-en-4-8",
       "o-en-5",
       "o-en-groceries-dog",
-      "o-en-task-dentist-reminder",
+      "o-fr-court-brico",
       "o-fr-dicte-brico-courses",
       "o-fr-liste-courte-sec",
       "o-hotte-ampoule-fr",
       "o-liste-courses-maison",
       "ord-2-courses-bricolage",
-      "ord-7-vie-maison-fr",
+      "ord-achat-bricolage-ampoules",
+      "ord-en-002-2",
       "ord-en-002-4",
       "ord-en-002-b3",
       "ord-en-004",
       "ord-en-004-b3",
-      "ord-en-009-3",
+      "ord-en-005-b3",
+      "ord-en-006",
       "ord-en-010-2",
       "ord-en-03-b3",
       "ord-en-04-2",
       "ord-en-04-3",
       "ord-en-06-2",
-      "ord-en-06-3",
-      "ord-en-06-b3",
       "ord-en-07",
       "ord-en-groceries-and-pickup",
-      "ord-kine-dicte",
+      "ord-imprimante-encre-fr",
       "ordinary-courses-liste",
-      "ordinary-hardware-store-list-en",
-      "ordinary-reading-evening-en",
-      "penser-couper-eau-jardin"
+      "ordinary-hardware-store-list-en"
     ],
     "X-CONF": [
       "g-ord-03-short-memo-fr",
@@ -16347,5 +16409,6 @@
       "g-ord-10"
     ]
   },
-  "prompt_tokens_max": 6210
+  "prompt_tokens_max": 6210,
+  "rescored": "2026-08-30"
 }

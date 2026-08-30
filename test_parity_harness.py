@@ -160,3 +160,40 @@ def test_liste_de_fusion_identique_au_core():
         "Le harnais jettera en silence tout champ qui manque ici, et chaque cas "
         "qui l'asserte sortira en écart alors que la production, elle, le voit."
     )
+
+
+def test_les_axes_disent_ce_que_la_citation_dit():
+    """Quand un `why` cite Alexis entre guillemets sur la validation, l'axe
+    `needs_review` doit dire la même chose que la citation.
+
+    Mesuré le 2026-08-30 : cinq cas portaient l'inverse de la phrase citée juste
+    au-dessus, dont trois avec le drapeau exactement retourné. Ils venaient tous
+    de la passe de réétiquetage du matin, qui touchait un autre axe. Une passe
+    qui déplace un axe en déplace d'autres par ricochet, et rien ne le signale.
+
+    Volontairement étroit : seules les formulations sans ambiguïté sont testées,
+    pour que le garde n'ait jamais à être arbitré.
+    """
+    import json
+    from pathlib import Path
+
+    SANS = ("pas besoin de validation", "pas de validation necessaire",
+            "pas de validation nécessaire")
+    AVEC = ("avec validation", "on veut une validation")
+
+    fautes = []
+    for f in sorted((Path(__file__).parent / "scripts" / "parity" / "corpus").glob("*.jsonl")):
+        for ligne in f.read_text(encoding="utf-8").splitlines():
+            if not ligne.strip():
+                continue
+            cas = json.loads(ligne)
+            why = (cas.get("why") or "").lower()
+            if "tu avais écrit" not in why:
+                continue
+            cite = why[why.index("tu avais écrit"):]
+            if any(m in cite for m in SANS) and cas.get("needs_review"):
+                fautes.append(f"{cas['id']} : la citation dit non, l'axe dit oui")
+            if any(m in cite for m in AVEC) and not cas.get("needs_review"):
+                fautes.append(f"{cas['id']} : la citation dit oui, l'axe dit non")
+
+    assert not fautes, "axes en désaccord avec la citation :\n  " + "\n  ".join(fautes)

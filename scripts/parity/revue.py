@@ -462,8 +462,9 @@ def main() -> int:
                          "pas l'erreur isolée.")
     ap.add_argument("--marque", metavar="TEXTE",
                     help="ne revoir que les cas dont le `why` contient ce texte. Une passe "
-                         "qui réétiquette y laisse sa date : « --marque 2026-08-30 » rouvre "
-                         "exactement ce qu'elle a touché. Implique --tous.")
+                         "qui réétiquette y laisse sa date : « --marque 2026-08-30 » rouvre ce "
+                         "qu'elle a touché et qui reste à valider. Ajouter --tous pour revoir "
+                         "aussi ceux qui sont déjà validés.")
     ap.add_argument("--baseline", help="afficher ce que ce modèle a produit (baselines/<nom>.json)")
     ap.add_argument("--arbitrages", action="store_true",
                     help="lister les décisions écrites en français qui attendent "
@@ -492,7 +493,7 @@ def main() -> int:
         if inconnus:
             raise SystemExit(f"cas inconnu(s) : {', '.join(sorted(inconnus))}")
     lot = [(j, k) for j, k in brut
-           if (args.tous or vises or args.marque or not k.get("valide"))
+           if (args.tous or vises or not k.get("valide"))
            and (not args.jeu or j == args.jeu)
            and (not args.frontiere or k.get("frontiere") == args.frontiere)
            and (vises is None or k["id"] in vises)

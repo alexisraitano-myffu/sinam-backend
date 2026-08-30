@@ -23,7 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import date as _date
+from datetime import date as _date, timedelta as _timedelta
 import sys
 from pathlib import Path
 
@@ -52,19 +52,37 @@ _CORE_CLASSIFIER = Path(
 
 
 def _today_with_weekday(today: str) -> str:
-    """`2026-07-13` → `2026-07-13 (a Monday)` — miroir de `llm.rs::today_with_weekday`.
+    """`2026-07-13` → la date, son jour, et les deux semaines qui l'encadrent.
+    Miroir exact de `llm.rs::today_with_weekday`.
 
     Le modèle recevait la date seule et devait en déduire le jour de la semaine
     avant de résoudre « mardi ». Mesuré le 2026-08-25 : il tombait une semaine
-    trop loin. Une date illisible retombe sur elle-même, parce qu'un contexte qui
-    annonce un faux jour est pire qu'un contexte qui n'en annonce aucun.
+    trop loin. Nommer le jour a réglé la semaine, pas le jour : mesuré le
+    2026-08-30 sur 495 cas, 17 captures tombaient un jour trop tard, le modèle
+    raisonnant « lundi 13, donc vendredi 18 ». Il ne compte donc plus du tout,
+    les deux semaines sont écrites et il lit la réponse dans une ligne.
+
+    Aucune des deux lignes ne contient aujourd'hui : c'est ce que le bloc DATES
+    veut dire par « aujourd'hui n'est jamais la réponse ».
+
+    Une date illisible retombe sur elle-même, parce qu'un contexte qui annonce
+    un faux jour est pire qu'un contexte qui n'en annonce aucun.
     """
     try:
         d = _date.fromisoformat(today)
     except ValueError:
         return today
     jours = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-    return f"{today} (a {jours[d.weekday()]})"
+
+    def _j(n: int) -> str:
+        x = d + _timedelta(days=n)
+        return f"{jours[x.weekday()]} {x.isoformat()}"
+
+    suivants = ", ".join(_j(n) for n in range(1, 8))
+    precedents = ", ".join(_j(-n) for n in range(7, 0, -1))
+    return (f"{today} (a {jours[d.weekday()]}).\n"
+            f"NEXT occurrence of each weekday, counting from tomorrow: {suivants}.\n"
+            f"LAST occurrence of each weekday, counting back from yesterday: {precedents}.")
 
 
 def _load_prompt(path: Path) -> str:

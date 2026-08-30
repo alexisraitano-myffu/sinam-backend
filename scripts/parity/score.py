@@ -81,6 +81,7 @@ AXES = {
     "type_proposal": "P-TYPE",
     "no_type_proposal": "P-TYPE",
     "fact_proposed": "F-QUEUE",
+    "fact_asserted": "F-QUEUE",
     "resource_url": "RES",
     "resource_owner_type": "RES",
     "resource_comment": "RES",
@@ -621,6 +622,18 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         vu = porte_du_fait(parsed, ent, pred)
         if vu != "proposé":
             out.append(f"fait '{pred}' sur '{ent}' : {vu} au lieu d'être proposé")
+
+    # La marche du HAUT de la même échelle, ouverte le 2026-08-30. Quand la
+    # capture ÉNONCE la date, il n'y a rien à deviner et le fait doit être
+    # asserté, pas proposé. L'axe existe parce que la règle des anniversaires
+    # s'appuie désormais sur ce fait pour porter la récurrence annuelle : sans
+    # lui, on retire la récurrence de la note sans vérifier que quoi que ce soit
+    # la reprend.
+    if case.get("fact_asserted"):
+        ent, _, pred = case["fact_asserted"].partition(":")
+        vu = porte_du_fait(parsed, ent, pred)
+        if vu != "asserté":
+            out.append(f"fait '{pred}' sur '{ent}' : {vu} au lieu d'être asserté")
 
     # P-TYPE — le type d'une entité ne s'invente pas : hors vocabulaire actif,
     # le modèle sort `concept` et remplit `type_proposal`, un humain valide.

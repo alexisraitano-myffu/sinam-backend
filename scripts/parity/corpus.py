@@ -69,6 +69,10 @@ CHAMPS = {
     "language", "needs_review", "drop_guard", "rel", "proj", "facts_min",
     "entity_expected", "no_entity", "entity_proposed", "fact_proposed",
     "type_proposal", "no_type_proposal",
+    # Ouvert le 2026-08-30 : le pendant POSITIF de `fact_proposed`. Sept
+    # anniversaires ont perdu leur récurrence au motif que le fait la porte,
+    # sans qu'aucun axe ne vérifie que ce fait naît.
+    "fact_asserted",
     "resource_url", "resource_owner_type", "resource_comment",
     "forbidden_value", "forbidden_predicate",
     "obsoletes", "no_obsolete", "renamed_to", "no_rename",

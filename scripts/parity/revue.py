@@ -39,16 +39,19 @@ SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
 # L'ordre canonique d'une ligne. Il n'a aucune importance pour le chargeur et
 # toute son importance pour le diff : deux cas voisins doivent se comparer à
 # l'œil, et une réécriture ne doit jamais permuter des clés au passage.
-# ⚠ Cette liste EST le contrat d'écriture : `ligne_json` reconstruit le cas à
-# partir d'elle seule, donc un champ de `corpus.CHAMPS` absent d'ici est
-# SUPPRIMÉ du corpus dès qu'on revoit le cas. Le test plus bas le vérifie.
-ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "kind", "ephemeral",
-         "owner", "recurring", "event_date", "language", "needs_review",
-         "drop_guard", "rel", "proj", "facts_min", "entity_expected", "no_entity",
-         "entity_proposed", "fact_proposed",
+# ⚠ Cette liste dit l'ordre, plus la survie : un champ de `corpus.CHAMPS`
+# absent d'ici part désormais en fin de ligne au lieu d'être supprimé. Le test
+# du harnais réclame quand même sa place, sans quoi les axes ouverts s'entassent
+# à la fin et le diff cesse de se lire à l'œil.
+ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "memories", "kind",
+         "ephemeral", "owner", "recurring", "event_date", "language",
+         "needs_review", "drop_guard", "rel", "proj",
+         "facts_min", "facts_on", "entity_expected", "no_entity",
+         "entity_proposed", "fact_proposed", "relation_proposed",
+         "type_proposal", "no_type_proposal",
          "resource_url", "resource_owner_type", "resource_comment",
          "forbidden_value", "forbidden_predicate", "obsoletes", "no_obsolete",
-         "renamed_to", "no_rename",
+         "renamed_to", "no_rename", "cancels", "no_cancel",
          "frontiere", "why", "ambigu", "arbitrage", "valide"]
 
 G, J, R, B, N = "\033[32m", "\033[33m", "\033[31m", "\033[1m", "\033[0m"
@@ -96,7 +99,14 @@ def _serialiser(cas: dict) -> str:
     inconnus = set(cas) - C.CHAMPS
     if inconnus:
         raise SystemExit(f"champs inconnus : {sorted(inconnus)}")
-    return json.dumps({k: cas[k] for k in ORDRE if k in cas}, ensure_ascii=False)
+    # ORDRE donne l'ordre, il ne donne PAS le droit de garder. Un axe ouvert
+    # dans `corpus.CHAMPS` et oublié ici sortait auparavant de la ligne sans un
+    # mot ; il sort maintenant à la fin, mal placé mais vivant. Le test du
+    # harnais réclame quand même sa place : perdre l'ordre se relit, perdre la
+    # valeur ne se relit plus.
+    reste = [k for k in cas if k not in ORDRE]
+    return json.dumps({k: cas[k] for k in [*ORDRE, *reste] if k in cas},
+                      ensure_ascii=False)
 
 
 def ecrire(jeu: str, cas: dict) -> None:

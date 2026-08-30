@@ -48,16 +48,18 @@ _CORE_LLM = (Path(__file__).resolve().parent.parent
 
 
 def test_ordre_de_revue_couvre_tous_les_champs():
-    """Écrire un cas ne doit jamais l'amputer.
+    """Écrire un cas doit le rendre RELISIBLE, pas seulement complet.
 
-    `revue.ligne_json` reconstruit la ligne du cas à partir d'ORDRE et d'elle
-    seule. Un champ déclaré dans `corpus.CHAMPS` mais absent d'ORDRE disparaît
-    donc du fichier dès qu'on revoit le cas, sans erreur et sans trace.
+    `revue._serialiser` reconstruit la ligne du cas en suivant ORDRE, puis
+    recopie en fin de ligne ce qu'ORDRE ne nomme pas : un axe oublié ici n'est
+    donc plus perdu. Il est mal placé, et c'est ce que ce test défend — deux cas
+    voisins doivent se comparer à l'œil, ce qui cesse d'être vrai dès que les
+    axes ouverts s'entassent à la fin dans l'ordre où on les a écrits.
     """
     manquants = corpus.CHAMPS - set(revue.ORDRE)
     assert not manquants, (
-        f"champs supprimés à l'écriture d'un cas : {sorted(manquants)}. "
-        f"Ajoute-les à revue.ORDRE."
+        f"champs absents de revue.ORDRE : {sorted(manquants)}. Ils survivent "
+        f"en fin de ligne, mais le corpus ne se relit plus en colonnes."
     )
 
 

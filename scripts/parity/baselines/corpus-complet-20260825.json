@@ -42,10 +42,13 @@
       "uncached_tokens": 6509,
       "output_tokens": 184,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "action annulée non nommée (attendu ~ 'appeler le dentiste')"
+      ],
       "axes": [
         "note",
-        "kind"
+        "kind",
+        "cancels"
       ]
     },
     "x-reported-speech": {
@@ -240,8 +243,11 @@
       "uncached_tokens": 6527,
       "output_tokens": 371,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "souvenirs attendus=2 obtenus=1 (Rappeler le dentiste jeudi)"
+      ],
       "axes": [
+        "memories",
         "drop_guard"
       ]
     },
@@ -382,10 +388,15 @@
       "uncached_tokens": 6507,
       "output_tokens": 169,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
-        "ephemeral"
+        "kind",
+        "ephemeral",
+        "event_date"
       ]
     },
     "x-birthday-party": {
@@ -443,10 +454,15 @@
       "uncached_tokens": 6519,
       "output_tokens": 334,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Yanis' : asserté au lieu d'être proposé"
+      ],
       "axes": [
         "note",
         "kind",
+        "recurring",
+        "fact_proposed",
         "drop_guard"
       ]
     },
@@ -507,7 +523,8 @@
       "confidence": 1.0,
       "gaps": [],
       "axes": [
-        "facts_min"
+        "facts_min",
+        "fact_asserted"
       ]
     },
     "x-birthday-bare": {
@@ -565,9 +582,16 @@
       "uncached_tokens": 6517,
       "output_tokens": 329,
       "confidence": 0.55,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Yanis' : asserté au lieu d'être proposé"
+      ],
       "axes": [
-        "needs_review"
+        "note",
+        "kind",
+        "recurring",
+        "needs_review",
+        "fact_proposed"
       ]
     },
     "x-attend-verb": {
@@ -815,7 +839,8 @@
       "gaps": [],
       "axes": [
         "note",
-        "kind"
+        "kind",
+        "event_date"
       ]
     },
     "x-no-invention": {
@@ -1382,7 +1407,7 @@
       "output_tokens": 187,
       "confidence": 1.0,
       "gaps": [
-        "event_date attendu=2026-07-14 obtenu='2026-07-21'"
+        "event_date attendu=2026-07-14 obtenu=['2026-07-21']"
       ],
       "axes": [
         "note",
@@ -1849,13 +1874,17 @@
       "uncached_tokens": 6523,
       "output_tokens": 271,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Nadia' : absent au lieu d'être proposé"
+      ],
       "axes": [
         "note",
         "kind",
         "recurring",
         "event_date",
-        "needs_review"
+        "needs_review",
+        "fact_proposed"
       ]
     },
     "emo-bare-state-fr": {
@@ -1894,9 +1923,13 @@
       "uncached_tokens": 6503,
       "output_tokens": 219,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "forbidden_predicate"
       ]
     },
@@ -1936,9 +1969,13 @@
       "uncached_tokens": 6495,
       "output_tokens": 224,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language",
         "forbidden_predicate"
       ]
@@ -1979,9 +2016,13 @@
       "uncached_tokens": 6507,
       "output_tokens": 252,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "forbidden_predicate"
       ]
     },
@@ -2078,7 +2119,7 @@
       "confidence": 0.95,
       "gaps": [
         "kind attendu=episode obtenu=note",
-        "event_date attendu=2026-07-12 obtenu=None"
+        "event_date attendu=2026-07-12 obtenu=[None]"
       ],
       "axes": [
         "note",
@@ -2238,9 +2279,15 @@
       "uncached_tokens": 6501,
       "output_tokens": 167,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "forbidden_predicate"
       ]
     },
@@ -2282,12 +2329,12 @@
       "confidence": 0.3,
       "gaps": [
         "note attendue=True obtenue=False",
-        "entité 'Jardin des Plantes' absente"
+        "entité 'Jardin des Plantes' : absente au lieu d'être proposée"
       ],
       "axes": [
         "note",
         "kind",
-        "entity_expected"
+        "entity_proposed"
       ]
     },
     "r3d-plumber": {
@@ -2588,7 +2635,8 @@
         "note",
         "kind",
         "event_date",
-        "entity_expected"
+        "entity_expected",
+        "entity_proposed"
       ]
     },
     "ez-passport-en": {
@@ -2757,9 +2805,13 @@
       "uncached_tokens": 6505,
       "output_tokens": 168,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
-        "note"
+        "note",
+        "kind",
+        "ephemeral"
       ]
     },
     "ez-wedding-anniversary-fr": {
@@ -3020,9 +3072,13 @@
       "uncached_tokens": 6495,
       "output_tokens": 162,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral"
       ]
     },
@@ -3100,7 +3156,8 @@
       "confidence": 1.0,
       "gaps": [],
       "axes": [
-        "note"
+        "note",
+        "entity_expected"
       ]
     },
     "g-type-episodic": {
@@ -3139,9 +3196,15 @@
       "uncached_tokens": 6505,
       "output_tokens": 169,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
-        "note"
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
       ]
     },
     "g-type-resource": {
@@ -3180,8 +3243,17 @@
       "uncached_tokens": 6519,
       "output_tokens": 272,
       "confidence": 0.3,
-      "gaps": [],
-      "axes": []
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ressource 'https://example.com/article' absente (vu : aucune)"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "resource_url",
+        "resource_owner_type",
+        "resource_comment"
+      ]
     },
     "g-type-ephemeral": {
       "parsed": {
@@ -3525,11 +3597,16 @@
       "uncached_tokens": 6563,
       "output_tokens": 802,
       "confidence": 0.55,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Yanis' : asserté au lieu d'être proposé"
+      ],
       "axes": [
         "note",
         "kind",
+        "recurring",
         "facts_min",
+        "fact_proposed",
         "drop_guard"
       ]
     },
@@ -3646,7 +3723,8 @@
       "gaps": [],
       "axes": [
         "note",
-        "facts_min"
+        "facts_min",
+        "fact_asserted"
       ]
     },
     "bday-bare-review-en": {
@@ -3704,13 +3782,17 @@
       "uncached_tokens": 6505,
       "output_tokens": 317,
       "confidence": 0.55,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Léa' : asserté au lieu d'être proposé"
+      ],
       "axes": [
         "note",
         "kind",
         "recurring",
         "language",
-        "needs_review"
+        "needs_review",
+        "fact_proposed"
       ]
     },
     "bday-age-not-birthdate": {
@@ -4459,6 +4541,7 @@
       "axes": [
         "note",
         "kind",
+        "event_date",
         "drop_guard"
       ]
     },
@@ -4727,11 +4810,16 @@
       "uncached_tokens": 6513,
       "output_tokens": 327,
       "confidence": 0.55,
-      "gaps": [],
+      "gaps": [
+        "recurring attendu=False obtenu=[True]",
+        "fait 'birthday' sur 'Léa' : asserté au lieu d'être proposé"
+      ],
       "axes": [
         "note",
         "kind",
+        "recurring",
         "needs_review",
+        "fact_proposed",
         "drop_guard"
       ]
     },
@@ -4771,9 +4859,13 @@
       "uncached_tokens": 6495,
       "output_tokens": 162,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral"
       ]
     },
@@ -4862,9 +4954,13 @@
       "uncached_tokens": 6493,
       "output_tokens": 161,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral"
       ]
     },
@@ -5480,7 +5576,8 @@
       "confidence": 1.0,
       "gaps": [],
       "axes": [
-        "note"
+        "note",
+        "entity_expected"
       ]
     },
     "f2": {
@@ -5742,9 +5839,13 @@
       "uncached_tokens": 6519,
       "output_tokens": 272,
       "confidence": 0.3,
-      "gaps": [],
+      "gaps": [
+        "ressource 'https://example.com/article' absente (vu : aucune)"
+      ],
       "axes": [
-        "ephemeral"
+        "ephemeral",
+        "resource_url",
+        "resource_owner_type"
       ]
     },
     "ep1": {
@@ -5811,6 +5912,7 @@
       "axes": [
         "note",
         "kind",
+        "event_date",
         "proj"
       ]
     },
@@ -5850,9 +5952,15 @@
       "uncached_tokens": 6505,
       "output_tokens": 169,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
-        "note"
+        "note",
+        "kind",
+        "ephemeral",
+        "event_date"
       ]
     },
     "lang-fr-plain": {
@@ -6542,10 +6650,12 @@
       "output_tokens": 444,
       "confidence": 0.3,
       "gaps": [
+        "entité 'Hamburg' absente",
         "négation de trop : lives_in='Berlin'"
       ],
       "axes": [
         "note",
+        "entity_expected",
         "no_obsolete"
       ]
     },
@@ -6620,13 +6730,12 @@
       "uncached_tokens": 6525,
       "output_tokens": 414,
       "confidence": 0.3,
-      "gaps": [
-        "négation de trop : works_at='Acme'"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "facts_min",
-        "no_obsolete"
+        "entity_expected",
+        "obsoletes"
       ]
     },
     "neg-b-hedged-fr": {
@@ -6911,9 +7020,15 @@
       "uncached_tokens": 6523,
       "output_tokens": 289,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "proj"
       ]
     },
@@ -6959,9 +7074,15 @@
       "uncached_tokens": 6507,
       "output_tokens": 217,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "language",
         "proj"
       ]
@@ -7002,9 +7123,14 @@
       "uncached_tokens": 6501,
       "output_tokens": 168,
       "confidence": 0.5,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
-        "note"
+        "note",
+        "kind",
+        "event_date"
       ]
     },
     "g-status-eaten-en": {
@@ -7043,9 +7169,13 @@
       "uncached_tokens": 6489,
       "output_tokens": 163,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
         "language"
       ]
     },
@@ -7169,7 +7299,8 @@
       "gaps": [],
       "axes": [
         "note",
-        "kind"
+        "kind",
+        "event_date"
       ]
     },
     "g-svo-carries-a-move": {
@@ -7319,9 +7450,15 @@
       "uncached_tokens": 6521,
       "output_tokens": 221,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "event_date attendu=2026-07-13 obtenu=[]"
+      ],
       "axes": [
         "note",
+        "kind",
+        "ephemeral",
+        "event_date",
         "proj"
       ]
     },
@@ -7782,9 +7919,13 @@
       "uncached_tokens": 6499,
       "output_tokens": 164,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral"
       ]
     },
@@ -7824,9 +7965,13 @@
       "uncached_tokens": 6493,
       "output_tokens": 230,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "note attendue=True obtenue=False",
+        "ephemeral attendu=False"
+      ],
       "axes": [
         "note",
+        "kind",
         "ephemeral",
         "language"
       ]
@@ -8122,7 +8267,7 @@
       "confidence": 0.5,
       "gaps": [
         "note attendue=True obtenue=False",
-        "event_date attendu=2026-07-14 obtenu=None"
+        "event_date attendu=2026-07-14 obtenu=[]"
       ],
       "axes": [
         "note",
@@ -8131,25 +8276,81 @@
       ]
     }
   },
-  "ecarts": 14,
+  "ecarts": 41,
   "par_frontiere": {
+    "autre": [
+      "bday-bare-review-en",
+      "date-birthday-party-recurring",
+      "e4",
+      "g-atomicity-mixed",
+      "g-type-resource",
+      "u1",
+      "x-birthday-bare",
+      "x-birthday-party",
+      "x-mixed-tense",
+      "x-negation"
+    ],
     "routage": [
       "conf-minimal-action",
+      "emo-bare-state-duration-fr",
+      "emo-bare-state-en",
+      "emo-bare-state-fr",
       "emo-cause-lived-episode-fr",
+      "emo-good-day-fr",
+      "ep2",
+      "ez-reread-notes-fr",
+      "g-ephemeral-trivial",
+      "g-progress-en",
+      "g-progress-fr",
+      "g-status-eaten-en",
+      "g-status-sent-fr",
+      "g-type-episodic",
+      "g-type-resource",
       "neg-b-correction",
+      "p1",
+      "p3",
+      "r0d-two-projects",
       "r1e-reported-event",
+      "r1g-chore-en",
+      "r1g-chore-fr",
       "r1j-no-name",
-      "r3b-place-alone"
+      "r3b-place-alone",
+      "x-past-errand"
     ],
     "R2d": [
       "date-event-weekday-fr",
       "emo-cause-lived-episode-fr",
-      "r1e-reported-event"
+      "emo-good-day-fr",
+      "ep2",
+      "g-progress-en",
+      "g-progress-fr",
+      "g-status-sent-fr",
+      "g-type-episodic",
+      "r0d-two-projects",
+      "r1e-reported-event",
+      "x-past-errand"
+    ],
+    "R2e/R3e": [
+      "bday-bare-review-en",
+      "date-birthday-party-recurring",
+      "e4",
+      "g-atomicity-mixed",
+      "x-birthday-bare",
+      "x-birthday-party"
     ],
     "P-PERS": [
+      "neg-b-replace-en",
       "neg-b-replace-fr",
       "pers-incidental-en",
       "r3b-place-alone"
+    ],
+    "X-EPH": [
+      "g-ephemeral-trivial",
+      "p1",
+      "p3",
+      "r1c-two-words",
+      "r1g-chore-en",
+      "r1g-chore-fr"
     ],
     "interdit": [
       "bday-age-not-birthdate"
@@ -8158,16 +8359,12 @@
       "lang-en-french-name"
     ],
     "NEG-c": [
-      "neg-b-replace-en",
-      "neg-b-replace-two-clauses"
-    ],
-    "X-EPH": [
-      "r1c-two-words"
+      "neg-b-replace-en"
     ],
     "perte": [
       "r1j-no-name"
     ]
   },
   "prompt_tokens_max": 3453,
-  "rescored": "2026-08-25"
+  "rescored": "2026-08-30"
 }

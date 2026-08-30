@@ -134,7 +134,15 @@ def test_classify_params_shape_with_working_memory(isolated_db):
 
     # Ce que le découpage promet : les deux moitiés ne se RÉPÈTENT pas. Chacune
     # ne porte que les règles des champs qu'elle écrit, et ce qu'elles partagent
-    # se compte sur les doigts d'une main (langue, en-tête JSON, dates).
+    # se compte sur les doigts d'une main (langue, en-tête JSON).
+    #
+    # Le bloc DATES est retiré du comptage AVANT de compter. Il est recopié mot
+    # pour mot dans les deux moitiés, exprès : elles ne peuvent pas s'inclure
+    # l'une l'autre, et deux rappels de dates divergents ont déjà daté « le 24 »
+    # à un mois d'écart. Cette duplication-là est donc tenue ailleurs, et plus
+    # sévèrement — `split.bloc_dates_identique()` refuse un écart d'un seul
+    # caractère. La compter ici sanctionnait le correctif au lieu du défaut :
+    # les 14 lignes du bloc mangeaient à elles seules un seuil de 10.
     #
     # ⚠ Ceci mesurait autrefois « les deux moitiés pèsent moins que l'appel
     # unique d'avant ». Cassé le 2026-08-25 en déployant la v21 : les moitiés
@@ -147,15 +155,17 @@ def test_classify_params_shape_with_working_memory(isolated_db):
     # dépôt : il échoue donc sur une machine dont le déploiement a pris du
     # retard, et c'est voulu — c'est le seul endroit qui le dit.
     from config import BASE_DIR
+    from scripts.parity.split import _DATES
     prompts = BASE_DIR / "prompts"
     fond = []
     for f in ("classifier-note.md", "classifier-graph.md"):
-        texte = (prompts / f).read_text(encoding="utf-8")
+        texte = _DATES.sub("", (prompts / f).read_text(encoding="utf-8"))
         fond.append({l.strip() for l in texte.splitlines() if len(l.strip()) > 25})
     communes = fond[0] & fond[1]
     assert len(communes) <= 10, (
-        f"{len(communes)} lignes de fond présentes dans les DEUX moitiés : le "
-        f"découpage a recommencé à se répéter. " + " · ".join(sorted(communes)[:5]))
+        f"{len(communes)} lignes de fond présentes dans les DEUX moitiés hors "
+        f"bloc DATES : le découpage a recommencé à se répéter. "
+        + " · ".join(sorted(communes)[:5]))
 
 
 def test_parse_classify_text_strips_fence_and_guards_truncation():

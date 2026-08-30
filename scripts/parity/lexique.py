@@ -185,9 +185,9 @@ FRONTIERES = {
     "G-DATE": "Une date annule la porte : ça devient une occurrence, quelle que soit la tournure.",
     "G-ATTR": "Un énoncé qui ne fait que décrire quelqu'un ne laisse pas de note.",
     "G-LINK": "Un lien nu, sans prise de position, ne laisse pas de note.",
-    "G-PROGRESS": "Un progrès sur un projet ne laisse pas de note.",
-    "G-STATUS": "Un statut nu (« c'est envoyé », « j'ai déjà mangé ») ne laisse rien.",
-    "G-ROUTINE": "Une activité routinière solitaire déjà faite ne laisse rien, et n'est pas un rappel.",
+    "G-PROGRESS": "Un progrès sur un projet est un moment vécu : il laisse un épisode, et son entrée de projet part côté graphe.",
+    "G-STATUS": "Un statut (« c'est envoyé », « j'ai déjà mangé ») raconte un moment vécu : il laisse un épisode.",
+    "G-ROUTINE": "Une corvée ou une séance ordinaire déjà faite laisse un épisode, sans qu'on pèse son intérêt.",
     "G-HABIT": "Une habitude ou un trait de biographie, sans moment précis, est du savoir durable et pas une note.",
     "G-SVO": "Si tout se reformule en « untel fait ceci », c'est un fait et pas une note.",
     # Ligne 0, projet
@@ -202,24 +202,24 @@ FRONTIERES = {
     "R1d": "Une tâche avec une échéance reste une TÂCHE, elle ne devient pas un événement.",
     "R1e": "Quand la capture rapporte l'action de quelqu'un d'autre, la tâche lui appartient.",
     "R1f": "Une action annulée garde la décision, mais pas la tâche.",
-    "R1g": "Une micro-course triviale ne laisse pas de note, juste un rappel de 48 h.",
-    "R1h": "Un objet durable qu'on choisit et qu'on paie n'est pas une course triviale.",
-    "R1i": "Une course déjà faite ne redevient jamais un rappel.",
+    "R1g": "Une corvée encore à faire est une tâche ordinaire, sans jugement sur sa trivialité.",
+    "R1h": "Aucun objet n'est trop ordinaire pour faire une tâche : la distinction consommable / durable a disparu.",
+    "R1i": "Une course déjà faite est un épisode, jamais une tâche à refaire.",
     "R1j": "Envoyer, payer, classer, déclarer : c'est un engagement, si court soit l'énoncé.",
     # Ligne 2, événement
     "R2a": "Une occurrence datée à laquelle tu assistes est un événement.",
     "R2b": "Une date plus un nom suffisent, même sans verbe.",
     "R2c": "Une tâche, on la FAIT ; un événement, on y ASSISTE. Le verbe ne prouve rien.",
     "R2d": "Une date relative doit ressortir en date absolue.",
-    "R2e": "Anniversaire : une fête, une date nue et une naissance donnent trois réponses différentes.",
+    "R2e": "Anniversaire : une fête donne un événement, une date nue un événement à faire valider, une naissance rien. Jamais de récurrence, elle est portée par la fiche.",
     "R2f": "Ce qui est déjà passé n'est plus un événement à venir, c'est du vécu.",
     # Ligne 3, épisode
     "R3a": "Dès qu'une autre personne nommée y figure, c'est un épisode, si ordinaire soit-il.",
     "R3b": "Seul, mais dans un lieu qui mérite d'être nommé : c'est quand même un épisode.",
-    "R3c": "Une première fois, un record, un résultat mesurable font un épisode. Un ressenti, non.",
+    "R3c": "Une première fois, un record, un résultat mesurable font un épisode. Un ressenti aussi, désormais.",
     "R3d": "Un épisode peut aussi établir quelque chose de durable : on garde les deux.",
     "R3e": "Un épisode a une date, et une date passée qui revient chaque année doit survivre.",
-    "R3f": "Un épisode n'expire jamais : c'est fait, pas en attente.",
+    "R3f": "Un épisode ne porte aucun drapeau d'expiration : le drapeau éphémère est retiré.",
     "R3g": "Ce qui n'est pas encore vécu n'est pas un épisode, c'est une intention.",
     # Ligne 4, note
     "R4a": "Une pensée à la première personne mérite de ressurgir.",
@@ -228,10 +228,10 @@ FRONTIERES = {
     "R4d": "Une décision, y compris celle de renoncer, mérite la note.",
     "R4e": "La phrase qui fonde un projet est sa première note.",
     # Transverses
-    "X-EPH": "Un rappel de 48 h exige QUATRE conditions ensemble : une seule qui manque, et il n'expire pas.",
+    "X-EPH": "Le drapeau éphémère est retiré. Tant que le champ existe, il ne doit plus jamais être posé à vrai.",
     "X-CONF": "Le doute doit atteindre la file « À valider » quand il est réel, et jamais autrement.",
     "X-LANG": "La note s'écrit dans la langue de la capture, sans jamais traduire tes mots.",
-    "X-ONE": "Exactement une note par capture, ou aucune.",
+    "X-ONE": "COMBIEN de souvenirs une capture laisse : deux quand elle demanderait deux lignes dans un carnet.",
     # Graphe
     "P-DUR": "Un fait n'existe que pour du durable. Ne rien retenir est parfois la bonne réponse.",
     "P-DEDUC": "Déduire, oui. Inventer, non.",
@@ -256,7 +256,7 @@ FRONTIERES = {
     "PER-a": "Une capture qui périme un fait doit émettre le NOUVEAU fait.",
     "PER-b": "Un renommage déclaré se propose, jamais ne s'applique.",
     "PER-c": "Un état transitoire ne doit pas devenir un fait durable.",
-    "EMO": "Un ressenti rattaché à une cause devient une note ; un état nu ne laisse rien.",
+    "EMO": "Un ressenti rattaché à une cause devient une note ; un état nu devient un épisode.",
 }
 
 

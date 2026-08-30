@@ -1,5 +1,15 @@
 # carte des frontières de décision
 
+
+> ⚠ **Douze frontières ont changé de réponse le 2026-08-30** et le commentaire
+> par frontière du tableau, plus bas, est antérieur : il décrit encore l'ancienne
+> règle. Le libellé court, celui que la revue affiche, est à jour dans
+> `lexique.py`. Les frontières concernées : `G-PROGRESS`, `G-STATUS`,
+> `G-ROUTINE`, `R1g`, `R1h`, `R1i`, `R2e`, `R3c`, `R3f`, `X-EPH`, `X-ONE`, `EMO`.
+> Ce qui a bougé, et pourquoi, est dans `sinam-core/docs/regles.md` et son
+> journal. La remise à niveau de ce document viendra après la réécriture du
+> prompt, pour ne pas l'écrire deux fois.
+
 À quoi ça sert : le ticket demande de couvrir **les arêtes**, pas d'être exhaustif
 sur ce que les gens écriront. Encore faut-il savoir où elles sont. Ce document
 énumère chaque frontière énoncée par les deux prompts de production

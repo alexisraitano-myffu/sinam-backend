@@ -9,6 +9,7 @@ pas, tout ce qu'il mesure est faux avec assurance.
     python -m scripts.parity.revue --jeu adversarial
     python -m scripts.parity.revue --frontiere NEG-b --baseline haiku-v28-final
     python -m scripts.parity.revue --cas x-attend-noun,x-no-invention
+    python -m scripts.parity.revue --marque 2026-08-30
 
 `--baseline` affiche, à côté de l'étiquette, ce que ce modèle a RÉELLEMENT
 produit sur le cas. Arbitrer contre une trace vaut mieux qu'arbitrer dans
@@ -459,6 +460,10 @@ def main() -> int:
                     help="ne relire que les cas qui portent une décision, plus N cas "
                          "ordinaires par famille (défaut 2). Cherche l'erreur systématique, "
                          "pas l'erreur isolée.")
+    ap.add_argument("--marque", metavar="TEXTE",
+                    help="ne revoir que les cas dont le `why` contient ce texte. Une passe "
+                         "qui réétiquette y laisse sa date : « --marque 2026-08-30 » rouvre "
+                         "exactement ce qu'elle a touché. Implique --tous.")
     ap.add_argument("--baseline", help="afficher ce que ce modèle a produit (baselines/<nom>.json)")
     ap.add_argument("--arbitrages", action="store_true",
                     help="lister les décisions écrites en français qui attendent "
@@ -487,10 +492,11 @@ def main() -> int:
         if inconnus:
             raise SystemExit(f"cas inconnu(s) : {', '.join(sorted(inconnus))}")
     lot = [(j, k) for j, k in brut
-           if (args.tous or vises or not k.get("valide"))
+           if (args.tous or vises or args.marque or not k.get("valide"))
            and (not args.jeu or j == args.jeu)
            and (not args.frontiere or k.get("frontiere") == args.frontiere)
-           and (vises is None or k["id"] in vises)]
+           and (vises is None or k["id"] in vises)
+           and (not args.marque or args.marque in (k.get("why") or ""))]
     if not lot:
         print("rien à revoir avec ces filtres.")
         return 0

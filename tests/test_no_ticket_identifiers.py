@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-RACINE = Path(__file__).resolve().parent
+RACINE = Path(__file__).resolve().parents[1]
 IDENTIFIANT = re.compile(rb"SYN-\d+")
 
 # Le corpus de parité rejoue des captures réalistes ; une capture peut nommer un

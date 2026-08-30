@@ -9,7 +9,7 @@ is API-bound and covered by test_dream_cycle.py).
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def _route(resolved, source_id=1):

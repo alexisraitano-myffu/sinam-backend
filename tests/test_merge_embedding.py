@@ -12,7 +12,7 @@ import sys
 import uuid
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def _insert(conn, name, type_="person", summary="", with_embedding=False):

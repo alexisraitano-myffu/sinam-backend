@@ -36,14 +36,14 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.parity import corpus, revue, score  # noqa: E402
 
 # Le core est un dépôt VOISIN, pas une dépendance. Sur une machine qui n'a que
 # le backend, le test de fusion se saute au lieu d'échouer : un test rouge pour
 # un fichier absent apprend aux gens à ignorer le rouge.
-_CORE_LLM = (Path(__file__).resolve().parent.parent
+_CORE_LLM = (Path(__file__).resolve().parents[2]
              / "sinam-core" / "crates" / "sinam-core" / "src" / "llm.rs")
 
 
@@ -83,7 +83,7 @@ def test_les_axes_de_score_sont_des_champs_declares():
     )
 
 
-_CORE_SCHEMA = (Path(__file__).resolve().parent.parent
+_CORE_SCHEMA = (Path(__file__).resolve().parents[2]
                 / "sinam-core" / "crates" / "sinam-core" / "src" / "schema.rs")
 
 
@@ -119,7 +119,7 @@ def test_types_semes_identiques_partout():
         "FALLBACK_TYPES a décroché des types semés : un core dégradé annoncerait "
         "au modèle un vocabulaire plus étroit que le sien.")
 
-    app = (Path(__file__).resolve().parent / "api" / "app.py").read_text()
+    app = (Path(__file__).resolve().parents[1] / "api" / "app.py").read_text()
     lit = app[app.index("EntityType = Literal["):]
     assert re.findall(r'"([a-z_]+)"', lit[:lit.index("]")]) == semes, (
         "EntityType a décroché des types semés : une fiche existerait sans qu'on "
@@ -182,7 +182,7 @@ def test_les_axes_disent_ce_que_la_citation_dit():
     AVEC = ("avec validation", "on veut une validation")
 
     fautes = []
-    for f in sorted((Path(__file__).parent / "scripts" / "parity" / "corpus").glob("*.jsonl")):
+    for f in sorted((Path(__file__).resolve().parents[1] / "scripts" / "parity" / "corpus").glob("*.jsonl")):
         for ligne in f.read_text(encoding="utf-8").splitlines():
             if not ligne.strip():
                 continue

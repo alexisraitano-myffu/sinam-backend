@@ -29,10 +29,10 @@ python -m dream_cycle --dry-run --verbose   # preview without DB writes, per-ste
 **Run tests:**
 ```bash
 pytest                             # whole suite
-pytest test_embeddings.py          # offline NR tests (no API key needed)
-pytest test_cycle.py::test_episodic_note_is_searchable   # a single test
+pytest tests/test_embeddings.py    # offline NR tests (no API key needed)
+pytest tests/test_cycle.py::test_episodic_note_is_searchable   # a single test
 ```
-`test_embeddings.py`, `test_cycle.py`, `test_api.py` and `test_parity_harness.py` run fully offline (local embeddings, FastAPI TestClient; the last one touches neither, it only compares lists). `test_dream_cycle.py` hits the live Claude API for the classify→route pipeline and is **skipped** unless `ANTHROPIC_API_KEY` is set. Shared fixture `isolated_db` lives in `conftest.py`.
+`test_embeddings.py`, `test_cycle.py`, `test_api.py` and `test_parity_harness.py` run fully offline (local embeddings, FastAPI TestClient; the last one touches neither, it only compares lists). `test_dream_cycle.py` hits the live Claude API for the classify→route pipeline and is **skipped** unless `ANTHROPIC_API_KEY` is set. Shared fixture `isolated_db` lives in `tests/conftest.py`. **All tests live in `tests/`** (moved there on 2026-08-30); they reach the root modules through the `sys.path` insert at the top of each file, computed as `Path(__file__).resolve().parents[1]`. A test that needs a repo path derives it the same way — never from the test's own directory.
 
 **Re-embed** after changing the embedding model:
 ```bash

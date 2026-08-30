@@ -8,7 +8,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 NOW = datetime(2026, 5, 31, 12, 0, 0)
 FMT = "%Y-%m-%d %H:%M:%S"

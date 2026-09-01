@@ -3,8 +3,14 @@ Offline tests for the embedding fallback in entity merge proposals.
 
 No ANTHROPIC_API_KEY needed — embeddings are local. The merge scan
 runs inside the core's routing; we drive `_process_entry` with a classified
-that creates the new entity (a persistence≥2 fact passes the creation gate)
-and assert on the proposals it raises against pre-inserted candidates.
+that creates the new entity and assert on the proposals it raises against
+pre-inserted candidates.
+
+⚠ Le fait porte une persistance de 4, et c'est le minimum utilisable ici : une
+entité inconnue, sans relation et avec un seul fait doit atteindre
+`LONE_ENTITY_PERSISTENCE` (4 depuis le 28/08) pour naître. En dessous, elle
+n'existe pas et le scan de fusion n'a rien à comparer. Ces tests portent sur le
+repli par embedding, pas sur ce palier : voir `test_lone_entity_gate.py`.
 """
 
 import json
@@ -46,7 +52,7 @@ def _route_new_entity(name, type_, summary, source_id=2):
             "canonical_name": name, "type": type_, "aliases": [],
             "summary": summary, "attributes": {},
             "facts": [{"predicate": "is", "value": "x",
-                       "persistence_value": 3, "evidence_strength": "explicit"}],
+                       "persistence_value": 4, "evidence_strength": "explicit"}],
         }],
         "relations": [], "project_entries": [],
     }

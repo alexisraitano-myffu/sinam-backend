@@ -41,7 +41,20 @@ def _rows(sql, params=()):
         conn.close()
 
 
-def _entity(name, type_="concept", type_proposal=None, persistence=3):
+def _entity(name, type_="concept", type_proposal=None, persistence=4):
+    """Une entité seule au monde : inconnue, un seul fait, aucune relation.
+
+    ⚠ La persistance vaut 4 et pas 3 depuis le 2026-09-01, parce que c'est le
+    palier que le core exige d'une entité qui n'a rien d'autre pour elle
+    (`LONE_ENTITY_PERSISTENCE`, relevé de 2 à 4 le 28/08). À 3, l'entité n'est
+    plus créée du tout et TOUS les tests de ce fichier deviennent muets : ils
+    n'observent plus le vocabulaire de types, ils observent une table vide.
+
+    Ce n'est pas un contournement du verrou. Ces tests ne portent pas sur lui ;
+    le passer est leur préalable, pas leur sujet. Le verrou a désormais son
+    propre fichier, `test_lone_entity_gate.py`, et c'est là qu'un changement de
+    palier doit faire du rouge.
+    """
     return {
         "canonical_name": name, "type": type_, "type_proposal": type_proposal,
         "facts": [{"predicate": "is", "value": "x",
@@ -114,7 +127,7 @@ def test_ephemeral_with_entities_still_captures_them(isolated_db, monkeypatch):
             "type_proposal": {"value": "recipe", "reason": "une recette"},
             "aliases": [], "summary": "recette", "attributes": {},
             "facts": [{"predicate": "is", "value": "recette",
-                       "persistence_value": 3, "evidence_strength": "explicit"}],
+                       "persistence_value": 4, "evidence_strength": "explicit"}],
         }],
     }
     monkeypatch.setattr(cyc, "step1_classify", lambda *a, **k: canned)

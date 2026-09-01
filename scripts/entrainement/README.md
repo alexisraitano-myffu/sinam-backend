@@ -100,16 +100,32 @@ python -m mlx_lm lora \
   --train --data scripts/entrainement/jeu/mlx \
   --fine-tune-type lora --num-layers 8 \
   --batch-size 1 --grad-accumulation-steps 4 \
-  --iters 1200 --learning-rate 1e-5 --max-seq-length 2048 \
+  --iters 600 --learning-rate 1e-5 --max-seq-length 2048 \
   --mask-prompt --grad-checkpoint \
   --adapter-path scripts/entrainement/adaptateur \
-  --steps-per-eval 100 --save-every 200
+  --steps-per-eval 50 --save-every 100
 ```
 
-**Ces valeurs sont un point de départ, pas une mesure.** Rien ici n'a encore été
-réglé sur la perte de validation ; la seule chose qui soit décidée par la
-machine, c'est `--max-seq-length 2048`, parce que la plus longue conversation du
-jeu fait environ 1 430 tokens.
+**Ce qui est mesuré, le 2026-09-01 sur 20 itérations d'essai**, et qui ne se
+redevine pas :
+
+| | |
+|---|---|
+| pic mémoire | **3,87 Go** sur les 8 de la machine, avec `--grad-checkpoint` |
+| vitesse | ~10 s l'itération, donc **environ 1 h 45 pour 600** |
+| une évaluation | ~37 s sur 8 lots |
+| perte de validation | **1,217 au départ, 0,838 à la 20ᵉ** |
+
+La perte tombe donc très vite, ce qui décide de deux choses. `--iters 600` fait
+un peu moins de quatre passages sur les 637 exemples : au-delà, avec un jeu de
+cette taille, on apprend le jeu et plus la tâche. Et l'évaluation toutes les 50
+itérations n'est pas du confort, c'est ce qui permet de **choisir le point
+d'arrêt après coup** au lieu de croire au dernier. `--save-every 100` garde les
+points intermédiaires pour ça.
+
+Le reste des valeurs est un point de départ, pas une mesure. La seule autre que
+la machine décide, c'est `--max-seq-length 2048`, parce que la plus longue
+conversation du jeu fait environ 1 430 tokens.
 
 Deux drapeaux ne sont pas négociables :
 

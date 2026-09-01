@@ -19,10 +19,19 @@ import threading
 import time
 
 import requests
+import urllib3
 
 from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_open
 
 from db import get_connection
+
+# Le membre annonce désormais son port CHIFFRÉ (auto-signé). Pendant le handshake
+# on n'a pas encore l'empreinte du certificat (elle est DANS la charge scellée) :
+# le transport est donc non vérifié, mais l'authenticité vient de SPAKE2 (le code
+# à 6 chiffres) et le scellé est chiffré de bout en bout — un intercepteur sans le
+# code ne dérive pas la clé et ne peut rien forger. Le tir de bootstrap qui suit,
+# lui, épingle l'empreinte reçue dans le scellé.
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # How long the joiner waits for the human approval on the member (matches the
 # member's own offer/request TTL).
@@ -113,7 +122,7 @@ def _try_member(code: str, base: str) -> str:
                 "name": socket.gethostname().split(".", 1)[0] or "Nouvel appareil",
                 "platform": "desktop",
             },
-            timeout=5,
+            timeout=5, verify=False,
         )
     except requests.RequestException:
         return "next"
@@ -129,7 +138,7 @@ def _try_member(code: str, base: str) -> str:
             f"{base}/pair/confirm-code",
             json={"request_id": request_id,
                   "mac": base64.b64encode(mac).decode("ascii")},
-            timeout=5,
+            timeout=5, verify=False,
         )
     except requests.RequestException:
         return "next"
@@ -141,7 +150,8 @@ def _try_member(code: str, base: str) -> str:
     deadline = time.monotonic() + _APPROVAL_TTL
     while time.monotonic() < deadline:
         try:
-            res = requests.get(f"{base}/pair/result/{request_id}", timeout=5).json()
+            res = requests.get(
+                f"{base}/pair/result/{request_id}", timeout=5, verify=False).json()
         except requests.RequestException:
             time.sleep(2)
             continue
@@ -180,7 +190,10 @@ def _apply(payload: dict, base: str) -> None:
     space_id = payload.get("space_id")
     if space_id:
         sync_peers.set_joining_space_id(str(space_id))
-    sync_peers.pull_from_peer(base)
+    # L'empreinte du certificat du membre voyage dans la charge scellée : on la
+    # passe au tir de bootstrap pour épingler dès le premier contact, sans
+    # fenêtre TOFU. Le membre la mémorise ensuite pour ce device_id.
+    sync_peers.pull_from_peer(base, expected_fp=payload.get("cert_sha256"))
     sync_peers.register_self_device()
 
 

@@ -23,14 +23,18 @@ the same capture collapse onto the smallest uuid, and the deletions
 propagate as tombstones.
 """
 
+import hashlib
 import json
 import logging
 import os
+import ssl
 import threading
 import time
+from urllib.parse import urlparse
 
 import requests
 from fastapi import HTTPException
+from requests.adapters import HTTPAdapter
 
 from core_store import get_store
 from db import first_row, get_connection
@@ -125,6 +129,77 @@ def all_cursors(conn) -> dict:
         "SELECT k, v FROM sync_meta WHERE k LIKE 'cursor:%'"
     ).fetchall()
     return {k.split(":", 1)[1]: int(v) for k, v in rows}
+
+
+# ── Peer TLS pinning (local, deliberately NOT replicated) ────────────────────
+# Le lien Mac↔Mac est chiffré comme le lien téléphone↔ordinateur, mais le tireur
+# n'a pas de QR : il apprend l'empreinte du certificat de son pair soit par la
+# charge scellée de l'appairage (`expected_fp`), soit au premier contact (TOFU).
+# Une fois connue, elle est épinglée : un certificat différent est REFUSÉ, ce
+# qui coupe le sniff passif ET le MITM en régime établi. L'empreinte n'est PAS
+# un secret, mais elle reste locale (`sync_meta`, non répliquée), keyée par le
+# device_id du pair — jamais annoncée en mDNS (cf. api/tls.py).
+
+def get_peer_cert(device_id: str | None) -> str | None:
+    if not device_id:
+        return None
+    conn = get_connection()
+    try:
+        row = conn.execute(
+            "SELECT v FROM sync_meta WHERE k = ?", (f"peer_cert:{device_id}",)
+        ).fetchone()
+        return str(row[0]) if row and row[0] else None
+    finally:
+        conn.close()
+
+
+def set_peer_cert(device_id: str, fingerprint: str) -> None:
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO sync_meta (k, v) VALUES (?, ?)",
+                (f"peer_cert:{device_id}", fingerprint),
+            )
+    finally:
+        conn.close()
+
+
+class _FingerprintAdapter(HTTPAdapter):
+    """Épingle l'empreinte SHA-256 du certificat au niveau du handshake TLS :
+    urllib3 lève AVANT d'envoyer la requête HTTP, donc un pair au mauvais
+    certificat ne reçoit jamais notre jeton. Pas de vérification de nom/CA :
+    le certificat est auto-signé et joint par IP, seule l'empreinte fait foi."""
+
+    def __init__(self, fingerprint: str, **kw):
+        self._fingerprint = fingerprint
+        super().__init__(**kw)
+
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        kwargs["ssl_context"] = ctx
+        kwargs["assert_fingerprint"] = self._fingerprint
+        super().init_poolmanager(*args, **kwargs)
+
+
+def _pinned_session(fingerprint: str) -> requests.Session:
+    s = requests.Session()
+    s.mount("https://", _FingerprintAdapter(fingerprint))
+    return s
+
+
+def _probe_cert_fp(host: str, port: int, timeout: float = 5.0) -> str | None:
+    """L'empreinte SHA-256 du certificat que le pair présente, obtenue par une
+    poignée de main TLS NUE (aucune requête HTTP, aucun jeton envoyé). Sert à
+    épingler la session avant tout échange, et à semer le TOFU au 1er contact."""
+    try:
+        pem = ssl.get_server_certificate((host, port), timeout=timeout)
+        der = ssl.PEM_cert_to_DER_cert(pem)
+    except Exception:  # noqa: BLE001 — pair injoignable / pas de TLS
+        return None
+    return hashlib.sha256(der).hexdigest()
 
 
 # ── Owner-lock (replicated) + run-guard ──────────────────────────────────────
@@ -311,19 +386,64 @@ def device_revoked(conn, device_id: str) -> bool:
 
 # ── Pulling from a peer ──────────────────────────────────────────────────────
 
-def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
+def pull_from_peer(base_url: str, timeout: int = 30,
+                   expected_fp: str | None = None,
+                   peer_device_hint: str | None = None) -> dict:
     """Pull + merge everything new from one peer. Idempotent and resumable:
-    the cursor advances after each applied page."""
+    the cursor advances after each applied page.
+
+    Le transport réseau est chiffré et épinglé (cf. la section « Peer TLS
+    pinning »). `expected_fp` = empreinte reçue dans la charge d'appairage
+    (épinglage sans fenêtre TOFU) ; `peer_device_hint` = device_id annoncé en
+    mDNS, sert à retrouver une empreinte déjà connue AVANT d'envoyer le jeton.
+    """
     base = base_url.rstrip("/")
     store = get_store()
     me = store.sync_device_id()
 
-    status = requests.get(
+    parsed = urlparse(base)
+    host = parsed.hostname or ""
+    is_loopback = host in ("127.0.0.1", "::1", "localhost")
+    probe_fp: str | None = None
+    if parsed.scheme == "https":
+        port = parsed.port or 443
+        # Épingle avant tout échange à ce qu'on connaît déjà (appairage ou pull
+        # précédent) ; un mauvais certificat est refusé au handshake, le jeton
+        # ne part pas. Sinon TOFU : on épingle ce que le pair présente là.
+        pin = expected_fp or get_peer_cert(peer_device_hint)
+        probe_fp = _probe_cert_fp(host, port, timeout=min(timeout, 5))
+        if probe_fp is None:
+            return {"url": base, "error": "peer TLS unreachable"}
+        if pin and pin != probe_fp:
+            log.warning("sync: refus de %s : empreinte de certificat inattendue "
+                        "(épinglée %s…, présentée %s…)", base, pin[:12], probe_fp[:12])
+            return {"url": base, "skipped": "cert_mismatch"}
+        sess: requests.Session | object = _pinned_session(probe_fp)
+    elif parsed.scheme == "http" and not is_loopback:
+        # Le clair ne sert que la boucle locale (même règle que l'app) : jamais
+        # un pair réseau, où il serait lisible par tout le Wi-Fi.
+        return {"url": base, "skipped": "cleartext_network_peer"}
+    else:
+        sess = requests  # loopback cleartext (same machine)
+
+    status = sess.get(
         f"{base}/sync/status", headers=_headers(), timeout=timeout
     ).json()
     peer_device = status.get("device_id")
     if not peer_device:
         return {"url": base, "error": "peer exposes no sync device_id"}
+    # Contrôle d'épinglage définitif, sur le device_id AUTHENTIFIÉ par /sync/status
+    # (le hint mDNS était falsifiable). Un certificat qui ne correspond pas à
+    # celui déjà connu pour ce pair coupe le pull ; un pair jamais vu est
+    # mémorisé (TOFU) ou semé par l'empreinte d'appairage.
+    if probe_fp is not None:
+        stored = get_peer_cert(peer_device)
+        if stored and stored != probe_fp:
+            log.warning("sync: refus de %s (device %s) : empreinte de certificat "
+                        "changée depuis le dernier contact", base, peer_device)
+            return {"url": base, "peer_device": peer_device, "skipped": "cert_mismatch"}
+        if stored is None:
+            set_peer_cert(peer_device, expected_fp or probe_fp)
     if peer_device == me:
         return {"url": base, "peer_device": peer_device, "skipped": "self"}
 
@@ -379,7 +499,7 @@ def pull_from_peer(base_url: str, timeout: int = 30) -> dict:
     notes: set[str] = set()
     pages = 0
     while True:
-        r = requests.get(
+        r = sess.get(
             f"{base}/sync/changes",
             params={"since": cursor, "limit": SYNC_PAGE_LIMIT},
             headers=_headers(), timeout=timeout,
@@ -542,7 +662,8 @@ def pull_all() -> list[dict]:
     reports = []
     for peer in known_peers():
         try:
-            reports.append(pull_from_peer(peer["url"]))
+            reports.append(pull_from_peer(
+                peer["url"], peer_device_hint=peer.get("device_id")))
         except Exception as exc:  # noqa: BLE001 — peer down is normal life
             reports.append({"url": peer["url"], "error": f"{type(exc).__name__}: {exc}"})
     return reports

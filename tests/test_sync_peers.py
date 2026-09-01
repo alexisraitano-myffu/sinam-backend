@@ -151,7 +151,7 @@ def test_pull_from_peer_bootstraps_and_is_idempotent(client, peer, stubbed_http)
         "INSERT INTO entities (id, canonical_name, type) VALUES ('pe-1', 'Pixel', 'concept')", [])
 
     from api.sync_peers import pull_from_peer
-    report = pull_from_peer("http://peer.test:8000")
+    report = pull_from_peer("http://127.0.0.1:8000")
     assert report["peer_device"] == store.sync_device_id()
     assert report["rows_created"] >= 3
     assert report["cursor"] > 0
@@ -170,13 +170,13 @@ def test_pull_from_peer_bootstraps_and_is_idempotent(client, peer, stubbed_http)
         conn.close()
 
     # Second pull: cursor did its job, nothing new lands.
-    again = pull_from_peer("http://peer.test:8000")
+    again = pull_from_peer("http://127.0.0.1:8000")
     assert again["rows_created"] == 0
     assert again["rows_deleted"] == 0
 
     # And the peer's deletes replicate as tombstones on the next pull.
     gate.execute("DELETE FROM inbox WHERE id='pc-1'", [])
-    third = pull_from_peer("http://peer.test:8000")
+    third = pull_from_peer("http://127.0.0.1:8000")
     assert third["rows_deleted"] == 1
     conn = _conn()
     try:
@@ -195,7 +195,7 @@ def test_pull_skips_self(client, monkeypatch):
             return _Resp(json.dumps({"device_id": get_store().sync_device_id()}))
 
     monkeypatch.setattr(sync_peers, "requests", _Requests)
-    report = sync_peers.pull_from_peer("http://loop.test:8000")
+    report = sync_peers.pull_from_peer("http://127.0.0.1:8000")
     assert report["skipped"] == "self"
 
 
@@ -223,7 +223,7 @@ def test_pull_refuses_a_peer_from_another_space(client, peer, stubbed_http):
     stubbed_http.space_id = "le-sien"
 
     from api.sync_peers import pull_from_peer
-    report = pull_from_peer("http://peer.test:8000")
+    report = pull_from_peer("http://127.0.0.1:8000")
     assert report["skipped"] == "other_space"
 
     conn = _conn()
@@ -242,7 +242,7 @@ def test_pull_accepts_a_peer_from_our_space(client, peer, stubbed_http):
     stubbed_http.space_id = "partagé"
 
     from api.sync_peers import pull_from_peer
-    report = pull_from_peer("http://peer.test:8000")
+    report = pull_from_peer("http://127.0.0.1:8000")
     assert report["rows_created"] >= 1
 
 
@@ -262,7 +262,7 @@ def test_pull_refuses_a_space_we_never_joined_when_not_virgin(client, peer, stub
     stubbed_http.space_id = "le-sien"
 
     from api.sync_peers import pull_from_peer
-    assert pull_from_peer("http://peer.test:8000")["skipped"] == "no_space"
+    assert pull_from_peer("http://127.0.0.1:8000")["skipped"] == "no_space"
 
 
 def test_virgin_install_bootstraps_the_space_then_forgets_the_hint(client, peer, stubbed_http):
@@ -284,7 +284,7 @@ def test_virgin_install_bootstraps_the_space_then_forgets_the_hint(client, peer,
     finally:
         conn.close()
 
-    report = pull_from_peer("http://peer.test:8000")
+    report = pull_from_peer("http://127.0.0.1:8000")
     assert report["rows_created"] >= 1
 
     conn = _conn()
@@ -777,3 +777,136 @@ def test_pairing_denied_and_key_optout(client, monkeypatch):
 def _offer_pub_from_qr(qr: str) -> str:
     # QR wire form: "v|offer_pub_b64|secret_b64|addrs"
     return qr.split("|")[1]
+
+
+# ── Transport chiffré + épinglage du certificat (vrai TLS, sans stub) ────────
+# Ici on ne stubbe PAS le réseau : un vrai serveur HTTPS auto-signé tourne sur la
+# boucle locale, pour prouver que le tir refuse le clair réseau, épingle au 1er
+# contact (TOFU) et refuse un certificat qui a changé.
+
+def _make_self_signed(tmp_dir):
+    import datetime
+    import hashlib as _h
+    import ipaddress
+
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.x509.oid import NameOID
+
+    key = ec.generate_private_key(ec.SECP256R1())
+    subj = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "test peer")])
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cert = (
+        x509.CertificateBuilder().subject_name(subj).issuer_name(subj)
+        .public_key(key.public_key()).serial_number(x509.random_serial_number())
+        .not_valid_before(now - datetime.timedelta(days=1))
+        .not_valid_after(now + datetime.timedelta(days=3650))
+        .add_extension(x509.SubjectAlternativeName(
+            [x509.IPAddress(ipaddress.ip_address("127.0.0.1"))]), critical=False)
+        .sign(key, hashes.SHA256())
+    )
+    certfile = Path(tmp_dir) / "c.pem"
+    keyfile = Path(tmp_dir) / "k.pem"
+    certfile.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+    keyfile.write_bytes(key.private_bytes(
+        serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8,
+        serialization.NoEncryption()))
+    fp = _h.sha256(cert.public_bytes(serialization.Encoding.DER)).hexdigest()
+    return str(certfile), str(keyfile), fp
+
+
+import contextlib  # noqa: E402
+
+
+@contextlib.contextmanager
+def _tls_peer_server(store, certfile, keyfile, space_id=None):
+    import http.server
+    import ssl as _ssl
+    import threading
+    from urllib.parse import parse_qs, urlparse
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            if self.path.startswith("/sync/status"):
+                body = json.dumps({"device_id": store.sync_device_id(),
+                                   "space_id": space_id}).encode()
+            elif self.path.startswith("/sync/changes"):
+                q = parse_qs(urlparse(self.path).query)
+                since = int(q.get("since", ["0"])[0])
+                limit = int(q.get("limit", ["5000"])[0])
+                body = store.sync_changes_since(since, limit).encode()
+            else:
+                self.send_response(404)
+                self.end_headers()
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
+    ctx.load_cert_chain(certfile, keyfile)
+    srv.socket = ctx.wrap_socket(srv.socket, server_side=True)
+    t = threading.Thread(target=srv.serve_forever, daemon=True)
+    t.start()
+    try:
+        yield f"https://127.0.0.1:{srv.server_address[1]}"
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
+def test_pull_refuses_cleartext_to_a_network_peer(client):
+    from api.sync_peers import pull_from_peer
+    rep = pull_from_peer("http://192.168.1.50:8000")
+    assert rep["skipped"] == "cleartext_network_peer"
+
+
+def test_pull_over_tls_pins_the_cert_on_first_contact(client, peer, tmp_path):
+    store, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('pt-1','via tls','test')", [])
+    certfile, keyfile, fp = _make_self_signed(tmp_path)
+    from api.sync_peers import get_peer_cert, pull_from_peer
+    with _tls_peer_server(store, certfile, keyfile) as base:
+        rep = pull_from_peer(base)
+    assert rep["peer_device"] == store.sync_device_id()
+    assert rep["rows_created"] >= 1
+    # TOFU: l'empreinte présentée est mémorisée pour ce pair.
+    assert get_peer_cert(store.sync_device_id()) == fp
+
+
+def test_pull_refuses_a_changed_cert(client, peer, tmp_path):
+    store, gate = peer
+    gate.execute(
+        "INSERT INTO inbox (id, content, source) VALUES ('pt-2','ne passe pas','test')", [])
+    certfile, keyfile, _fp = _make_self_signed(tmp_path)
+    from api.sync_peers import pull_from_peer, set_peer_cert
+    set_peer_cert(store.sync_device_id(), "0" * 64)  # une empreinte différente
+    with _tls_peer_server(store, certfile, keyfile) as base:
+        rep = pull_from_peer(base)
+    assert rep["skipped"] == "cert_mismatch"
+    conn = _conn()
+    try:
+        assert conn.execute(
+            "SELECT count(*) FROM inbox WHERE id='pt-2'").fetchone()[0] == 0
+    finally:
+        conn.close()
+
+
+def test_pull_with_known_pin_refuses_before_any_request(client, peer, tmp_path):
+    """Avec l'empreinte déjà connue (hint mDNS), le mauvais certificat est
+    refusé au handshake — le jeton ne part jamais."""
+    store, _gate = peer
+    certfile, keyfile, _fp = _make_self_signed(tmp_path)
+    from api.sync_peers import pull_from_peer, set_peer_cert
+    set_peer_cert(store.sync_device_id(), "0" * 64)
+    with _tls_peer_server(store, certfile, keyfile) as base:
+        rep = pull_from_peer(base, peer_device_hint=store.sync_device_id())
+    assert rep["skipped"] == "cert_mismatch"

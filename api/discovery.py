@@ -72,7 +72,13 @@ def _self_device_id() -> str | None:
 
 
 async def start_advertising(port: int | None = None) -> AsyncZeroconf | None:
-    port = port or int(os.environ.get("SYNAPSE_API_PORT", "8000"))
+    # On annonce le port CHIFFRÉ : c'est la seule face réseau du backend depuis
+    # que le clair est rebindé sur la boucle locale. Les pairs (et le joiner)
+    # composent donc un https://ip:8443 épinglable, jamais un http://ip:8000 qui
+    # n'écoute plus sur l'interface réseau et serait lisible par tout le Wi-Fi.
+    if port is None:
+        from api.tls import tls_port
+        port = tls_port()
     hostname = socket.gethostname().split(".")[0]
     ip = _local_ip()
     props = {"version": APP_VERSION, "host": hostname}
@@ -129,7 +135,9 @@ async def _resolve_peer(zc, service_type: str, name: str) -> None:
         return  # our own advertisement echoed back
     _PEERS[name] = {
         "name": name,
-        "url": f"http://{addresses[0]}:{info.port}",
+        # Le port annoncé est celui du TLS (start_advertising) : lien chiffré,
+        # épinglé côté tireur par l'empreinte du certificat.
+        "url": f"https://{addresses[0]}:{info.port}",
         "device_id": dev,
         "space_id": props.get("space_id") or None,
         "host": props.get("host"),

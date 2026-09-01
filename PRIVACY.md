@@ -68,10 +68,16 @@ point : elles sont publiées sur anthropic.com.
 ### La synchronisation entre tes appareils
 
 Ton téléphone et ton ordinateur échangent directement, sur ton réseau Wi-Fi,
-sans passer par aucun serveur. Cet échange est protégé par un jeton d'accès
-propre à ton installation, mais **il n'est pas chiffré** : sur un réseau que tu
-ne contrôles pas, quelqu'un qui écoute ce réseau pourrait en lire le contenu.
-Utilise sinam sur un réseau de confiance, pas sur un Wi-Fi public.
+sans passer par aucun serveur. Depuis la version 1.2, cet échange est **chiffré**
+de bout en bout entre tes deux appareils, en plus du jeton d'accès propre à ton
+installation. Ce chiffrement repose sur l'empreinte que tes appareils se sont
+donnée au moment de l'appairage : ton téléphone ne parle qu'à un ordinateur dont
+il reconnaît l'empreinte, et refuse toute connexion qu'il ne peut pas chiffrer.
+
+Avant la version 1.2, cet échange se faisait en clair : sur un réseau que tu ne
+contrôlais pas, quelqu'un qui l'écoutait pouvait en lire le contenu. Si tu as
+utilisé sinam sur un Wi-Fi partagé avant cette version, considère que ce qui y a
+transité a pu être vu.
 
 ### La sauvegarde Android
 

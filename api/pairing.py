@@ -32,6 +32,7 @@ from sinam_core import (
     CodePairing,
     PairingSession,
     pairing_code_confirm_verify,
+    pairing_open,
     pairing_seal,
 )
 
@@ -166,10 +167,16 @@ def submit_code_request(msg_joiner: bytes, name: str, platform: str) -> dict:
                 "msg": base64.b64encode(msg_member).decode("ascii")}
 
 
-def confirm_code_request(request_id: str, mac: bytes) -> dict:
+def confirm_code_request(request_id: str, mac: bytes,
+                         peer_cert_sealed: str | None = None) -> dict:
     """Verify the joiner's key-confirmation MAC. Success promotes
     the request into the human-approval queue; a mismatch burns one attempt
-    and three misses kill the code (the user must display a new one)."""
+    and three misses kill the code (the user must display a new one).
+
+    `peer_cert_sealed` : l'empreinte du certificat du joiner, scellée sous la
+    clé SPAKE2. On ne l'ouvre qu'APRÈS avoir vérifié le MAC (donc que le joiner
+    connaît le code) et on l'épingle pour lui, afin que notre futur tir dans
+    l'autre sens n'ait pas de fenêtre TOFU."""
     global _code_offer
     with _lock:
         _prune(_now())
@@ -187,7 +194,29 @@ def confirm_code_request(request_id: str, mac: bytes) -> dict:
                     _code_offer = None
             raise _PairingError(403, "confirmation failed")
         req["status"] = "pending"
+        if peer_cert_sealed:
+            _adopt_peer_fingerprint(req, peer_cert_sealed)
         return {"status": "pending"}
+
+
+def _adopt_peer_fingerprint(req: dict, sealed: str) -> None:
+    """Ouvrir l'empreinte scellée par le joiner (authentifiée par la clé SPAKE2 :
+    un relais qui ignore le code ne peut ni la lire ni la remplacer) et
+    l'épingler pour son device_id. Best-effort — jamais faire échouer
+    l'appairage là-dessus ; le TOFU reste le filet. Ne jamais logger la charge."""
+    try:
+        import json
+
+        from api import sync_peers
+
+        opened = bytes(pairing_open(
+            req["channel_key"], req["aad_a"], req["aad_b"], sealed))
+        data = json.loads(opened)
+        dev, fp = data.get("device_id"), data.get("cert_sha256")
+        if dev and fp:
+            sync_peers.set_peer_cert(str(dev), str(fp))
+    except Exception:  # noqa: BLE001 — l'appairage prime, le TOFU couvre le reste
+        pass
 
 
 def submit_request(accept_pub: bytes, name: str, platform: str,

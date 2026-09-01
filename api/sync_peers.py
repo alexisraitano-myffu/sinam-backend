@@ -33,8 +33,13 @@ import time
 from urllib.parse import urlparse
 
 import requests
+import urllib3
 from fastapi import HTTPException
 from requests.adapters import HTTPAdapter
+
+# La session épinglée tourne en verify=False (l'assert_fingerprint fait le
+# contrôle) : on tait l'avertissement d'urllib3 qui, sinon, se répète à chaque tir.
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from core_store import get_store
 from db import first_row, get_connection
@@ -167,25 +172,25 @@ def set_peer_cert(device_id: str, fingerprint: str) -> None:
 
 class _FingerprintAdapter(HTTPAdapter):
     """Épingle l'empreinte SHA-256 du certificat au niveau du handshake TLS :
-    urllib3 lève AVANT d'envoyer la requête HTTP, donc un pair au mauvais
-    certificat ne reçoit jamais notre jeton. Pas de vérification de nom/CA :
-    le certificat est auto-signé et joint par IP, seule l'empreinte fait foi."""
+    urllib3 vérifie l'empreinte AVANT d'envoyer la requête HTTP, donc un pair au
+    mauvais certificat ne reçoit jamais notre jeton. Pas de vérification de
+    nom/CA (le certificat est auto-signé et joint par IP, la session tourne en
+    verify=False) : seule l'empreinte fait foi, comme l'épinglage mobile."""
 
     def __init__(self, fingerprint: str, **kw):
         self._fingerprint = fingerprint
         super().__init__(**kw)
 
     def init_poolmanager(self, *args, **kwargs):
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        kwargs["ssl_context"] = ctx
         kwargs["assert_fingerprint"] = self._fingerprint
         super().init_poolmanager(*args, **kwargs)
 
 
 def _pinned_session(fingerprint: str) -> requests.Session:
     s = requests.Session()
+    # verify=False coupe la vérification CA/nom (inutile ici) sans désactiver
+    # l'assert_fingerprint d'urllib3, qui reste le vrai contrôle.
+    s.verify = False
     s.mount("https://", _FingerprintAdapter(fingerprint))
     return s
 

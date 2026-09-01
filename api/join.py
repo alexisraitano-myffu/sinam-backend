@@ -21,7 +21,12 @@ import time
 import requests
 import urllib3
 
-from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_open
+from sinam_core import (
+    CodePairing,
+    pairing_code_confirm_mac,
+    pairing_open,
+    pairing_seal,
+)
 
 from db import get_connection
 
@@ -70,6 +75,25 @@ def is_virgin() -> bool:
         return n_inbox == 0 and n_entities == 0
     finally:
         conn.close()
+
+
+def _sealed_self_fingerprint(key: bytes, msg_m: bytes, msg_j: bytes) -> str | None:
+    """Notre empreinte de certificat + notre device_id, scellés sous la clé
+    SPAKE2 (mêmes AAD que la charge du membre : sa msg d'abord, la nôtre
+    ensuite). Best-effort : sans certificat lisible on renvoie None et le membre
+    retombe sur le TOFU. Ne jamais logger la charge."""
+    try:
+        from api.tls import fingerprint as _cert_fp
+        from core_store import get_store
+
+        fp = _cert_fp()
+        dev = get_store().sync_device_id()
+        if not fp or not dev:
+            return None
+        blob = json.dumps({"device_id": dev, "cert_sha256": fp}).encode("utf-8")
+        return pairing_seal(key, msg_m, msg_j, blob)
+    except Exception:  # noqa: BLE001 — jamais bloquer l'appairage là-dessus
+        return None
 
 
 def start_join(code: str, url: str | None) -> dict:
@@ -133,11 +157,17 @@ def _try_member(code: str, base: str) -> str:
     msg_m = base64.b64decode(data["msg"])
     key = bytes(session.finish(msg_m))
     mac = bytes(pairing_code_confirm_mac(key, msg_m, msg_j))
+    # Notre empreinte de certificat, scellée sous la clé SPAKE2 : le membre
+    # l'ouvre après vérif du MAC et l'épingle pour nous, pour que SON futur tir
+    # vers nous n'ait pas de fenêtre TOFU. Authentifiée par la clé, donc un
+    # relais qui ignore le code ne peut ni la lire ni la remplacer.
+    sealed_fp = _sealed_self_fingerprint(key, msg_m, msg_j)
     try:
         c = requests.post(
             f"{base}/pair/confirm-code",
             json={"request_id": request_id,
-                  "mac": base64.b64encode(mac).decode("ascii")},
+                  "mac": base64.b64encode(mac).decode("ascii"),
+                  "peer_cert_sealed": sealed_fp},
             timeout=5, verify=False,
         )
     except requests.RequestException:

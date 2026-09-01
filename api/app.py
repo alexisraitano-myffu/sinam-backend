@@ -507,6 +507,11 @@ class PairCodeRequestIn(BaseModel):
 class PairCodeConfirmIn(BaseModel):
     request_id: str
     mac: str                     # key-confirmation HMAC (base64)
+    # L'empreinte du certificat du joiner, scellée sous la clé SPAKE2 (échange
+    # bidirectionnel : le membre l'épingle pour clore la fenêtre TOFU de son
+    # propre tir vers le joiner). Optionnel : un joiner d'une version antérieure
+    # ne l'envoie pas, le membre retombe sur le TOFU au premier contact.
+    peer_cert_sealed: str | None = None
 
 
 class PairJoinIn(BaseModel):
@@ -846,7 +851,8 @@ def pair_confirm_code(body: PairCodeConfirmIn):
         mac = _base64.b64decode(body.mac)
     except Exception:
         raise HTTPException(status_code=422, detail="mac not base64")
-    return _pair_guard(lambda: _pairing.confirm_code_request(body.request_id, mac))
+    return _pair_guard(lambda: _pairing.confirm_code_request(
+        body.request_id, mac, body.peer_cert_sealed))
 
 
 @app.post("/pair/join", dependencies=[Depends(require_auth)])

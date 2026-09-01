@@ -900,6 +900,58 @@ def test_pull_refuses_a_changed_cert(client, peer, tmp_path):
         conn.close()
 
 
+def test_code_pairing_seeds_the_joiner_fingerprint(client):
+    """L'appairage Mac↔Mac transmet AUSSI l'empreinte du joiner au membre
+    (scellée sous la clé SPAKE2), qui l'épingle : pas de fenêtre TOFU pour le
+    tir que le membre fera dans l'autre sens."""
+    import base64 as _b64
+
+    from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_seal
+
+    from api import pairing, sync_peers
+
+    code = pairing.start_code_offer()["code"]
+    joiner = CodePairing(code)
+    msg_j = bytes(joiner.msg())
+    resp = pairing.submit_code_request(msg_j, "Autre Mac", "desktop")
+    request_id = resp["request_id"]
+    msg_m = _b64.b64decode(resp["msg"])
+    key = bytes(joiner.finish(msg_m))
+    mac = bytes(pairing_code_confirm_mac(key, msg_m, msg_j))
+    fp = "ab" * 32  # 64 hex chars
+    blob = json.dumps({"device_id": "joiner-dev-xyz", "cert_sha256": fp}).encode()
+    sealed = pairing_seal(key, msg_m, msg_j, blob)
+
+    pairing.confirm_code_request(request_id, mac, sealed)
+    assert sync_peers.get_peer_cert("joiner-dev-xyz") == fp
+
+
+def test_code_pairing_rejects_a_tampered_fingerprint(client):
+    """Une empreinte scellée sous une AUTRE clé (relais qui ignore le code) ne
+    s'ouvre pas : rien n'est épinglé, l'appairage n'échoue pas pour autant."""
+    import base64 as _b64
+
+    from sinam_core import CodePairing, pairing_code_confirm_mac, pairing_seal
+
+    from api import pairing, sync_peers
+
+    code = pairing.start_code_offer()["code"]
+    joiner = CodePairing(code)
+    msg_j = bytes(joiner.msg())
+    resp = pairing.submit_code_request(msg_j, "Autre Mac", "desktop")
+    request_id = resp["request_id"]
+    msg_m = _b64.b64decode(resp["msg"])
+    key = bytes(joiner.finish(msg_m))
+    mac = bytes(pairing_code_confirm_mac(key, msg_m, msg_j))
+    # Scellé sous une clé étrangère (un relais qui ne connaît pas le code).
+    wrong_key = bytes(CodePairing("000000").msg()) + bytes(16)
+    blob = json.dumps({"device_id": "spoofed", "cert_sha256": "cd" * 32}).encode()
+    sealed = pairing_seal(wrong_key[:32], msg_m, msg_j, blob)
+
+    pairing.confirm_code_request(request_id, mac, sealed)  # MAC valide, scellé non
+    assert sync_peers.get_peer_cert("spoofed") is None
+
+
 def test_pull_with_known_pin_refuses_before_any_request(client, peer, tmp_path):
     """Avec l'empreinte déjà connue (hint mDNS), le mauvais certificat est
     refusé au handshake — le jeton ne part jamais."""

@@ -5490,6 +5490,17 @@
           "mac": {
             "type": "string",
             "title": "Mac"
+          },
+          "peer_cert_sealed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peer Cert Sealed"
           }
         },
         "type": "object",

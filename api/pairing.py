@@ -107,10 +107,40 @@ def _local_addrs() -> list[str]:
     return addrs
 
 
+def _qr_addrs() -> list[str]:
+    """Les adresses du QR, augmentées de l'empreinte du certificat chiffré.
+
+    L'empreinte voyage ICI, dans le QR, qui est le seul canal hors-bande
+    authentique de l'appairage (montré à l'écran, lu par la caméra ; l'attaquant
+    du réseau ne le touche pas). Le joiner l'épingle AVANT de frapper à la porte,
+    donc sa toute première poignée https réussit au lieu de buter sur un
+    certificat qu'il ne sait pas encore reconnaître. Sans elle, un appareil neuf
+    échouait à rejoindre : https était refusé (certificat inconnu), et le clair
+    réseau l'est désormais aussi (boucle locale seulement). L'empreinte scellée
+    dans la charge reste, mais elle n'arrive qu'APRÈS approbation, trop tard pour
+    la poignée ; annoncée en mDNS elle ne prouverait rien, n'importe qui annonce
+    la sienne.
+
+    Sentinelle `fp:<sha256>`, à part de `_local_addrs()` : elle ne doit jamais
+    se retrouver dans la liste des peers (`_build_payload`), qui ne contient que
+    des URLs joignables.
+    """
+    addrs = _local_addrs()
+    if os.environ.get("SYNAPSE_TLS_DISABLE"):
+        return addrs
+    from api.tls import cert_path, fingerprint as _cert_fingerprint
+
+    if cert_path().exists():
+        fp = _cert_fingerprint()
+        if fp:
+            addrs.append(f"fp:{fp}")
+    return addrs
+
+
 def start_offer() -> dict:
     """Begin showing a QR (member side). Replaces any prior offer. Returns
     `{qr}` — render `qr` as a QR code for the joiner to scan."""
-    session, qr = PairingSession.offer(_local_addrs())
+    session, qr = PairingSession.offer(_qr_addrs())
     with _lock:
         _prune(_now())
         pub = session.offer_pub()

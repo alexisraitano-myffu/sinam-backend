@@ -77,3 +77,23 @@ def test_the_pairing_offer_leads_with_the_encrypted_address(home, monkeypatch):
     monkeypatch.setenv("SYNAPSE_TLS_DISABLE", "1")
     addrs = pairing._local_addrs()
     assert addrs and all(a.startswith("http://") for a in addrs)
+
+
+def test_the_qr_carries_the_certificate_fingerprint(home, monkeypatch):
+    """L'empreinte voyage dans le QR pour que le joiner épingle AVANT le premier
+    contact — sinon sa première poignée https bute sur un certificat inconnu et
+    l'appairage d'un appareil neuf échoue. Elle reste HORS de `_local_addrs()` :
+    ces adresses-là repartent dans la liste des peers scellée à l'appairage, où
+    une sentinelle n'aurait rien à faire."""
+    from api import pairing, tls
+
+    tls.ensure_cert()
+    fp = tls.fingerprint()
+
+    assert f"fp:{fp}" in pairing._qr_addrs(), "la sentinelle d'empreinte est dans le QR"
+    assert all(not a.startswith("fp:") for a in pairing._local_addrs()), \
+        "l'empreinte ne doit pas entrer dans les adresses réutilisées comme peers"
+
+    # Sans certificat à épingler, pas de sentinelle : rien à annoncer.
+    monkeypatch.setenv("SYNAPSE_TLS_DISABLE", "1")
+    assert all(not a.startswith("fp:") for a in pairing._qr_addrs())

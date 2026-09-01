@@ -136,24 +136,44 @@ def decouper(cas: dict[str, dict], ids: list[str], part_test: float,
     Le test se compose donc des cas SANS frontière, tirés à proportion par jeu et
     par langue pour que la répartition du test ressemble à celle du corpus.
     """
-    eligibles = [i for i in ids if not cas[i].get("frontiere")]
+    # ⚠ LA DÉCOUPE SE FAIT PAR TEXTE, PAS PAR IDENTIFIANT. Le corpus réutilise
+    # volontairement la même capture sous plusieurs identifiants pour éprouver
+    # des axes différents : « acheter du pain » est à la fois `p1` et
+    # `g-ephemeral-trivial`. Séparer les identifiants laisserait donc le MÊME
+    # texte des deux côtés, et le modèle retrouverait au test une phrase vue à
+    # l'entraînement. Mesuré le 2026-09-01 : six textes fuyaient ainsi.
+    groupes: dict[str, list[str]] = collections.defaultdict(list)
+    for i in ids:
+        groupes[cas[i]["text"].strip().lower()].append(i)
+    # Un groupe n'est éligible au test que si AUCUN de ses membres ne porte de
+    # frontière : les deux côtés d'une frontière doivent rester à
+    # l'entraînement, et un texte partagé emmènerait le reste avec lui.
+    eligibles = [t for t, membres in groupes.items()
+                 if not any(cas[i].get("frontiere") for i in membres)]
     vise = round(len(ids) * part_test)
     strates: dict[tuple, list[str]] = collections.defaultdict(list)
-    for i in eligibles:
-        strates[(cas[i].get("set_"), cas[i].get("language") or "fr")].append(i)
+    for t in eligibles:
+        tete = sorted(groupes[t])[0]
+        strates[(cas[tete].get("set_"), cas[tete].get("language") or "fr")].append(t)
     rng = random.Random(graine)
     test: set[str] = set()
+    n_eligibles = sum(len(groupes[t]) for t in eligibles)
+
+    def prendre(textes: list[str]) -> None:
+        for t in textes:
+            test.update(groupes[t])
+
     # Un tour par strate, à proportion, puis complément au fil de l'eau : une
     # strate de trois cas ne doit pas disparaître du test par arrondi.
     for cle in sorted(strates, key=lambda k: (str(k[0]), str(k[1]))):
         pool = sorted(strates[cle])
         rng.shuffle(pool)
-        n = max(1, round(len(pool) * vise / max(1, len(eligibles))))
-        test.update(pool[:n])
-    reste = sorted(set(eligibles) - test)
+        n = max(1, round(len(pool) * vise / max(1, n_eligibles)))
+        prendre(pool[:n])
+    reste = [t for t in sorted(eligibles) if not (set(groupes[t]) & test)]
     rng.shuffle(reste)
     while len(test) < vise and reste:
-        test.add(reste.pop())
+        prendre([reste.pop()])
     return set(ids) - test, test
 
 

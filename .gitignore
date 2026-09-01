@@ -49,3 +49,5 @@ scripts/entrainement/prompts-courts/
 # Poids LoRA : ~100 Mo de binaire, refabricables depuis le jeu
 scripts/entrainement/adaptateur/
 scripts/entrainement/*.log
+# Modele fusionne : 1,6 Go de poids, refabricable par `mlx_lm fuse`
+scripts/entrainement/modele-fusionne/

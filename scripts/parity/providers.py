@@ -229,14 +229,37 @@ def _call_mlx(model: str, system_blocks: list[str], user: str, max_tokens: int,
     lancé avec `--model`. Mesuré le 2026-09-01 : le serveur RÉSOUT le champ
     `model` de la requête, et un nom fantaisiste le fait partir chercher un
     dépôt sur Hugging Face, puis répondre 404 après un aller-retour réseau. Il
-    faut donc passer l'identifiant exact avec lequel le serveur a été lancé.
+    faut donc passer l'identifiant exact du modèle à servir.
 
-    ⚠ En revanche l'ADAPTATEUR, lui, ne se choisit que par `--adapter-path` au
-    lancement, et rien dans la réponse ne dit lequel a répondu. Deux
-    adaptateurs successifs sur le même modèle rendent des baselines
-    d'empreintes IDENTIQUES : l'empreinte certifie le prompt, jamais les poids.
-    Noter le lancement à côté de la baseline, sinon deux mesures d'entraînements
-    différents deviennent indiscernables.
+    ⚠⚠ ET `--adapter-path` NE SERT À RIEN, en silence. Il a coûté deux mesures
+    fausses le 2026-09-01 : un modèle entraîné et le modèle nu ont rendu
+    93 sorties identiques au caractère près, ce qui était le seul indice.
+    La cause est dans `mlx_lm/server.py` (0.31.3), et c'est un défaut de leur
+    code, pas du nôtre :
+
+        model_path   = self._model_map.get(model_path, model_path)
+        adapter_path = self._adapter_map.get(model_path, adapter_path)
+
+    L'adaptateur du CLI est rangé sous la clé « default_model », mais la
+    recherche se fait APRÈS que `model_path` a été remplacé par le vrai dépôt.
+    La clé ne tombe donc jamais, quel que soit le `model` de la requête, et
+    aucune ligne de log ni aucun champ de réponse ne le signale.
+
+    LA SEULE FAÇON FIABLE de mesurer un entraînement est donc de FUSIONNER
+    l'adaptateur dans un modèle à part entière, et de servir ce dossier :
+
+        python -m mlx_lm fuse --model <base> --adapter-path <adaptateur> \
+            --save-path <dossier>
+        python -m mlx_lm.server --model <dossier chemin absolu>
+
+    Le nom du modèle dans la baseline devient alors le chemin du dossier, donc
+    la mesure dit d'elle-même quels poids ont répondu. (Le champ `adapters`
+    dans le corps de la requête marche aussi, mais il laisse la même ambiguïté
+    dans la baseline.)
+
+    ⚠ Reste vrai dans tous les cas : rien dans la réponse ne dit quels poids
+    ont répondu, et l'empreinte de la baseline certifie le PROMPT, jamais les
+    poids. Deux entraînements différents rendent des empreintes IDENTIQUES.
     """
     payload = {
         "model": model,

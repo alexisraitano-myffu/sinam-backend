@@ -1,0 +1,96 @@
+# La suite Python, lancée par quelqu'un d'autre que celui qui vient d'écrire le code.
+#
+# Pourquoi ce fichier existe : un test correct et rouge depuis deux jours a été
+# découvert par une relecture, pas par un lancement. Il attrapait un vrai défaut
+# (une liste d'ordre d'écriture qui avait cessé de suivre les axes du corpus,
+# donc valider une étiquette en supprimait d'autres en silence). Un garde-fou
+# que personne n'écoute ne garde rien.
+#
+# ⚠ La suite ne tourne pas sans le cœur : `db/__init__.py` importe `sinam_core`
+# à la racine, donc presque tous les tests s'effondrent sans la roue. Elle est
+# CONSTRUITE ici depuis `main` du dépôt voisin, et pas récupérée depuis la
+# release roulante, exprès : ce qu'on veut savoir, c'est que le backend marche
+# avec le cœur d'aujourd'hui. Prendre un artefact publié rejouerait exactement
+# le défaut qui a coûté deux jours de faux vert, une roue en retard sur le
+# dépôt validant un routage que le cœur n'appliquait plus.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  # Les fichiers du modèle d'embedding, que le cœur charge à l'exécution. Même
+  # dépôt que la CI du cœur, pour que les deux mesurent le même vecteur.
+  MODEL_REPO: qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q
+  MODEL_DIR: paraphrase-multilingual-MiniLM-L12-v2-onnx-Q
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Le cœur est un dépôt VOISIN, pas une dépendance déclarée. Il est public,
+      # donc pas de secret à poser ici.
+      - name: Checkout du cœur
+        uses: actions/checkout@v4
+        with:
+          repository: alexisraitano-myffu/sinam-core
+          path: core
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: core
+
+      - name: Cache du modèle d'embedding
+        id: cache-modele
+        uses: actions/cache@v4
+        with:
+          path: ~/.synapse/models
+          key: modele-v1-${{ env.MODEL_DIR }}
+
+      - name: Modèle d'embedding
+        if: steps.cache-modele.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.synapse/models/"$MODEL_DIR"
+          for f in model_optimized.onnx tokenizer.json config.json \
+                   special_tokens_map.json tokenizer_config.json; do
+            curl -sSfL "https://huggingface.co/$MODEL_REPO/resolve/main/$f" \
+              -o ~/.synapse/models/"$MODEL_DIR/$f"
+          done
+
+      # Les prompts sont de la DONNÉE que le cœur lit dans SYNAPSE_HOME/prompts
+      # à l'exécution. Sans eux, la construction des paramètres d'appel échoue.
+      # En local, ce chemin sert aussi à repérer un déploiement en retard ; ici
+      # on le pointe sur ceux du dépôt, sinon la CI mesurerait la machine et
+      # non le code.
+      - name: Prompts
+        run: |
+          mkdir -p ~/.synapse/prompts
+          cp core/prompts/*.md core/prompts/manifest.json ~/.synapse/prompts/
+
+      - name: Dépendances
+        run: |
+          python -m pip install --upgrade pip maturin
+          pip install -r requirements.txt
+
+      - name: Roue du cœur, construite depuis main
+        run: |
+          maturin build --release -m core/crates/sinam-core-py/Cargo.toml
+          pip install --force-reinstall --no-deps core/target/wheels/*.whl
+
+      # Sans clé d'API, les tests qui appellent le modèle se sautent d'eux-mêmes
+      # (`pytest.mark.skipif`). Aucune clé n'est posée ici et il ne faut pas en
+      # poser : la suite doit rester exécutable par n'importe qui sur un fork.
+      - name: pytest
+        run: pytest -q

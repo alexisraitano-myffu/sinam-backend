@@ -89,11 +89,6 @@ launchctl kickstart -k gui/$(id -u)/fr.myffu.synapse.digest                     
 launchctl bootout   gui/$(id -u)/fr.myffu.synapse.digest                                 # disable
 ```
 
-**Run web visualizer** (knowledge graph at http://127.0.0.1:8080):
-```bash
-python visualizer/app.py
-```
-
 **Seed synthetic demo data for the living map** (dogfood: ~95 entities in 10 communities + 50 notes, varied `memory_strength`; idempotent, test data only, writes into `SYNAPSE_HOME`):
 ```bash
 python -m scripts.seed_demo_map            # (re)seed · --clean removes all synthetic rows
@@ -356,7 +351,7 @@ FastAPI app for the mobile/desktop clients (run `python -m api`, port 8000), **8
 
 **Fully local, no PyTorch, no API call.** The embedder runs **inside the Rust core** (`sinam_core.Embedder`, ONNX via fastembed-rs) with `paraphrase-multilingual-MiniLM-L12-v2` (384-dim, ~50 languages incl. French: set via `EMBEDDING_MODEL` in `config.py`). The model files are **data** in `~/.synapse/models/…` (not compiled in, not auto-downloaded), loaded once per process; vectors are bit-identical to the core's own internal embeds. `embeddings.py` is now a thin **shim**: `embed_text(text, client=None)` delegates to the core and returns an L2-normalized serialized vector; the `client` arg is ignored (kept for backward compat with the old API-based signature). Run `python reembed.py` after changing `EMBEDDING_MODEL` to regenerate existing vectors.
 
-Vectors are normalized so the sqlite-vec `vec0` **L2 distance** stays in [0, 2] and is monotonic with cosine: keeping the `score = 1 - distance/2` mapping valid. With this model, related notes land ~0.9 and unrelated ~1.4 (the visualizer edge threshold is 1.1).
+Vectors are normalized so the sqlite-vec `vec0` **L2 distance** stays in [0, 2] and is monotonic with cosine: keeping the `score = 1 - distance/2` mapping valid. With this model, related notes land ~0.9 and unrelated ~1.4.
 
 **Long texts are chunked.** The model truncates at 128 tokens, and that is the right granule (a single 512-token vector measurably dilutes: head AND tail queries drop). Texts beyond ~128 tokens (weekly digests ~460, long captures, resource summaries) embed as **one vector per ~128-token window**: notes get one vec0 row per chunk (key `uuid`, then `uuid#k`; the core's `search_notes` dedupes to each note's best chunk, so callers still see one hit per note), resources concatenate frames in their BLOB (scorer takes the best frame). Host writers use `embeddings.embed_text_chunks` + `Storage.upsert_note_vectors` (the sync receiver re-embed does). Entities stay single-vector by design: the composite text is identity-first and 43/44 fit in one window. After changing chunking or the model, run `python reembed.py` (notes + entities + resources).
 
@@ -379,7 +374,7 @@ Tables:
 - `project_entries`, `project_state`, `project_state_versions`: project aggregate
 - `knowledge_graph`: legacy, unused
 
-vec0 virtual tables don't support `COUNT(*)`; count by point-looking-up each rowid (see `visualizer/app.py::get_stats`).
+vec0 virtual tables don't support `COUNT(*)`; count by point-looking-up each rowid.
 
 ### Config (`config.py`)
 
@@ -418,10 +413,6 @@ nowhere here — the same drift class as the endpoint count. Grouped by what the
 this list, so it is the next thing that will drift.
 
 **Anthropic client (`anthropic_client.py`).** *Single* place that builds the Anthropic client: `cycle.py`, `digest.py`, `api/app.py` all call `get_client()`/`get_client_or_none()`. A normal key (`sk-ant-…`) → direct. A beta **fuel token** (`syn-fuel-…`, the closed-beta proxy that lends testers my credits) → client pointed at the fuel proxy with the token in an `x-synapse-token` header and a placeholder api_key; the real key lives only on the Cloudflare Worker (separate repo `synapse-fuel-proxy/`, **deployed** at `synapse-fuel-proxy.alexis-raitano.workers.dev`). The proxy URL is baked in (`_DEFAULT_FUEL_BASE_URL`), overridable via `SYNAPSE_FUEL_BASE_URL` (set it empty to disable the fuel path). Only consulted for `syn-fuel-` tokens, so a normal key (Mac mini) is unaffected. Disposable by design: stop issuing fuel tokens and the seam is inert.
-
-### Visualizer (`visualizer/`)
-
-FastAPI app (`app.py`) serving `/api/nodes`, `/api/edges`, `/api/stats`, `/api/note/{id}`, backed by the same SQLite DB. It reads the `atomic_notes` (episodic) world. Edges are computed live from vector similarity (k-NN per note, L2 distance threshold 1.1). Static frontend is a D3.js force-directed graph (`static/graph.js`). Note: it does not yet render the entity graph: wiring that to `/api/nodes` is a natural next step.
 
 ## Clients
 

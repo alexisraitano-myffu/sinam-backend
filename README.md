@@ -107,11 +107,6 @@ python -m dream_cycle                # --dry-run / --verbose available
 python mcp_server/server.py
 ```
 
-**Web visualizer** (D3 knowledge graph at http://127.0.0.1:8080):
-```bash
-python visualizer/app.py
-```
-
 **Weekly digest** (condense the past and coming week into one durable note; the production trigger is a Monday-08h scheduled job, self-healed by the API if a run is missed):
 ```bash
 python -m dream_cycle.digest         # --dry-run to preview

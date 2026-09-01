@@ -42,6 +42,11 @@ SORTIE = _REPO / "scripts" / "entrainement" / "jeu"
 # celle qu'a produite le prompt qui tourne aujourd'hui, pour que le style des
 # champs non contraints soit homogène d'un exemple à l'autre.
 PRIORITE = [
+    # v35 est le prompt qu'on livre : ses sorties fixent le style des champs que
+    # le corpus n'affirme pas (résumé, owner, prédicat). Les passes qui la
+    # suivent ne servent qu'à couvrir les cas qu'elle a ratés.
+    "v35-release-495", "controle-mois-nu", "v34-cadrage-150",
+    "v33-sans-ephemere-495",
     "regles-v4-a", "regles-v4-b", "regles-v3-150", "regles-v2-150",
     "apres-reecriture-30-08", "apres-225-224", "ordinaire-apres-revue",
     "corpus-complet-20260828", "controle-3-correctifs", "controle-porte-et-graphe",

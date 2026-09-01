@@ -46,3 +46,6 @@ scripts/lang_snapshots/
 # Jeu d entrainement : derive des baselines, se regenere par script
 scripts/entrainement/jeu/
 scripts/entrainement/prompts-courts/
+# Poids LoRA : ~100 Mo de binaire, refabricables depuis le jeu
+scripts/entrainement/adaptateur/
+scripts/entrainement/*.log

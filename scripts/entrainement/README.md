@@ -13,9 +13,17 @@ Le corpus ne porte que des **assertions** (`note`, `kind`, `facts_min`,
 entraîner tel quel.
 
 Mais les baselines gardées stockent la sortie complète du modèle sous `parsed`.
-**444 des 495 cas ont déjà une réponse Haiku qui passe toutes leurs
+**459 des 496 cas ont déjà une réponse Haiku qui passe toutes leurs
 assertions.** Le script les récolte au lieu de repayer une passe : construire le
 jeu ne coûte aucun appel API.
+
+Les baselines sont lues dans l'ordre de `PRIORITE`, en tête de `construire.py`,
+et **cette liste est écrite à la main** : une passe absente de la liste est une
+passe invisible, sans un mot dans la sortie. Le 2026-09-01 la liste datait du
+matin et ignorait la passe de release de l'après-midi ; la récolte tirait donc
+son style de prompts déjà remplacés. L'ordre à tenir est celui-ci, du plus
+proche de la production au plus lointain : ajouter une passe EN TÊTE le jour où
+on la garde, sinon elle ne sert à rien.
 
 Une sortie n'est retenue que si `score.gaps()` la déclare sans écart **contre les
 étiquettes d'aujourd'hui**. Les `gaps` figés dans les fichiers de baseline ont
@@ -37,7 +45,7 @@ réduit pas en filtrant mieux, elle se réduit en étiquetant plus.
 ## Le prompt système, et pourquoi il est court par défaut
 
 `--systeme court` (défaut) ne met dans l'exemple que **l'entête et le bloc
-DATES** : 3 205 caractères pour la moitié note contre 19 786, 4 387 contre 16 859
+DATES** : 3 570 caractères pour la moitié note contre 20 142, 5 139 contre 17 803
 pour la moitié graphe.
 
 Ce que le système dit pendant l'entraînement est ce que le modèle apprend à
@@ -71,14 +79,14 @@ après entraînement demandera une vague de cas neufs, réservée à ça.
 
 ## Deux choses que ce jeu dit du corpus
 
-**Les 51 cas sans sortie propre sont les plus intéressants du corpus.** Haiku ne
+**Les 37 cas sans sortie propre sont les plus intéressants du corpus.** Haiku ne
 les a jamais passés, sur aucune passe. Soit l'étiquette est fausse, soit le
 modèle échoue vraiment. Les trier départage les deux, et c'est le seul endroit où
 une heure de relecture vaut une passe entière. Ils sont listés par le script et
 dans `jeu/provenance.json`.
 
 **La proportion de langues est l'a priori qu'on enseigne.** L'entraînement sort à
-271 fr / 79 en, soit 22 % d'anglais, contre la cible de 30 % que le corpus s'était
+278 fr / 84 en, soit 23 % d'anglais, contre la cible de 30 % que le corpus s'était
 donnée. Pour une suite de tests c'est sans effet ; dans des poids, ça enseigne
 que le français est le défaut.
 
@@ -86,7 +94,7 @@ que le français est le défaut.
 
 ```bash
 python -m scripts.entrainement.construire --ecrire   # récolte, aucun appel API
-python -m scripts.entrainement.vers_mlx              # 637 / 71 / 180
+python -m scripts.entrainement.vers_mlx              # 659 / 73 / 186
 ```
 
 Les deux moitiés sont mélangées dans le même jeu. La production les fait tourner
@@ -113,11 +121,11 @@ redevine pas :
 |---|---|
 | pic mémoire | **3,87 Go** sur les 8 de la machine, avec `--grad-checkpoint` |
 | vitesse | ~10 s l'itération, donc **environ 1 h 45 pour 600** |
-| une évaluation | ~37 s sur 8 lots |
+| une évaluation | **113 s** sur les 25 lots du défaut, et il y en a 13 : compter **~25 min** d'évaluation en plus des 1 h 45 |
 | perte de validation | **1,217 au départ, 0,838 à la 20ᵉ** |
 
 La perte tombe donc très vite, ce qui décide de deux choses. `--iters 600` fait
-un peu moins de quatre passages sur les 637 exemples : au-delà, avec un jeu de
+un peu moins de quatre passages sur les 659 exemples : au-delà, avec un jeu de
 cette taille, on apprend le jeu et plus la tâche. Et l'évaluation toutes les 50
 itérations n'est pas du confort, c'est ce qui permet de **choisir le point
 d'arrêt après coup** au lieu de croire au dernier. `--save-every 100` garde les
@@ -125,7 +133,7 @@ points intermédiaires pour ça.
 
 Le reste des valeurs est un point de départ, pas une mesure. La seule autre que
 la machine décide, c'est `--max-seq-length 2048`, parce que la plus longue
-conversation du jeu fait environ 1 430 tokens.
+conversation du jeu fait environ 1 616 tokens.
 
 Deux drapeaux ne sont pas négociables :
 
@@ -148,9 +156,14 @@ python -m mlx_lm.server --model mlx-community/Qwen2.5-3B-Instruct-4bit \
   --adapter-path scripts/entrainement/adaptateur
 ```
 
-Il reste à écrire le provider correspondant dans `scripts/parity/providers.py`.
-Il n'existe pas encore : les trois dialectes actuels sont `anthropic`, `ollama`
-et `gemini`, et aucun ne sait parler à un adaptateur local.
+Le provider `mlx:` existe dans `scripts/parity/providers.py` et parle à ce
+serveur. Deux choses qu'il a coûté de découvrir, et qui ne se redevinent pas :
+le champ `model` de la requête doit porter **l'identifiant exact** avec lequel
+le serveur a été lancé, sans quoi il part chercher un dépôt sur Hugging Face et
+répond 404 ; et **rien dans la réponse ne dit quel adaptateur a répondu**, donc
+deux entraînements différents rendent des baselines d'empreintes identiques.
+L'empreinte certifie le prompt, jamais les poids : noter le lancement à côté de
+la baseline.
 
 ⚠ Et une mesure faite avec le prompt COMPLET ne dirait rien de ce modèle-là : il
 aura été entraîné sur le prompt court, donc il doit être mesuré avec le prompt

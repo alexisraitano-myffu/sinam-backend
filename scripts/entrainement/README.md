@@ -140,3 +140,25 @@ et `gemini`, et aucun ne sait parler à un adaptateur local.
 aura été entraîné sur le prompt court, donc il doit être mesuré avec le prompt
 court. C'est `SYNAPSE_SPLIT_PROMPTS_DIR` qui permet de pointer le harnais sur un
 autre dossier de prompts sans toucher à ceux de production.
+
+### Les prompts courts, sur disque
+
+```bash
+python -m scripts.entrainement.construire \
+  --ecrire-prompts-courts scripts/entrainement/prompts-courts
+SYNAPSE_SPLIT_PROMPTS_DIR=$PWD/scripts/entrainement/prompts-courts \
+  python -m scripts.parity.baseline run mlx:qwen-lora --label qwen-lora-test \
+  --cas "$(python - <<'EOF'
+import json; print(','.join(json.load(open('scripts/entrainement/jeu/provenance.json'))['test']))
+EOF
+)"
+```
+
+La variable d'environnement n'est pas un confort : **le modèle est entraîné sur
+le prompt court, donc il se mesure avec le prompt court.** Lui envoyer les
+20 000 caractères de production reviendrait à lui poser une question qu'il n'a
+jamais vue, et on conclurait à l'échec de l'entraînement.
+
+Les 90 cas nommés sont ceux du test, ceux qu'il n'a pas vus. Le dossier de
+prompts courts n'est pas suivi par git : il se régénère, et il change dès que
+l'entête ou le bloc DATES bouge.

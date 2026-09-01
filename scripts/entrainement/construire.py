@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import os
 import random
 import re
 import sys
@@ -164,10 +165,35 @@ def main() -> int:
                     help="court (défaut) : entête + bloc DATES, ce qu'on veut à "
                          "l'inférence. complet : le prompt de production entier, "
                          "pour mesurer ce que l'entraînement apporte à prompt égal.")
+    ap.add_argument("--ecrire-prompts-courts", metavar="DOSSIER",
+                    help="écrire les deux moitiés courtes dans DOSSIER, à "
+                         "pointer ensuite par SYNAPSE_SPLIT_PROMPTS_DIR. Un "
+                         "modèle entraîné sur le prompt court se mesure AVEC "
+                         "le prompt court : lui envoyer celui de production "
+                         "poserait une question qu'il n'a jamais vue, et on "
+                         "conclurait à l'échec de l'entraînement.")
     ap.add_argument("--ecrire", action="store_true",
                     help="écrire les fichiers ; sans ce drapeau, on ne fait que "
                          "compter (rien n'est produit à l'aveugle)")
     args = ap.parse_args()
+
+    if args.ecrire_prompts_courts:
+        d = Path(args.ecrire_prompts_courts)
+        d.mkdir(parents=True, exist_ok=True)
+        for source, cible in (("note.md", "classifier-note.md"),
+                              ("graph.md", "classifier-graph.md")):
+            texte = systeme_court(source)
+            (d / cible).write_text(texte)
+            print(f"écrit : {d / cible}  ({len(texte)} car)")
+        # Le harnais refuse un écart d'un seul caractère entre les deux blocs
+        # DATES. Les moitiés ne peuvent pas s'inclure l'une l'autre, et deux
+        # rappels de dates divergents ont déjà daté « le 24 » à un mois d'écart.
+        os.environ["SYNAPSE_SPLIT_PROMPTS_DIR"] = str(d)
+        import importlib
+        importlib.reload(split)
+        split.bloc_dates_identique()
+        print("bloc DATES identique entre les deux moitiés : vérifié")
+        return 0
 
     cas = cas_du_corpus()
     for jeu, liste in SETS.items():

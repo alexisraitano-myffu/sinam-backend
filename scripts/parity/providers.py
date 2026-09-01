@@ -5,6 +5,8 @@ Deux dialectes suffisent aujourd'hui :
   * `anthropic:<model>` — la référence (Haiku), via `anthropic_client.get_client()`,
     donc le seam fuel-proxy marche aussi pour un token `syn-fuel-`.
   * `ollama:<model>`    — tout ce qui tourne en local (Qwen, Llama, Gemma…).
+  * `mlx:<model>`       — un modèle MLX servi par `mlx_lm.server`, adaptateur
+    LoRA compris. C'est par là qu'un modèle ENTRAÎNÉ se note contre le corpus.
 
 Toute réponse est ramenée à la MÊME forme (`Reply`), pour que le scoring ne
 sache pas d'où elle vient. C'est la leçon apprise côté core : normaliser au
@@ -27,6 +29,11 @@ import urllib.request
 from dataclasses import dataclass, field
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
+# `mlx_lm.server`, l'endpoint compatible OpenAI qui sert un modèle MLX et son
+# adaptateur LoRA. C'est le SEUL moyen de noter un modèle entraîné contre le
+# corpus : sans lui, on ne lirait qu'une perte de validation, qui ne dit rien de
+# ce que le produit fait.
+MLX_URL = os.environ.get("SYNAPSE_MLX_URL", "http://127.0.0.1:8080/v1/chat/completions")
 # L'endpoint compatible OpenAI de Gemini, et pas l'API native : la forme de
 # `Reply` se remplit alors avec les mêmes champs que partout ailleurs
 # (`finish_reason`, `usage.prompt_tokens`), donc un cas mesuré sur Gemini se
@@ -73,7 +80,7 @@ def parse_spec(spec: str) -> tuple[str, str]:
     if ":" not in spec:
         raise ValueError(f"spec de modèle invalide : {spec!r} (attendu 'provider:model')")
     provider, model = spec.split(":", 1)
-    if provider not in ("anthropic", "ollama", "gemini"):
+    if provider not in ("anthropic", "ollama", "gemini", "mlx"):
         raise ValueError(f"provider inconnu : {provider!r}")
     return provider, model
 
@@ -96,6 +103,9 @@ def call(spec: str, system_blocks: list[str], user: str, max_tokens: int,
         if provider == "gemini":
             return _call_gemini(model, system_blocks, user, max_tokens, schema,
                                 temperature)
+        if provider == "mlx":
+            return _call_mlx(model, system_blocks, user, max_tokens, schema,
+                             temperature)
         return _call_ollama(model, system_blocks, user, max_tokens, num_ctx, schema,
                             temperature)
     except Exception as exc:  # noqa: BLE001 — un modèle qui casse EST un résultat
@@ -197,6 +207,74 @@ def _call_ollama(model: str, system_blocks: list[str], user: str,
         output_tokens=resp.get("eval_count"),
         extra={"eval_s": round(resp.get("eval_duration", 0) / 1e9, 2),
                "num_ctx": num_ctx},
+    )
+
+
+def _call_mlx(model: str, system_blocks: list[str], user: str, max_tokens: int,
+              schema: dict | None = None, temperature: float = 0.0) -> Reply:
+    """Un modèle MLX local, servi par `mlx_lm.server`, adaptateur LoRA compris.
+
+    Mêmes blocs système aplatis avec le MÊME séparateur que partout ailleurs
+    (\n\n) : le jour où l'on compare deux providers sur le même cas, la seule
+    variable doit être le modèle, jamais la mise en page.
+
+    ⚠ LE PIÈGE QUI REND LA MESURE FAUSSE SANS RIEN DIRE, et il est propre à ce
+    provider : un modèle ENTRAÎNÉ sur le prompt court doit être mesuré AVEC le
+    prompt court. Le harnais lit ses prompts dans `SYNAPSE_SPLIT_PROMPTS_DIR` ;
+    l'oublier lui envoie les 20 000 caractères de production, c'est-à-dire un
+    énoncé qu'il n'a jamais vu à l'entraînement, et on conclurait que
+    l'entraînement a échoué alors qu'on aurait posé la mauvaise question.
+
+    ⚠ Le serveur ne connaît pas de modèle « par défaut » utile : le nom passé
+    ici n'est PAS ce qui décide des poids. Ce sont `--model` et
+    `--adapter-path` au lancement du serveur qui décident, et rien dans la
+    réponse ne dit lequel a répondu. Noter le lancement à côté de la baseline,
+    sinon l'empreinte de contexte certifie le prompt et rien du modèle.
+    """
+    payload = {
+        "model": model,
+        "messages": [{"role": "system", "content": "\n\n".join(system_blocks)},
+                     {"role": "user", "content": user}],
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if schema is not None:
+        # Le support du décodage contraint varie d'une version de mlx-lm à
+        # l'autre. Un refus remonte tel quel dans `error` : c'est une donnée de
+        # mesure, pas une panne à rattraper en silence.
+        payload["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {"name": "sortie", "schema": schema, "strict": True},
+        }
+    req = urllib.request.Request(
+        MLX_URL, data=json.dumps(payload).encode("utf-8"),
+        headers={"content-type": "application/json"})
+    t0 = time.time()
+    try:
+        resp = json.loads(urllib.request.urlopen(req, timeout=900).read())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", "replace")[:400]
+        raise RuntimeError(f"mlx_lm.server HTTP {exc.code} : {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(
+            f"mlx_lm.server injoignable sur {MLX_URL} — le lancer avec "
+            f"`python -m mlx_lm.server --model … --adapter-path …` ({exc})"
+        ) from exc
+    choix = (resp.get("choices") or [{}])[0]
+    fin = choix.get("finish_reason")
+    usage = resp.get("usage") or {}
+    return Reply(
+        text=(choix.get("message") or {}).get("content") or "",
+        # `length` est l'orthographe OpenAI du `max_tokens` d'Anthropic, que
+        # seul connaît le garde de troncature du harnais.
+        stop_reason="max_tokens" if fin == "length" else fin,
+        latency_s=round(time.time() - t0, 2),
+        prompt_tokens=usage.get("prompt_tokens"),
+        output_tokens=usage.get("completion_tokens"),
+        # Rien n'est mis en cache côté local : tout est payé en calcul, à
+        # chaque appel. La clé garde le même nom qu'ailleurs pour que le
+        # chiffrage d'un lot ne fasse pas de cas particulier.
+        extra={"uncached_input_tokens": usage.get("prompt_tokens")},
     )
 
 

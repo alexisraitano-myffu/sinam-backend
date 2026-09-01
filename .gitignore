@@ -45,3 +45,4 @@ scripts/lang_snapshots/
 
 # Jeu d entrainement : derive des baselines, se regenere par script
 scripts/entrainement/jeu/
+scripts/entrainement/prompts-courts/

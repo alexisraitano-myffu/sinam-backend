@@ -109,9 +109,14 @@ def test_project_shell_guard_downgrades_to_concept(isolated_db):
 
 
 def test_ephemeral_with_entities_still_captures_them(isolated_db, monkeypatch):
-    """An ephemeral capture that ALSO names a durable entity must not
-    discard it. The recipe entity (+ type proposal) is created and the expiring
-    intention is recorded; the atomic_note is suppressed (no double-store)."""
+    """Une capture marquée éphémère qui nomme aussi une entité durable.
+
+    L'entité et sa proposition de type sont créées : ça, c'était déjà vrai et ça
+    le reste. Ce qui change le 2026-09-01, c'est le reste de la capture. Le
+    drapeau ne pilotant plus rien, aucune intention n'est écrite et la note
+    n'est plus supprimée : ce qui était « pas de double stockage » était en
+    réalité la moitié perdue du couple.
+    """
     import dream_cycle.cycle as cyc
     from db import get_connection
 
@@ -142,8 +147,8 @@ def test_ephemeral_with_entities_still_captures_them(isolated_db, monkeypatch):
     ents = _rows("SELECT canonical_name, status FROM entities")
     assert any(e["canonical_name"] == "Udon Dan Dan" and e["status"] == "pending" for e in ents)
     assert [p["proposed_type"] for p in _rows("SELECT proposed_type FROM entity_type_proposals")] == ["recipe"]
-    assert len(_rows("SELECT id FROM intentions")) == 1  # the envie still expires
-    assert _rows("SELECT id FROM atomic_notes") == []     # not double-stored
+    assert _rows("SELECT id FROM intentions") == []       # la table est dormante
+    assert _rows("SELECT id FROM atomic_notes") != []      # la note survit
 
 
 def test_project_with_matching_entry_stays_project(isolated_db):

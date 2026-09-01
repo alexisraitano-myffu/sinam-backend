@@ -245,33 +245,33 @@ def test_behavioral_validation():
         )
 
 
-# ── Test 4 — Ephemeral ────────────────────────────────────────────────────────
+# ── Test 4 — Une corvée ne s'évapore plus ─────────────────────────────────────
 
-def test_ephemeral_goes_to_intentions():
-    """
-    "penser à acheter du lait"
-    → in intentions with ttl_hours=48, NOT in entities.
+def test_une_corvee_laisse_une_trace_durable():
+    """« penser à acheter du lait » laisse une note durable, et plus d'intention.
+
+    Ce test s'appelait `test_ephemeral_goes_to_intentions` et attendait
+    exactement l'inverse : la capture partait en intention avec 48 h à vivre et
+    disparaissait ensuite. C'est le comportement retiré le 2026-09-01, pas le
+    test : le jugement de trivialité qui décidait ça est parti du document, et
+    c'est la décroissance qui oublie les tâches maintenant, comme tout le reste.
+
+    L'assertion s'inverse donc, et elle garde le mode d'échec qui comptait : une
+    corvée ne doit plus jamais s'évaporer sans laisser de quoi la retrouver.
     """
     _add_inbox("penser à acheter du lait")
     _run_cycle()
 
-    intentions = _get_intentions()
-    assert intentions, "Expected at least one intention to be created"
+    assert _get_intentions() == [], \
+        "plus rien ne doit partir en intention, la table est dormante"
 
-    lait_intentions = [
-        i for i in intentions
-        if "lait" in i["content"].lower() or "acheter" in i["content"].lower()
-    ]
-    assert lait_intentions, (
-        f"Expected an intention about 'lait', got: {intentions}"
-    )
-    assert lait_intentions[0]["ttl_hours"] == 48
-
-    # Must NOT be in entities
-    from db import get_connection
+    from db import cursor_to_dicts, get_connection
     conn = get_connection()
     try:
-        count = conn.execute("SELECT COUNT(*) FROM entities").fetchone()[0]
+        notes = cursor_to_dicts(conn.execute(
+            "SELECT content, kind FROM atomic_notes"))
     finally:
         conn.close()
-    assert count == 0, f"Expected 0 entities for an ephemeral entry, found {count}"
+    assert notes, "la corvée doit laisser une note durable"
+    assert any("lait" in n["content"].lower() for n in notes), \
+        f"la note doit parler du lait, obtenu : {notes}"

@@ -290,9 +290,18 @@ def test_nameless_entity_skipped(isolated_db):
 
 # ── Intentions ───────────────────────────────────────────────────────────────
 
-def test_intention_object_content_is_coerced_to_text(isolated_db):
-    """Haiku sometimes returns ephemeral_content as an object ({'text': …}) or
-    a list; the stored intention must be TEXT (coercion now in the core)."""
+def test_plus_rien_ne_part_en_intention(isolated_db):
+    """Le drapeau éphémère n'écrit plus d'intention, quoi qu'il porte.
+
+    Ce test remplace `test_intention_object_content_is_coerced_to_text`, qui
+    vérifiait la coercition en texte d'un `ephemeral_content` rendu comme objet
+    ou comme liste. Le code qui faisait cette coercition est retiré avec le
+    chemin qu'il servait, le 2026-09-01.
+
+    La forme tordue est gardée exprès dans l'entrée : c'est celle qui cassait,
+    et si un jour l'insertion revenait par mégarde, c'est elle qui la ferait
+    remarquer.
+    """
     from db import get_connection
 
     _process({
@@ -305,8 +314,7 @@ def test_intention_object_content_is_coerced_to_text(isolated_db):
         rows = list(conn.execute("SELECT content FROM intentions"))
     finally:
         conn.close()
-    assert len(rows) == 1
-    assert rows[0][0] == "aller chercher les croquettes"
+    assert rows == [], "la table des intentions reste vide et dormante"
 
 
 def _ancre_de_note_durable():

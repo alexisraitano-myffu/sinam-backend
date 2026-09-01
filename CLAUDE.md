@@ -245,6 +245,18 @@ installable via le tag/release **`python-legacy`**.
   `SYNAPSE_SYNC_INTERVAL` seconds (default 600, `0` = off). Per-peer cursors live in
   `sync_meta` (`cursor:<device>`), local by design. Peers share one
   `SYNAPSE_API_TOKEN`.
+- **Transport is encrypted + pinned** (since the cleartext link was closed to the
+  network). mDNS advertises the **TLS** port (`tls_port()`, 8443), so a peer URL is
+  `https://ip:8443`; `pull_from_peer` **refuses cleartext to a network address**
+  (loopback still allowed) and pins the peer's cert fingerprint via an
+  `assert_fingerprint` adapter — known fingerprint (learned at pairing, or on a prior
+  pull) is required at the handshake so the token never reaches a wrong cert; unknown
+  = trust-on-first-use, recorded then pinned; a **changed** fingerprint is refused.
+  The per-peer fingerprint lives in **local** `sync_meta` (`peer_cert:<device>`, not
+  replicated); it is NEVER advertised over mDNS (see `api/tls.py`). Code pairing
+  exchanges the fingerprint **both ways** — the joiner seals its own under the SPAKE2
+  key and the member opens it after the MAC — so a paired peer has no TOFU window in
+  either direction. A relay that does not know the code can neither read nor swap it.
 - **Owner-lock + run-guard**: `sync_owner` is a REPLICATED singleton row naming the
   one device allowed to run the Dream Cycle (keeps the derived layer single-writer,
   which is what makes LWW merging safe). `GET/PUT /sync/owner`; the first cycle on a

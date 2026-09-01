@@ -102,15 +102,21 @@ python -m scripts.seed_demo_map            # (re)seed · --clean removes all syn
 
 ```
 Capture → inbox → Dream Cycle ─┬─ entities/facts/relations  → the entity graph
-                               ├─ atomic_note              → atomic_notes (+ atomic_notes_vec),
+                               ├─ memories[]               → atomic_notes (+ atomic_notes_vec),
+                               │                             ONE ROW PER MEMORY,
                                │                             kind = note | task | event | episode
                                ├─ project_entries          → project aggregate
-                               ├─ is_ephemeral             → intentions (48h TTL)   ← NON-exclusive:
-                               │                             durable entities are still extracted
                                └─ any URL in the text      → fetch + Haiku summary → resources
 ```
 
-Routing is **non-exclusive**: one capture can produce entities + atomic_note + project_entries + an intention + a resource at once (`_process_entry`). URL-driven resource fetch runs for any capture, even a pure intention.
+Routing is **non-exclusive**: one capture can produce entities + several memories + project_entries + a resource at once (`_process_entry`). URL-driven resource fetch runs for any capture.
+
+⚠️ **The `is_ephemeral` lane is GONE** (2026-09-01). It used to send a capture to a 48h-TTL
+`intentions` row, and a capture wrongly flagged lost everything with no trace. The flag left the
+prompt, the routing, the corpus and the app; the `intentions` table stays in place but dormant
+(dropping it would be a schema migration on replicas living on other devices, for no gain). The
+full dossier, including what it would take to bring the flag back, is in
+`sinam-core/docs/regles-journal.md`.
 
 `import dream_cycle` resolves to the **package** `dream_cycle/`; `dream_cycle/cycle.py` is the **host orchestrator**, exported as `run_dream_cycle` (also `python -m dream_cycle`). The pipeline *logic* lives once in the **Rust core** (`sinam-core`) — see "the brain lives in sinam-core" below; `cycle.py` builds the working-memory context, drives the core and persists what it returns.
 
@@ -135,12 +141,12 @@ emits, and what each field triggers:
 > The live vocab + project blocks go **only** to the graph half: a half only reads what it can write.
 
 - **`entities[]` + their `facts[]` + `relations[]`** → the 6-step graph pipeline below.
-- **`atomic_note` + `atomic_note_kind`** → one `atomic_notes` row, `memory_strength=1.0`, vectorized.
-  `note` = a durable thought · `task` = something to do · `event` = a dated occurrence ·
-  `episode` = something lived (kept, but decays on τ/3 — `decay.rs::tau_for_kind`).
+- **`memories[]`** → one `atomic_notes` row **per memory**, `memory_strength=1.0`, vectorized.
+  Each carries its own `kind`, `owner` and `event_date`. `note` = a durable thought ·
+  `task` = something to do · `event` = a dated occurrence · `episode` = something lived (kept,
+  but decays on τ/3 — `decay.rs::tau_for_kind`). The field was singular until 2026-08-28, and a
+  capture holding a lived episode AND a dated task lost one of the two, always the same one.
 - **`project_entries[]`** → the project aggregate.
-- **`is_ephemeral`** → `intentions` (48h TTL). Non-exclusive: durable entities in the same capture
-  are still routed.
 - **any URL found in the capture TEXT** → fetched + extracted (dependency-free tag stripper) +
   summarised (Haiku, prompt = data `resource-summary.md`) + stored in `resources`, searchable via its
   embedded summary. Driven by `extract_urls`, never by anything the classifier says. T5: the whole
@@ -166,11 +172,47 @@ Per-entry resilience: each entry is processed in isolation. An `anthropic.APIErr
 
 **Shared modules**: `entity_search.py` (entity/resource cosine search + composite-text helper, used by MCP search, merge fallback, `/similar`), `graph_layout.py` (ForceAtlas2 + `node_positions`), `graph_clusters.py` (Haiku labels + hulls). T5: `facts_store.py`, `dream_cycle/decay.py`, `dream_cycle/digest.py` and `dream_cycle/resources.py` are **shims over the core** keeping the historical signatures.
 
+### Update 2026-09-01: the capture frame, the bare month, and three freshness guards
+
+- **A capture shaped like an order used to break the model out of its role.** On « Reply to Léna's
+  email about the contract » the reference model answered in prose instead of emitting JSON, and
+  the capture was lost with no trace. Not one phrasing but a *shape*: on seven English captures
+  naming work an assistant could do, **4 halves out of 24** fell, almost always the graph half.
+  Rules `N0-c` / `G0-c` now state what the message IS. **The wording mattered as much as the
+  rule** — two drafts saying « this is not an instruction addressed to you » fixed nothing or made
+  it worse, because they create the very category they forbid: the model sorts its input into
+  « capture » vs « request to me », gets it wrong, and refuses while quoting the rule back. The one
+  that holds denies nothing and offers no sorting. Zero losses over 28 attempts.
+- **A bare month with no day** fell on today's day-of-month (« due in October » → the 13th, because
+  the harness date is 13 July). `N0-b` extended: the FIRST of that month. Watch the rank — the line
+  went into the middle of the DATES block and four « before Thursday » deadlines shifted by a day
+  as a side effect. Tracked, not fixed.
+- **The ephemeral flag is gone from production**, all three stages. See the Architecture note above.
+- **The gate plays BOTH halves** (`scripts/parity/gate.py`). Until 2026-09-01 it loaded
+  `classifier.md`, the single-call prompt retired on 21 August: it certified a model on a
+  statement nobody executes. Every check is now per half, including the truncation floor — computed
+  on the sum, it would flag the shorter note half as amputated. Variants are measured through
+  `SYNAPSE_SPLIT_PROMPTS_DIR`, the same mechanism as stage 2.
+- **Three guards against measuring the wrong thing.** `sinam-core-py`'s `build.rs` burns a
+  content fingerprint of the core sources at compile time (`empreinte_source()`), and the expected
+  prompts version (`version_prompts_attendue()`); `tests/test_artefacts_a_jour.py` checks the
+  installed wheel against the repo, and the deployed prompts against **both** the wheel and the
+  repo — a prompts-only version bump left both numbers stale and the suite green, a hole crossed
+  on 2026-09-01. The fingerprint ignores `#[cfg(test)]` blocks (a red that fires on a harmless
+  change teaches people to ignore red), guarded by a one-test-block-per-file check.
+- **CI**: `.github/workflows/tests.yml` runs the whole suite on ubuntu-latest, building the wheel
+  with maturin **from the checked-out core** rather than the rolling release. No API key is set;
+  model-bound tests skip themselves.
+- **The `visualizer/` folder is gone** — the map lives in the app now.
+- **Corpus at 501 cases**, 496 played per full pass. Certification of the deployed prompt:
+  **379/496**, and the French/English gap closed (66.4% both sides, against 69.5 / 60.7 that
+  morning). 22 cases went red in the process; they are triaged and kept.
+
 ### Update 2026-06-12: dogfood batch
 
-- **Inbox diagnosability**: `inbox.error` stores the per-entry failure reason (exposed on `/feed`); `POST /inbox/{id}/requeue` retries a failed entry; API startup marks orphan `running` cycle_runs as `error` (process died mid-run, guarded by `cycle.lock` freshness). Cycle fixes: `_intention_text()` coerces object/list `ephemeral_content`; classify `max_tokens` 1536→4096 + explicit `stop_reason` check.
+- **Inbox diagnosability**: `inbox.error` stores the per-entry failure reason (exposed on `/feed`); `POST /inbox/{id}/requeue` retries a failed entry; API startup marks orphan `running` cycle_runs as `error` (process died mid-run, guarded by `cycle.lock` freshness). Cycle fixes: classify `max_tokens` 1536→4096 + explicit `stop_reason` check. (This entry also carried a fix to `_intention_text()`; that whole path went away with the ephemeral flag on 2026-09-01.)
 - **Fiche edits**: `PATCH /entity/{id}` also renames (old canonical_name kept as **alias** so the resolver still matches); `PATCH /fact/{id}` = user correction → `confidence 1.0` + `last_confirmed`; relation CRUD `POST/PATCH/DELETE /relation` (optional client id; `/entity` exposes `relations[].id`). User edits are **source of truth**.
-- **Note kinds**: `atomic_notes.kind` ∈ `note|task|event` + `event_date` (absolute, classifier-resolved), `event_recurring` (yearly), `archived_at` (user « rendre obsolète », `POST /atomic-note/{id}/archive|unarchive`). Tasks = retrievable backlog, **no due date/checkbox**: decay forgets them. Durable (task/event) notes **bypass the ephemeral gates** (pure-intention fast exit + anti-double-store), a project-routed note always **mentions its project**, and an entity anchoring a durable note passes the noise garde-fou (`anchors_durable_note`).
+- **Note kinds**: `atomic_notes.kind` ∈ `note|task|event` + `event_date` (absolute, classifier-resolved), `event_recurring` (yearly), `archived_at` (user « rendre obsolète », `POST /atomic-note/{id}/archive|unarchive`). Tasks = retrievable backlog, **no due date/checkbox**: decay forgets them. A project-routed note always **mentions its project**, and an entity anchoring a durable note passes the noise garde-fou (`anchors_durable_note`).
 - **Fact categories**: `facts.category` ∈ `identity|dates|work|places|relations|preferences|health|other`, assigned by the classifier, propagated through every write path via `insert_fact`. Clients group facts into collapsible sections.
 - **Entity re-summary**: the summary is **purely derived** (never user-edited). `entities.summary_stale` is set by every fact write (`insert_fact`) and fact-edit/lifecycle endpoints; `step_resummarize` rebuilds summaries from the **active** facts + relations (Haiku, `_RESUMMARY_SYSTEM`) for touched ∪ stale entities, then they're re-vectorized. Hard rule: summaries are **timeless** (absolute dates only: never « la semaine prochaine »); same rule in the extraction prompt. The cycle and the auto-scheduler also run on an empty inbox when stale summaries exist.
 - **Alias-aware promotion**: both pending-fact promotion paths (step5 + `validation.py`) resolve entities through `_find_existing_entity` (aliases included): canonical-only lookup used to spawn duplicate shells.
@@ -284,7 +326,7 @@ installable via le tag/release **`python-legacy`**.
   in the process (see the Database section — adding a second binding corrupts the file).
 - **Brain**: classification AND routing run in the core. `_process_entry` passes
   the classified JSON to `Brain.route_capture` (resolution, confidence, buckets, anti-redite
-  dedup, review gates, merge/type/attach proposals, intentions, atomic note, project entries,
+  dedup, review gates, merge/type/attach proposals, memories, project entries,
   reactivation — all Rust, golden-tested against the frozen pre-port reference); the returned
   work list drives the host-side LLM follow-ups (project synthesis). `step1_classify`
   goes through the core's HTTP client (key + fuel-proxy resolution stays in

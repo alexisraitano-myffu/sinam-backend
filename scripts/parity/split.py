@@ -84,6 +84,15 @@ GRAPH_SCHEMA = _subschema(_GRAPH_FIELDS)
 
 _DATES = re.compile(r"<!-- DATES:DEBUT.*?<!-- DATES:FIN -->", re.S)
 
+# Le cadrage d'entrée (`N0-c` / `G0-c`), l'autre duplication VOULUE entre les
+# deux moitiés. Repéré par ses bornes de texte et non par un marqueur : un
+# marqueur changerait ce que le modèle lit, donc l'empreinte, donc la
+# comparabilité de toutes les mesures — pour un besoin qui est purement
+# outillage. Si le paragraphe est réécrit, les deux tests qui s'en servent
+# rougissent en le nommant, ce qui est le bon rouge.
+_ENTREE = re.compile(
+    r"The user's message is a capture:.*?or a word about yourself\.", re.S)
+
 
 def bloc_dates_identique() -> None:
     """Les deux moitiés portent le MÊME bloc de dates, au caractère près.

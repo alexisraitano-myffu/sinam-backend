@@ -107,6 +107,21 @@ def test_les_prompts_deployes_ne_sont_pas_en_retard():
         f"Recopier ceux du dépôt vers {maison / 'prompts'}."
     )
 
+    # Et contre le DÉPÔT, pas seulement contre la roue.
+    #
+    # La roue grave sa version à la compilation. Une montée de version côté
+    # prompts SEULS laisse donc les deux nombres à l'ancienne valeur et ce test
+    # vert, alors que le dépôt est en avance et que le Mac classe avec le
+    # prompt d'hier. C'est exactement le trou traversé le 2026-09-01 en posant
+    # `N0-c` : manifeste passé à 34, roue et déployé à 33, suite au vert.
+    depot = _CORE / "prompts" / "manifest.json"
+    if depot.is_file():
+        au_depot = json.loads(depot.read_text()).get("version", 0)
+        assert deploye >= au_depot, (
+            f"prompts déployés en version {deploye}, le dépôt en {au_depot}. "
+            f"Recopier {depot.parent}/* vers {maison / 'prompts'}."
+        )
+
 
 def test_un_seul_bloc_de_tests_par_fichier_du_coeur():
     """La convention qui rend la troncature sûre.

@@ -154,12 +154,20 @@ def test_classify_params_shape_with_working_memory(isolated_db):
     # Ce test lit les prompts DÉPLOYÉS (`SYNAPSE_HOME/prompts`), pas ceux du
     # dépôt : il échoue donc sur une machine dont le déploiement a pris du
     # retard, et c'est voulu — c'est le seul endroit qui le dit.
+    # Le cadrage d'entrée (`N0-c` / `G0-c`) se retire pour la même raison que le
+    # bloc DATES : c'est une duplication VOULUE, tenue ailleurs et plus
+    # sévèrement — `test_les_deux_moities_portent_le_meme_cadrage_dentree`
+    # refuse le moindre écart entre les deux copies. Le compter ici
+    # sanctionnerait le correctif au lieu du défaut : ses six lignes suffisaient
+    # à faire passer le compte de 7 à 13 pour un seuil de 10, alors que rien ne
+    # s'était mis à se répéter par accident.
     from config import BASE_DIR
-    from scripts.parity.split import _DATES
+    from scripts.parity.split import _DATES, _ENTREE
     prompts = BASE_DIR / "prompts"
     fond = []
     for f in ("classifier-note.md", "classifier-graph.md"):
-        texte = _DATES.sub("", (prompts / f).read_text(encoding="utf-8"))
+        texte = (prompts / f).read_text(encoding="utf-8")
+        texte = _ENTREE.sub("", _DATES.sub("", texte))
         fond.append({l.strip() for l in texte.splitlines() if len(l.strip()) > 25})
     communes = fond[0] & fond[1]
     assert len(communes) <= 10, (

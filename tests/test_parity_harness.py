@@ -220,3 +220,32 @@ def test_aucun_axe_ne_porte_le_nom_de_sa_propre_cle():
                     if isinstance(x, str) and x == cle:
                         fautifs.append(f"{f.name}:{cas['id']} {cle}={x!r}")
     assert not fautifs, "axes dont la valeur est le nom de leur clé : " + ", ".join(fautifs)
+
+
+def test_les_deux_moities_portent_le_meme_cadrage_dentree():
+    """`N0-c` / `G0-c` : le paragraphe d'entrée, identique au caractère près.
+
+    Comme le bloc DATES, il est RECOPIÉ dans deux fichiers que le core lit tels
+    quels — et une liste recopiée à deux endroits dérive en silence. Ce qu'il
+    garde vaut le contrôle : sans lui, mesuré le 2026-09-01, une capture qui
+    nomme un travail qu'un assistant saurait faire fait répondre le modèle en
+    prose, et la capture est perdue sans laisser de trace. La moitié GRAPHE est
+    celle qui tombait presque à chaque fois : elle a besoin de la règle entière,
+    donc un jour où elle n'en aurait plus qu'un résumé, ce test doit rougir.
+    """
+    from scripts.parity import split
+
+    vus = {}
+    for moitie in ("note.md", "graph.md"):
+        texte = split._half_path(moitie).read_text(encoding="utf-8")
+        bloc = split._ENTREE.search(texte)
+        assert bloc is not None, (
+            f"le cadrage d'entrée est introuvable dans la moitié {moitie}. "
+            "S'il a été RÉÉCRIT, mettre à jour `split._ENTREE`, qui le repère "
+            "par ses bornes de texte."
+        )
+        vus[moitie] = bloc.group(0)
+    assert vus["note.md"] == vus["graph.md"], (
+        "les deux moitiés portent des cadrages d'entrée DIFFÉRENTS. Recopier "
+        "l'un sur l'autre, à l'identique."
+    )

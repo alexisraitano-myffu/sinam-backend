@@ -197,3 +197,26 @@ def test_les_axes_disent_ce_que_la_citation_dit():
                 fautes.append(f"{cas['id']} : la citation dit oui, l'axe dit non")
 
     assert not fautes, "axes en désaccord avec la citation :\n  " + "\n  ".join(fautes)
+
+
+def test_aucun_axe_ne_porte_le_nom_de_sa_propre_cle():
+    """Un gabarit resté en place se lit comme une étiquette et ne s'attrape pas.
+
+    `g-ord-en-005` portait `rel: "rel"`, c'est-à-dire le nom de la clé recopié
+    en valeur par le générateur. Le cas ne pouvait jamais passer, et rien ne le
+    disait : il ressemblait à une exigence que le modèle n'atteignait pas. Il a
+    survécu à une validation humaine sous cette forme, ce qui montre bien que
+    l'œil ne le voit pas.
+    """
+    import json
+    fautifs = []
+    for f in sorted((Path(__file__).resolve().parents[1] / "scripts" / "parity" / "corpus").glob("*.jsonl")):
+        for ligne in f.read_text().splitlines():
+            if not ligne.strip():
+                continue
+            cas = json.loads(ligne)
+            for cle, valeur in cas.items():
+                for x in (valeur if isinstance(valeur, list) else [valeur]):
+                    if isinstance(x, str) and x == cle:
+                        fautifs.append(f"{f.name}:{cas['id']} {cle}={x!r}")
+    assert not fautifs, "axes dont la valeur est le nom de leur clé : " + ", ".join(fautifs)

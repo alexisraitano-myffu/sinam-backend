@@ -1,7 +1,11 @@
 """Entry point for the PyInstaller-bundled backend.
 
-Runs uvicorn on 127.0.0.1:8765 so the desktop app can talk to the LaunchAgent
-without exposing the API to the LAN.
+Délègue le service à `api.__main__.serve` : DEUX écoutes, le clair sur la
+boucle locale (l'app desktop lui parle) et le TLS sur 8443 (les téléphones
+épinglent le certificat). Historiquement ce fichier faisait un `uvicorn.run`
+à plat sans TLS : le durcissement du lien local ne touchait donc que le chemin
+`python -m api`, jamais le binaire que la prod et les testeurs exécutent. Le
+partage ferme ce trou.
 
 Le défaut mDNS posé plus bas ne décrit PAS ce que font les installs réelles :
 l'installeur pose `SYNAPSE_DISABLE_MDNS` à la chaîne vide dans le LaunchAgent,
@@ -49,13 +53,11 @@ _sync_bundled_prompts()
 
 
 def main() -> None:
-    import uvicorn
+    import asyncio
 
-    from api.app import app
+    from api.__main__ import serve
 
-    port = int(os.environ.get("SYNAPSE_PORT", "8765"))
-    host = os.environ.get("SYNAPSE_HOST", "127.0.0.1")
-    uvicorn.run(app, host=host, port=port, log_level="info")
+    asyncio.run(serve())
 
 
 if __name__ == "__main__":

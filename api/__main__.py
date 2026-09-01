@@ -28,12 +28,24 @@ def _config(app, host: str, port: int, *, lifespan: str, ssl: dict | None = None
                           lifespan=lifespan, **(ssl or {}))
 
 
-async def _serve() -> None:
+async def serve() -> None:
+    """Les deux écoutes (clair loopback + TLS 8443). Partagée par les DEUX
+    entrypoints : `python -m api` (dev) et `backend_entry.py` (binaire bundlé,
+    ce que la prod et les testeurs exécutent). Sans ce partage, un durcissement
+    posé ici ne touche aucun runtime réel — c'est exactement ce qui était
+    arrivé au TLS du lien local.
+
+    Les noms d'env sont lus dans les deux conventions : `SYNAPSE_API_HOST/PORT`
+    (serveur LAN) et, en repli, `SYNAPSE_HOST/PORT` (que le LaunchAgent du
+    bundle pose). Le clair retombe de toute façon sur la boucle locale dès
+    qu'un certificat existe, quel que soit l'hôte demandé."""
     from api.app import app
     from api.tls import ensure_cert, tls_port
 
-    host = os.environ.get("SYNAPSE_API_HOST", "0.0.0.0")
-    port = int(os.environ.get("SYNAPSE_API_PORT", "8000"))
+    host = (os.environ.get("SYNAPSE_API_HOST")
+            or os.environ.get("SYNAPSE_HOST") or "0.0.0.0")
+    port = int(os.environ.get("SYNAPSE_API_PORT")
+               or os.environ.get("SYNAPSE_PORT") or "8000")
 
     pair = None if os.environ.get("SYNAPSE_TLS_DISABLE") else ensure_cert()
     if pair is None:
@@ -63,4 +75,4 @@ async def _serve() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(_serve())
+    asyncio.run(serve())

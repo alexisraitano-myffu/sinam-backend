@@ -244,10 +244,50 @@ def _recover_interrupted_runs() -> None:
         conn.close()
 
 
+def _avertir_si_prompts_en_retard() -> None:
+    """Crié au démarrage : les prompts déployés sont-ils en retard sur le cœur ?
+
+    Les prompts sont de la DONNÉE, recopiée sur chaque surface et lue à
+    l'exécution. Réinstaller le binaire bundlé recopie ceux de son paquet dans
+    SYNAPSE_HOME, ce qui peut faire RECULER la version déployée sans rien dire,
+    et les fichiers portent alors la date du jour. Le 30/08, ce Mac classait
+    depuis deux semaines avec la version 17 quand le dépôt en était à la 32.
+
+    On avertit, on ne bloque pas : quelqu'un qui n'a pas encore migré doit
+    pouvoir travailler. Le message dit les deux versions et où réparer, parce
+    qu'un avertissement qu'on ne sait pas suivre finit ignoré.
+    """
+    journal = logging.getLogger(__name__)
+    try:
+        import sinam_core
+        attendu = sinam_core.version_prompts_attendue()
+    except Exception:  # noqa: BLE001 — un cœur trop ancien n'expose pas la fonction
+        return
+    dossier = Path(os.environ.get("SYNAPSE_HOME", Path.home() / ".synapse")) / "prompts"
+    manifeste = dossier / "manifest.json"
+    if not manifeste.is_file():
+        journal.warning(
+            "aucun prompt déployé dans %s : le cœur ne pourra pas classer. "
+            "Recopier prompts/ depuis le dépôt sinam-core.", dossier)
+        return
+    try:
+        deploye = json.loads(manifeste.read_text()).get("version", 0)
+    except (OSError, ValueError):
+        journal.warning("manifeste de prompts illisible : %s", manifeste)
+        return
+    if deploye < attendu:
+        journal.error(
+            "prompts déployés en version %s alors que ce cœur en attend %s. "
+            "Tout ce qui est classé jusqu'à la correction l'est avec des règles "
+            "périmées. Réparer en recopiant prompts/*.md et manifest.json du "
+            "dépôt sinam-core vers %s.", deploye, attendu, dossier)
+
+
 @contextlib.asynccontextmanager
 async def lifespan(_app):
     from api.access import warn_if_open
     warn_if_open(os.environ.get("SYNAPSE_API_HOST", "0.0.0.0"))
+    _avertir_si_prompts_en_retard()
     _recover_interrupted_runs()
     # Le réglage « aller chercher les pages » vit dans config.json et se pose
     # dans l'environnement, que l'hôte partage avec le core.

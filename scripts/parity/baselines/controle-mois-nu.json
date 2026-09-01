@@ -1,0 +1,810 @@
+{
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "fingerprint": "ca3c6b99ef4f+1445e4946041",
+  "label": "controle-mois-nu",
+  "schema_constrained": false,
+  "split": true,
+  "temperature": 0.0,
+  "cases": {
+    "date-task-deadline-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Appeler le dentiste",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-16",
+            "event_recurring": false,
+            "summary": "Appeler le dentiste avant jeudi"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "Appeler le dentiste avant jeudi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5471,
+      "graph_prompt_tokens": 5118,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 4.52,
+      "prompt_tokens": 5471,
+      "input_tokens": 10589,
+      "uncached_tokens": 311,
+      "output_tokens": 177,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "drop_guard"
+      ]
+    },
+    "date-event-weekday-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Rendez-vous chez le notaire",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-14",
+            "event_recurring": false,
+            "summary": "Rendez-vous prévu chez le notaire mardi."
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "Rendez-vous chez le notaire mardi",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5474,
+      "graph_prompt_tokens": 5121,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 2.65,
+      "prompt_tokens": 5474,
+      "input_tokens": 10595,
+      "uncached_tokens": 317,
+      "output_tokens": 186,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-event-weekday-en": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Team offsite on Friday",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-17",
+            "event_recurring": false,
+            "summary": "Team offsite scheduled for Friday"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "Team offsite on Friday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5467,
+      "graph_prompt_tokens": 5114,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.06,
+      "prompt_tokens": 5467,
+      "input_tokens": 10581,
+      "uncached_tokens": 303,
+      "output_tokens": 173,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-tomorrow-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Réunion budget demain",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-14",
+            "event_recurring": false,
+            "summary": "Réunion budget prévue demain mardi"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Synapse",
+            "content": "Réunion budget demain",
+            "is_new": false
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 9,
+      "set": "dates",
+      "text": "Réunion budget demain",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5469,
+      "graph_prompt_tokens": 5116,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.51,
+      "prompt_tokens": 5469,
+      "input_tokens": 10585,
+      "uncached_tokens": 307,
+      "output_tokens": 224,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-two-weeks-en": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Design review scheduled",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-27",
+            "event_recurring": false,
+            "summary": "Prepare for and attend design review in two weeks."
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 0.5,
+        "entities": [
+          {
+            "canonical_name": "Design review",
+            "type": "project",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "scheduled_date",
+                "value": "2026-07-27",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Design review",
+            "content": "Design review scheduled for 2026-07-27",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 1,
+      "fields": 9,
+      "set": "dates",
+      "text": "Design review in two weeks",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5467,
+      "graph_prompt_tokens": 5114,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 4.5,
+      "prompt_tokens": 5467,
+      "input_tokens": 10581,
+      "uncached_tokens": 303,
+      "output_tokens": 353,
+      "confidence": 0.5,
+      "gaps": [
+        "kind attendu=event obtenu=task"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "date-day-only-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Concert de Nadia",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-30",
+            "event_recurring": false,
+            "summary": "Concert de Nadia le 30 juillet"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 0.5,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "Concert de Nadia le 30",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5470,
+      "graph_prompt_tokens": 5117,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.35,
+      "prompt_tokens": 5470,
+      "input_tokens": 10587,
+      "uncached_tokens": 309,
+      "output_tokens": 249,
+      "confidence": 0.5,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "date-absent-task": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Envoyer le devis au comptable",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Transmettre le devis au comptable"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "Envoyer le devis au comptable",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5472,
+      "graph_prompt_tokens": 5119,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 2.63,
+      "prompt_tokens": 5472,
+      "input_tokens": 10591,
+      "uncached_tokens": 313,
+      "output_tokens": 176,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "drop_guard"
+      ]
+    },
+    "date-past-episode-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Dîné chez Nadia",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-04",
+            "event_recurring": false,
+            "summary": "Alexis a dîné chez Nadia le 4 juillet."
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "J'ai dîné chez Nadia le 4 juillet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5478,
+      "graph_prompt_tokens": 5125,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.38,
+      "prompt_tokens": 5478,
+      "input_tokens": 10603,
+      "uncached_tokens": 325,
+      "output_tokens": 260,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date"
+      ]
+    },
+    "date-past-recurring-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Mariage d'Alexis le 12 juin",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2025-06-12",
+            "event_recurring": false,
+            "summary": "Alexis s'est marié le 12 juin"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "A marié le 12 juin 2025.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "June 12",
+                "persistence_value": 1,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "On s'est mariés le 12 juin",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5473,
+      "graph_prompt_tokens": 5120,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 4.01,
+      "prompt_tokens": 5473,
+      "input_tokens": 10593,
+      "uncached_tokens": 315,
+      "output_tokens": 329,
+      "confidence": 1.0,
+      "gaps": [
+        "recurring attendu=True obtenu=[False]",
+        "event_date attendu=2026-06-12 obtenu=['2025-06-12']"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date"
+      ]
+    },
+    "date-birthday-party-recurring": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+            "kind": "event",
+            "owner": null,
+            "event_date": "2026-07-23",
+            "event_recurring": false,
+            "summary": "Apéro d'anniversaire de Nadia le 23 juillet"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 0.5,
+        "entities": [
+          {
+            "canonical_name": "Nadia",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": "Anniversaire le 23 juillet.",
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": "2026-07-23",
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "dates",
+      "text": "L'apéro d'anniversaire de Nadia est le 23 juillet",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5481,
+      "graph_prompt_tokens": 5128,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.61,
+      "prompt_tokens": 5481,
+      "input_tokens": 10609,
+      "uncached_tokens": 331,
+      "output_tokens": 339,
+      "confidence": 0.5,
+      "gaps": [
+        "ne doit PAS encombrer « À valider » : confiance 0.5 (seuil 0.7), trace laissée=oui"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "recurring",
+        "event_date",
+        "needs_review",
+        "fact_proposed"
+      ]
+    },
+    "ord-en-household-ac-filter": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "replaced the AC filter in the living room",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis replaced the AC filter in the living room today."
+          },
+          {
+            "note": "AC filter in the living room due for replacement in October",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-10-01",
+            "event_recurring": false,
+            "summary": "Replace the AC filter in the living room."
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "replaced the AC filter in the living room today, next replacement due in October",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5477,
+      "graph_prompt_tokens": 5124,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.88,
+      "prompt_tokens": 5477,
+      "input_tokens": 10601,
+      "uncached_tokens": 323,
+      "output_tokens": 332,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "needs_review"
+      ]
+    },
+    "ord-1-boulangerie-bruit": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Suis passé chercher des viennoiseries ce matin",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Alexis a acheté des viennoiseries le matin"
+          },
+          {
+            "note": "La rue va être fermée toute la semaine prochaine pour travaux",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Le boulanger a signalé une fermeture de rue prévue la semaine prochaine"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 2,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit que la rue allait être fermée toute la semaine prochaine pour travaux",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": 5505,
+      "graph_prompt_tokens": 5152,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "end_turn",
+      "graph_stop": "end_turn",
+      "latency_s": 3.7,
+      "prompt_tokens": 5505,
+      "input_tokens": 10657,
+      "uncached_tokens": 379,
+      "output_tokens": 357,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    }
+  },
+  "ecarts": 3,
+  "par_frontiere": {
+    "routage": [
+      "date-two-weeks-en"
+    ],
+    "R2e/R3e": [
+      "date-past-recurring-fr"
+    ],
+    "R2d": [
+      "date-past-recurring-fr"
+    ],
+    "X-CONF": [
+      "date-birthday-party-recurring"
+    ]
+  },
+  "prompt_tokens_max": 5505
+}

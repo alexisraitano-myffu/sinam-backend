@@ -161,6 +161,13 @@ def classify_split(model: str, text: str, schema: bool, temperature: float) -> t
     note = context.parse_classify(a.text, a.stop_reason)
     graph = context.parse_classify(b.text, b.stop_reason)
     diag = {"note_parsed": note is not None, "graph_parsed": graph is not None,
+            # Par moitié, parce que le gate a besoin de savoir LAQUELLE a échoué
+            # et de comparer chaque compte de tokens à SON prompt. Un plancher
+            # calculé sur la somme des deux déclarerait la moitié note amputée
+            # alors qu'elle est simplement plus courte.
+            "note_prompt_tokens": a.prompt_tokens, "graph_prompt_tokens": b.prompt_tokens,
+            "note_error": a.error, "graph_error": b.error,
+            "note_stop": a.stop_reason, "graph_stop": b.stop_reason,
             "latency_s": round(a.latency_s + b.latency_s, 2),
             "prompt_tokens": max(a.prompt_tokens or 0, b.prompt_tokens or 0),
             # Le coût se compte sur la SOMME des deux appels, jamais sur le max :

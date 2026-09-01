@@ -30,13 +30,28 @@ _CORE = Path(__file__).resolve().parents[2] / "sinam-core"
 _CRATES = _CORE / "crates"
 
 
+def _sans_les_tests(source: str) -> str:
+    """Le contenu d'un fichier avant son bloc de tests.
+
+    Les tests ne changent aucun comportement : les hacher ferait rougir ce
+    garde-fou sur une modification qui ne peut rien casser, et un rouge qu'on
+    apprend à ignorer ne garde plus rien. Mesuré le 2026-09-01, retirer sept
+    fixtures périmées suffisait à déclarer la roue en retard.
+    """
+    i = source.find("\n#[cfg(test)]")
+    if i >= 0:
+        return source[:i + 1]
+    return "" if source.startswith("#[cfg(test)]") else source
+
+
 def _empreinte_du_depot() -> str:
     """Le miroir exact de `crates/sinam-core-py/build.rs`.
 
     Toute divergence entre les deux rendrait ce test rouge en permanence, donc
-    faux, donc ignoré. Les trois choses qui doivent coïncider mot pour mot : les
-    deux dossiers parcourus et leurs préfixes, le tri par chemin relatif, et le
-    séparateur nul entre chemin et contenu.
+    faux, donc ignoré. Les quatre choses qui doivent coïncider mot pour mot :
+    les deux dossiers parcourus et leurs préfixes, le tri par chemin relatif,
+    la troncature au bloc de tests, et le séparateur nul entre chemin et
+    contenu.
     """
     fichiers: list[tuple[str, Path]] = []
     for dossier, prefixe in ((_CRATES / "sinam-core" / "src", "sinam-core"),
@@ -49,7 +64,7 @@ def _empreinte_du_depot() -> str:
     for rel, chemin in fichiers:
         h.update(rel.encode())
         h.update(b"\0")
-        h.update(chemin.read_bytes())
+        h.update(_sans_les_tests(chemin.read_text()).encode())
         h.update(b"\0")
     return h.hexdigest()[:12]
 
@@ -91,3 +106,25 @@ def test_les_prompts_deployes_ne_sont_pas_en_retard():
         f"prompts déployés en version {deploye}, le cœur en attend {attendu}. "
         f"Recopier ceux du dépôt vers {maison / 'prompts'}."
     )
+
+
+def test_un_seul_bloc_de_tests_par_fichier_du_coeur():
+    """La convention qui rend la troncature sûre.
+
+    L'empreinte ignore tout ce qui suit le premier `#[cfg(test)]`. Ça ne vaut
+    que si chaque fichier n'en a qu'un, et en fin de fichier — c'est le cas des
+    quinze aujourd'hui. Un deuxième bloc placé au milieu ferait disparaître du
+    VRAI code de l'empreinte, en silence, et la garde cesserait de garder sans
+    que rien ne rougisse.
+    """
+    if not (_CRATES / "sinam-core" / "src").is_dir():
+        pytest.skip(f"dépôt core absent ({_CRATES})")
+    fautifs = []
+    for dossier in ("sinam-core", "sinam-core-py"):
+        for chemin in (_CRATES / dossier / "src").rglob("*.rs"):
+            n = chemin.read_text().count("\n#[cfg(test)]")
+            if n > 1:
+                fautifs.append(f"{chemin.name} ({n} blocs)")
+    assert not fautifs, (
+        "plusieurs blocs de tests dans un même fichier : l'empreinte tronque au "
+        "premier et perdrait du vrai code — " + ", ".join(fautifs))

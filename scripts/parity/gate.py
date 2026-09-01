@@ -3,7 +3,7 @@
 Ne mesure PAS la qualité : cherche les quatre vices qui rendent un modèle
 inutilisable quelle que soit son intelligence, et s'arrête au premier trouvé.
 
-    1. avale-t-il le prompt          (une fenêtre trop courte le tronque en silence)
+    1. avale-t-il les DEUX prompts   (une fenêtre trop courte les tronque en silence)
     2. rend-il du JSON exploitable   (valide, non tronqué)
     3. respecte-t-il l'énumération   (atomic_note_kind ∈ note|task|event|episode)
     4. ne perd-il rien               (drop_guard : une action garde une trace)
@@ -26,38 +26,49 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
 
-from scripts.parity import context, providers, score  # noqa: E402
+from scripts.parity import context, providers, score, split  # noqa: E402
 from scripts.parity.corpus import AMBIGUOUS, GATE_CASES  # noqa: E402
-from scripts.parity.schema import CLASSIFY_SCHEMA  # noqa: E402
 
 VALID_NOTE_KINDS = score.VALID_NOTE_KINDS
 
 
-def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
-                    system_chars: int, num_ctx: int) -> str | None:
-    """Renvoie la raison du NO-GO, ou None si le cas passe les axes bloquants."""
-    if reply.error:
-        return f"appel en échec — {reply.error}"
+def _check_blocking(case: dict, diag: dict, parsed: dict | None,
+                    tailles: dict[str, int], num_ctx: int) -> str | None:
+    """Renvoie la raison du NO-GO, ou None si le cas passe les axes bloquants.
 
-    # 1. Le prompt a-t-il été avalé ? Deux symptômes distincts.
-    if reply.prompt_tokens is not None:
-        if reply.prompt_tokens >= num_ctx:
-            return (f"prompt tronqué : {reply.prompt_tokens} tokens d'entrée pour une "
-                    f"fenêtre de {num_ctx} — le modèle n'a pas reçu toutes les règles")
-        # Plancher très conservateur : quel que soit le tokenizer, 8 caractères
-        # par token est une borne basse absurde. Passer dessous veut dire qu'une
-        # partie du système a disparu en route.
-        floor = system_chars // 8
-        if reply.prompt_tokens < floor:
-            return (f"prompt amputé : {reply.prompt_tokens} tokens d'entrée pour "
-                    f"{system_chars} caractères de système (plancher {floor})")
+    ⚠ Tout se lit PAR MOITIÉ. Jusqu'au 2026-09-01 cet étage jouait
+    `classifier.md`, le prompt en un seul appel abandonné en production le
+    21 août : il certifiait qu'un modèle était utilisable, ou pas, sur un
+    énoncé que plus personne n'exécutait. Le plancher d'amputation doit lui
+    aussi se calculer moitié par moitié, sinon la moitié note, plus courte,
+    déclenche un faux positif contre la somme des deux.
+    """
+    for demi, nom in (("note", "moitié note"), ("graph", "moitié graphe")):
+        if diag.get(f"{demi}_error"):
+            return f"{nom} : appel en échec — {diag[f'{demi}_error']}"
 
-    # 2. JSON exploitable.
-    if reply.truncated:
-        return "sortie tronquée (budget de sortie épuisé avant la fin du JSON)"
+        # 1. Le prompt a-t-il été avalé ? Deux symptômes distincts.
+        jetons = diag.get(f"{demi}_prompt_tokens")
+        if jetons is not None:
+            if jetons >= num_ctx:
+                return (f"{nom} : prompt tronqué, {jetons} tokens d'entrée pour une "
+                        f"fenêtre de {num_ctx} — le modèle n'a pas reçu toutes les règles")
+            # Plancher très conservateur : quel que soit le tokenizer, 8
+            # caractères par token est une borne basse absurde. Passer dessous
+            # veut dire qu'une partie du système a disparu en route.
+            plancher = tailles[demi] // 8
+            if jetons < plancher:
+                return (f"{nom} : prompt amputé, {jetons} tokens d'entrée pour "
+                        f"{tailles[demi]} caractères de système (plancher {plancher})")
+
+        # 2. JSON exploitable.
+        if diag.get(f"{demi}_stop") == "max_tokens":
+            return f"{nom} : sortie tronquée (budget épuisé avant la fin du JSON)"
+        if not diag.get(f"{demi}_parsed"):
+            return f"{nom} : sortie non-JSON"
+
     if parsed is None:
-        head = reply.text.strip()[:120].replace("\n", " ")
-        return f"sortie non-JSON : {head!r}"
+        return "aucune des deux moitiés n'a produit de JSON"
 
     # 3. Énumération fermée.
     #
@@ -96,7 +107,13 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
 def main() -> int:
     ap = argparse.ArgumentParser(description="gate de parité (étage 1)")
     ap.add_argument("model", help="provider:modèle, ex. ollama:qwen2.5:3b-instruct-q4_K_M")
-    ap.add_argument("--prompt", help="classifier.md alternatif (variante compacte…)")
+    # Il y avait ici un `--prompt` qui désignait un `classifier.md` de
+    # remplacement. Le classifieur est découpé en deux moitiés depuis le
+    # 21/08 : pour mesurer une variante, on pointe SYNAPSE_SPLIT_PROMPTS_DIR
+    # sur un dossier contenant `classifier-note.md` et `classifier-graph.md`,
+    # comme le fait l'étage 2. Un seul mécanisme, sinon les deux étages
+    # finissent par mesurer deux énoncés différents — ce qui est exactement ce
+    # qui vient d'arriver.
     ap.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)
     ap.add_argument("--temperature", type=float, default=0.0,
                     help="0 = reproductible (défaut). 1.0 reproduit la variance de prod.")
@@ -104,40 +121,40 @@ def main() -> int:
                     help="jouer les 12 cas même après un vice rédhibitoire")
     ap.add_argument("--schema", action="store_true",
                     help="décodage contraint par le JSON Schema (Ollama seulement) — "
-                         "mesure la justesse SANS la conformité de format")
+                         "mesure la justesse SANS la conformité de format. Chaque "
+                         "moitié reçoit SON sous-schéma, comme à l'étage 2.")
     ap.add_argument("--json", type=Path, help="écrire le détail dans ce fichier")
     args = ap.parse_args()
 
-    system = context.classifier_system(Path(args.prompt) if args.prompt else None)
-    system_chars = sum(len(b) for b in system)
-    fp = context.fingerprint(system)
+    note, graphe = split._system("note.md"), split._system("graph.md")
+    tailles = {"note": sum(len(b) for b in note), "graph": sum(len(b) for b in graphe)}
+    fp_note, fp_graph = context.fingerprint(note), context.fingerprint(graphe)
+    fp = f"{fp_note}+{fp_graph}"
 
     print(f"modèle   : {args.model}")
-    print(f"contexte : {system_chars} caractères · empreinte {fp} · today={context.TODAY}")
+    print(f"appel 1  : {tailles['note']} car · empreinte {fp_note}")
+    print(f"appel 2  : {tailles['graph']} car · empreinte {fp_graph}")
+    print(f"contexte : today={context.TODAY}")
     print(f"fenêtre  : num_ctx={args.num_ctx}, budget de sortie={context.CLASSIFY_MAX_TOKENS}")
     print(f"décodage : {'contraint par schéma' if args.schema else 'libre'}\n")
-
-    schema = CLASSIFY_SCHEMA if args.schema else None
     records, blockers, notes_count = [], [], 0
     for case in GATE_CASES:
-        reply = providers.call(args.model, system, case["text"],
-                               context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
-                               args.temperature)
-        parsed = context.parse_classify(reply.text, reply.stop_reason)
-        blocking = _check_blocking(case, reply, parsed, system_chars, args.num_ctx)
+        parsed, diag = split.classify_split(args.model, case["text"], bool(args.schema),
+                                            args.temperature)
+        blocking = _check_blocking(case, diag, parsed, tailles, args.num_ctx)
         quality = score.gaps(case, parsed, skip=("drop_guard",)) if parsed else []
         notes_count += len(quality)
 
         records.append({"id": case["id"], "text": case["text"], "blocking": blocking,
-                        "quality": quality, "latency_s": reply.latency_s,
-                        "prompt_tokens": reply.prompt_tokens,
-                        "output_tokens": reply.output_tokens, "parsed": parsed})
+                        "quality": quality, "latency_s": diag["latency_s"],
+                        "prompt_tokens": diag["input_tokens"],
+                        "output_tokens": diag["output_tokens"], "parsed": parsed})
 
         # flush : un modèle local prend des minutes par cas ; sans ça, rien ne
         # s'affiche avant la fin quand la sortie est redirigée dans un fichier.
         if blocking and case["id"] not in AMBIGUOUS:
             blockers.append((case["id"], blocking))
-            print(f"  ✗ {case['id']:22} {reply.latency_s:6.1f}s  BLOQUANT — {blocking}", flush=True)
+            print(f"  ✗ {case['id']:22} {diag['latency_s']:6.1f}s  BLOQUANT — {blocking}", flush=True)
             if not args.no_fail_fast:
                 print(f"\nNO-GO. Arrêt au premier vice : l'étage 2 n'a pas de sens tant "
                       f"que celui-ci tient.")
@@ -145,7 +162,7 @@ def main() -> int:
         else:
             mark = "•" if quality else "✓"
             detail = f"  ({'; '.join(quality)})" if quality else ""
-            print(f"  {mark} {case['id']:22} {reply.latency_s:6.1f}s{detail}", flush=True)
+            print(f"  {mark} {case['id']:22} {diag['latency_s']:6.1f}s{detail}", flush=True)
 
     played = len(records)
     print()
@@ -159,7 +176,7 @@ def main() -> int:
 
     if args.json:
         args.json.write_text(json.dumps(
-            {"model": args.model, "fingerprint": fp, "system_chars": system_chars,
+            {"model": args.model, "fingerprint": fp, "system_chars": tailles,
              "num_ctx": args.num_ctx, "schema_constrained": bool(args.schema),
              "blockers": blockers, "cases": records},
             ensure_ascii=False, indent=2), encoding="utf-8")

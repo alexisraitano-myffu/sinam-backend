@@ -1,8 +1,8 @@
 """Extraire le CHEMIN DE DÉCISION pris par chaque modèle, cas par cas.
 
 Le score dit « 10 sur 12 ». Il ne dit pas *où* le modèle a bifurqué. Or les trois
-axes que `classifier.md` déclare ORTHOGONAUX — `atomic_note`,
-`is_ephemeral` — sont exactement là où les petits modèles se trompent : ils les
+axes que le prompt déclare ORTHOGONAUX — la note, son genre, ce qui part au
+graphe — sont exactement là où les petits modèles se trompent : ils les
 traitent comme un choix unique et recopient l'un dans l'autre.
 
 Ce module réduit chaque réponse aux branches empruntées, pour qu'on puisse
@@ -41,7 +41,6 @@ def path_of(parsed: dict | None) -> dict:
         # sur-découpe, invisible sur tous les autres axes.
         "memories": len(liste),
         "kind_defaulted": False,
-        "ephemeral": bool(parsed.get("is_ephemeral")),
         "facts": facts,
         "relations": len(parsed.get("relations") or []),
         "projects": len(parsed.get("project_entries") or []),

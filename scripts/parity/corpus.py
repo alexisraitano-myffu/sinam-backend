@@ -23,7 +23,6 @@ formulée. C'est `score.py` qui les lit, et lui seul.
 
     note        True/False : la capture doit-elle produire une atomic_note
     kind        note | task | event | episode, vérifié seulement si une note est produite
-    ephemeral   valeur attendue de is_ephemeral
     owner       None = l'auteur ; un nom = l'action est celle de quelqu'un d'autre
     recurring   valeur attendue de event_recurring
     event_date  date absolue attendue (YYYY-MM-DD), ou None pour « doit rester vide »
@@ -65,7 +64,7 @@ CORPUS_DIR = Path(__file__).resolve().parent / "corpus"
 # le cas passe pour vert en n'ayant rien mesuré. C'est le mode d'échec le plus
 # coûteux d'un corpus, parce qu'il est silencieux et qu'il grandit.
 CHAMPS = {
-    "id", "text", "note", "kind", "ephemeral", "owner", "recurring", "event_date",
+    "id", "text", "note", "kind", "owner", "recurring", "event_date",
     "language", "needs_review", "drop_guard", "rel", "proj", "facts_min",
     "entity_expected", "no_entity", "entity_proposed", "fact_proposed",
     "type_proposal", "no_type_proposal",

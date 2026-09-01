@@ -74,19 +74,22 @@ def _check_blocking(case: dict, reply: providers.Reply, parsed: dict | None,
 
     # 4. Rien ne se perd — au sens DURABLE du terme.
     #
-    # Le harnais de juillet comptait `is_ephemeral` comme « gardé ». C'est faux,
-    # et c'est même l'inverse du bug qu'on surveille : une intention vit 48 h puis
-    # expire. Une tâche terse classée éphémère EST perdue, c'est exactement ce qui
-    # arrivait à « Répondre à l'e-mail de Vincent » avant le durcissement de juin.
-    # Une trace durable = note, entrée projet, fait ou relation.
+    # Le harnais de juillet comptait le drapeau de l'éphémère comme « gardé ».
+    # C'était faux, et même l'inverse du bug qu'on surveille : une intention
+    # vivait 48 h puis expirait, donc une tâche terse classée éphémère ÉTAIT
+    # perdue — ce qui arrivait à « Répondre à l'e-mail de Vincent » avant le
+    # durcissement de juin. Le drapeau est retiré depuis le 2026-09-01 et ce
+    # chemin de perte avec lui ; le contrôle reste, parce que ce qu'il garde
+    # n'a jamais été le drapeau mais la question : la capture a-t-elle laissé
+    # quelque chose de durable ? Une trace durable = note, entrée projet, fait
+    # ou relation.
     if case.get("drop_guard"):
         has_note = bool(souvenirs(parsed))
         facts = sum(len(e.get("facts") or []) for e in (parsed.get("entities") or []))
         kept = (has_note or bool(parsed.get("project_entries"))
                 or facts > 0 or bool(parsed.get("relations")))
         if not kept:
-            expired = " (classée éphémère : expire en 48 h)" if parsed.get("is_ephemeral") else ""
-            return f"capture sans trace durable{expired}"
+            return "capture sans trace durable"
     return None
 
 

@@ -39,7 +39,7 @@ SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
 # texte d'une note varie d'une exécution à l'autre sans que ce soit une
 # régression, alors qu'une branche qui bascule en est toujours une (ou une
 # correction, et c'est justement ce qu'on veut voir).
-DIFFED = ("has_note", "kind", "memories", "ephemeral", "facts", "relations", "projects")
+DIFFED = ("has_note", "kind", "memories", "facts", "relations", "projects")
 
 
 def _frontiere(case: dict, ecart: str) -> str:

@@ -127,7 +127,7 @@ SOUVENIRS.update({k: (True, k) for k in score.VALID_NOTE_KINDS})
 # Le modèle a les prompts de PRODUCTION sous les yeux, et ils nomment leurs
 # sorties autrement que le corpus. Renommer sous son nez marche mieux que le lui
 # interdire : c'est le même geste que `souvenir`, et pour la même raison.
-_ALIAS_MOTEUR = {"event_recurring": "recurring", "is_ephemeral": "ephemeral",
+_ALIAS_MOTEUR = {"event_recurring": "recurring",
                  "atomic_note_owner": "owner", "event_date": "event_date"}
 
 

@@ -26,7 +26,7 @@ SYSTEM_COURT = (
     "You classify a personal capture into a memory record. Answer with one JSON object "
     "and nothing else, with exactly these keys:\n"
     '{"language","memories":[{"note","kind","owner","event_date","event_recurring","summary"}],'
-    '"is_ephemeral","ephemeral_content","cancels_action","classification_confidence",'
+    '"cancels_action","classification_confidence",'
     '"entities","relations","project_entries","obsoleted_facts","resources"}\n'
     'kind is one of "task","event","episode","note". Dates are absolute (YYYY-MM-DD).\n'
     f"Today is {_TODAY}. The author is {_OWNER}."

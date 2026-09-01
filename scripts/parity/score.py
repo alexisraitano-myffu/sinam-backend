@@ -66,7 +66,6 @@ REVIEW_THRESHOLD = 0.7
 AXES = {
     "note": "routage",
     "kind": "routage",
-    "ephemeral": "X-EPH",
     "owner": "R1e",
     "recurring": "R2e/R3e",
     "event_date": "R2d",
@@ -198,8 +197,6 @@ def rien_garde(parsed: dict) -> bool:
     n'apprend rien.
     """
     if souvenirs(parsed):
-        return False
-    if parsed.get("is_ephemeral"):
         return False
     # Le repêchage de l'annulation a déjà écrit la note côté core : sans cette
     # ligne le harnais enverrait en file une capture que la production garde.
@@ -428,9 +425,7 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         kept = (note or bool(parsed.get("project_entries"))
                 or _count_durable(parsed) > 0)
         if not kept:
-            expire = " (classée éphémère : expire en 48 h)" \
-                if parsed.get("is_ephemeral") else ""
-            out.append(f"drop_guard : capture sans trace durable{expire}")
+            out.append("drop_guard : capture sans trace durable")
 
     # --- routage ---------------------------------------------------------
     if "note" in case and note != case["note"]:
@@ -446,9 +441,6 @@ def gaps(case: dict, parsed: dict | None, skip: tuple[str, ...] = ()) -> list[st
         vus = [m["kind"] for m in liste] or [kind]
         if case["kind"] not in vus:
             out.append(f"kind attendu={case['kind']} obtenu={', '.join(map(str, vus))}")
-
-    if "ephemeral" in case and bool(parsed.get("is_ephemeral")) != case["ephemeral"]:
-        out.append(f"ephemeral attendu={case['ephemeral']}")
 
     # Le NOMBRE de souvenirs, quand le cas le dit. C'est l'axe qui voit la
     # sur-découpe : une capture hachée en trois passe tous les autres axes,

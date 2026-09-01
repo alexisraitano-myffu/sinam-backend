@@ -169,7 +169,6 @@ def _distill(raw: dict) -> dict:
         "atomic_note": note,
         "event_date": raw.get("event_date"),
         "event_recurring": raw.get("event_recurring"),
-        "is_ephemeral": raw.get("is_ephemeral"),
         "classification_confidence": raw.get("classification_confidence"),
         "language": raw.get("language"),  # présent seulement depuis la bascule multilingue
         "entities": [e.get("canonical_name") for e in raw.get("entities", []) or []],
@@ -229,8 +228,6 @@ def _print_case(cid: str, text: str, dist: dict, err: str | None) -> None:
     flags = []
     if dist.get("has_note"):
         flags.append(f"note:{kind}")
-    if dist.get("is_ephemeral"):
-        flags.append("ephemeral")
     if dist.get("event_date"):
         flags.append(f"date:{dist['event_date']}")
     if dist.get("facts"):
@@ -289,30 +286,30 @@ def cmd_compare(args) -> None:
 
 
 def _note_written(r: dict) -> bool:
-    """Statut EFFECTIF après routage (_process_entry cycle.py) : une note kind=note
-    est écrite seulement si non-éphémère ; une task/event est durable (toujours écrite).
-    C'est ce qui compte — pas le simple has_note de la sortie brute du classifieur."""
-    eph = bool(r.get("is_ephemeral")) or r.get("input_type") == "ephemeral"
-    return bool(r.get("has_note")) and (
-        not eph or r.get("atomic_note_kind") in ("task", "event"))
+    """Statut EFFECTIF après routage : la note est écrite, point.
+
+    Cette fonction retranchait naguère les notes que le drapeau de l'éphémère
+    faisait jeter par le routage — une capture marquée éphémère perdait tout
+    souvenir qui n'était ni tâche ni événement. Ce chemin est retiré du cœur le
+    2026-09-01, donc `has_note` dit désormais toute la vérité.
+
+    La fonction reste, et son nom aussi : ce qu'elle mesure est « la note
+    survit-elle au routage », qui est la bonne question même quand la réponse
+    est devenue simple. La refondre dans l'appelant ferait disparaître ce que
+    le harnais surveille."""
+    return bool(r.get("has_note"))
 
 
 def _diff_case(a: dict, b: dict) -> list[tuple[str, str]]:
     """Renvoie [(severity, message)]. severity ∈ {reg, warn}. Vide = OK."""
     issues: list[tuple[str, str]] = []
 
-    # Perte d'une note EFFECTIVEMENT écrite = la régression Haiku historique
-    # (inclut le cas « kind=note marqué is_ephemeral=true » que le routage drop).
+    # Perte d'une note EFFECTIVEMENT écrite = la régression Haiku historique.
     if _note_written(a) and not _note_written(b):
-        issues.append(("reg", f"note effective perdue (kind={a.get('atomic_note_kind')}, "
-                              f"is_ephemeral={b.get('is_ephemeral')})"))
+        issues.append(("reg", f"note effective perdue (kind={a.get('atomic_note_kind')})"))
     if a.get("atomic_note_kind") != b.get("atomic_note_kind") and a.get("has_note"):
         issues.append(("warn",
                        f"kind {a.get('atomic_note_kind')} → {b.get('atomic_note_kind')}"))
-
-    # Une action durable qui bascule en pur éphémère sans note = drop.
-    if (not a.get("is_ephemeral")) and b.get("is_ephemeral") and not b.get("has_note"):
-        issues.append(("reg", "bascule en ephemeral sans note (action perdue)"))
 
     if a.get("input_type") != b.get("input_type"):
         issues.append(("warn",

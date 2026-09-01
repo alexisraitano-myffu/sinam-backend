@@ -45,7 +45,7 @@ SNAP_DIR = _REPO / "scripts" / "parity" / "baselines"
 # du harnais réclame quand même sa place, sans quoi les axes ouverts s'entassent
 # à la fin et le diff cesse de se lire à l'œil.
 ORDRE = ["id", "text", "wm", "repeat", "expect", "note", "memories", "kind",
-         "ephemeral", "owner", "recurring", "event_date", "language",
+         "owner", "recurring", "event_date", "language",
          "needs_review", "drop_guard", "rel", "proj",
          "facts_min", "facts_on", "entity_expected", "no_entity",
          "entity_proposed", "fact_proposed", "fact_asserted", "relation_proposed",
@@ -156,8 +156,6 @@ def _branche(cas: dict, jeu: str) -> list[str]:
         dits.append(f"de genre {e['kind']}")
     if "confidence_below" in e:
         dits.append(f"sous {e['confidence_below']} de confiance")
-    if "ephemeral" in e:
-        dits.append("éphémère" if e["ephemeral"] else "non éphémère")
     lignes = [f"{', '.join(dits) or e}, sur "
               f"{cas.get('repeat', 1)} passes identiques"]
 
@@ -263,7 +261,7 @@ def _trace(cas: dict, trace: dict) -> None:
     etat = f"{G}conforme{N}" if not ecarts else f"{R}{len(ecarts)} écart(s){N}"
     print(f"\n{B}CE QUE LE MODÈLE A PRODUIT{N} — {etat}")
     print(f"  note={trace.get('has_note')} kind={trace.get('kind')} "
-          f"ephemeral={trace.get('ephemeral')} faits={trace.get('facts')} "
+          f"faits={trace.get('facts')} "
           f"relations={trace.get('relations')} projets={trace.get('projects')}")
     for e in ecarts:
         print(f"  {R}·{N} {e}")

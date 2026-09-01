@@ -161,13 +161,6 @@ CLASSIFY_SCHEMA = {
                 "additionalProperties": False,
             },
         },
-        "is_ephemeral": {"type": "boolean"},
-        # Absent du schéma jusqu'au 2026-08-25, alors que `routing.rs` le lit en
-        # PREMIER pour le texte du rappel à 48 h. Contraint, le modèle ne pouvait
-        # donc pas l'émettre ; libre, le prompt le lui présentait comme un `null`
-        # littéral. Sur les 7 captures éphémères du corpus, il était rempli 0 fois,
-        # et la fonctionnalité ne tenait que par le repli sur `summary`.
-        "ephemeral_content": {"type": ["string", "null"]},
         # Le pointeur en arrière : l'action que la capture ANNULE, dans ses
         # propres mots. Le core y cherche une tâche vivante, l'archive si la
         # cible est nette, demande sinon. Requis comme les autres, et pour la
@@ -185,13 +178,12 @@ CLASSIFY_SCHEMA = {
     # ⚠️ TOUS les champs déclarés sont requis, et ce n'est pas du zèle.
     # Mesuré le 2026-08-19 : avec seulement trois champs requis, Qwen contraint
     # n'en émettait plus que 4 à 5 sur 13 — il omettait `atomic_note_kind`,
-    # `is_ephemeral`, `event_date`, `relations`… Un schéma permissif ne se contente
+    # `atomic_note_kind`, `event_date`, `relations`… Un schéma permissif ne se contente
     # pas de ne rien garantir : il AUTORISE le modèle à moins produire, et les
     # absences se lisaient ensuite comme des erreurs de jugement. Un schéma qui
     # n'exige pas la forme complète mesure autre chose que ce qu'on croit.
     "required": [
         "language", "memories",
-        "is_ephemeral", "ephemeral_content",
         "cancels_action", "classification_confidence", "project_entries", "entities", "relations",
         # Requis comme les autres, et pour la même raison mesurée : un champ
         # facultatif est un champ que le modèle cesse d'émettre. Le tableau vide

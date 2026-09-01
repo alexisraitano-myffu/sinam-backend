@@ -30,7 +30,6 @@ from datetime import date
 GROUPES: dict[str, tuple[str, tuple[str, ...]]] = {
     "trace":    ("Que laisse cette capture, et sous quelle forme ?", ("note", "kind")),
     "perte":    ("Cette capture peut-elle disparaître sans laisser de trace ?", ("drop_guard",)),
-    "duree":    ("Est-ce un rappel qui expire en 48 h, ou quelque chose de durable ?", ("ephemeral",)),
     "qui":      ("À qui appartient l'action ?", ("owner",)),
     "quand":    ("Quelle date retient-on, et revient-elle chaque année ?", ("event_date", "recurring")),
     "langue":   ("Dans quelle langue la note s'écrit-elle ?", ("language",)),
@@ -97,9 +96,6 @@ def phrase(axe: str, valeur) -> str:
     if axe == "drop_guard":
         return ("Cette capture ne doit pas disparaître : au moins une trace "
                 "durable (note, fait, lien ou entrée de projet).")
-    if axe == "ephemeral":
-        return ("Elle part en rappel de 48 h, puis expire." if valeur
-                else "Elle n'expire pas : rien ne la transforme en rappel.")
     if axe == "owner":
         return ("L'action est la tienne." if valeur is None
                 else f"L'action est celle de {valeur}, pas la tienne : "

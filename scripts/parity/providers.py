@@ -225,11 +225,18 @@ def _call_mlx(model: str, system_blocks: list[str], user: str, max_tokens: int,
     énoncé qu'il n'a jamais vu à l'entraînement, et on conclurait que
     l'entraînement a échoué alors qu'on aurait posé la mauvaise question.
 
-    ⚠ Le serveur ne connaît pas de modèle « par défaut » utile : le nom passé
-    ici n'est PAS ce qui décide des poids. Ce sont `--model` et
-    `--adapter-path` au lancement du serveur qui décident, et rien dans la
-    réponse ne dit lequel a répondu. Noter le lancement à côté de la baseline,
-    sinon l'empreinte de contexte certifie le prompt et rien du modèle.
+    ⚠ LE NOM DU MODÈLE COMPTE, contrairement à ce qu'on suppose d'un serveur
+    lancé avec `--model`. Mesuré le 2026-09-01 : le serveur RÉSOUT le champ
+    `model` de la requête, et un nom fantaisiste le fait partir chercher un
+    dépôt sur Hugging Face, puis répondre 404 après un aller-retour réseau. Il
+    faut donc passer l'identifiant exact avec lequel le serveur a été lancé.
+
+    ⚠ En revanche l'ADAPTATEUR, lui, ne se choisit que par `--adapter-path` au
+    lancement, et rien dans la réponse ne dit lequel a répondu. Deux
+    adaptateurs successifs sur le même modèle rendent des baselines
+    d'empreintes IDENTIQUES : l'empreinte certifie le prompt, jamais les poids.
+    Noter le lancement à côté de la baseline, sinon deux mesures d'entraînements
+    différents deviennent indiscernables.
     """
     payload = {
         "model": model,

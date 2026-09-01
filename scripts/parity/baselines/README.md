@@ -65,3 +65,27 @@ la conclusion est dans le journal et dont la sortie brute ne servait plus.
 nom qui dit la question posée (`regles-seules-150`) vaut mieux qu'un numéro
 d'essai (`syn224-essai4`). Une sonde qui répond à une question du jour n'a pas
 besoin d'être commitée.
+
+## Ajouts du 2026-09-01
+
+**`prompt-deploye-v32-150`** — le prompt réellement déployé, sur les mêmes 150
+cas que `regles-v4-a/b`. Elle existe parce que ces deux-là ne mesuraient PAS ce
+qui tourne : la promotion en production a suivi la dernière mesure de quatre
+minutes et a changé le contenu des deux moitiés. Les empreintes le disent,
+`8751242ef493+a216da480` mesuré contre `0404262a2be2+a7a8e0bf069a` déployé.
+
+Verdict : **136/150**, contre 137 et 136 pour la variante mesurée. Au plancher
+de bruit de ±1 cas, c'est la même chose. La promotion n'a rien cassé, mais on ne
+le savait pas, et c'est ça qui devait être réparé.
+
+**`qwen25-3b-regles-v32-150`** — Qwen 2.5 3B sur ces mêmes cas, avant tout
+entraînement. C'est le point de départ à battre : **67/150**, et surtout 49 % en
+français contre 12 % en anglais. Les deux modes d'échec dominants sont la porte
+qui ne se ferme jamais (24 cas gardés quand le corpus attend « rien ») et treize
+réponses en français à des captures anglaises.
+
+⚠ **L'empreinte ne certifie PAS les poids.** Une baseline produite par le
+provider `mlx:` porte l'empreinte du prompt et rien d'autre : l'adaptateur se
+choisit au lancement du serveur, et deux entraînements différents rendent des
+empreintes identiques. Noter le lancement à côté, sinon deux mesures deviennent
+indiscernables.

@@ -7,6 +7,9 @@ Deux dialectes suffisent aujourd'hui :
   * `ollama:<model>`    — tout ce qui tourne en local (Qwen, Llama, Gemma…).
   * `mlx:<model>`       — un modèle MLX servi par `mlx_lm.server`, adaptateur
     LoRA compris. C'est par là qu'un modèle ENTRAÎNÉ se note contre le corpus.
+  * `rejeu:<model>`     — ne parle à personne : enregistre les questions que le
+    harnais fabrique, ou rejoue des réponses obtenues ailleurs. C'est ainsi
+    qu'un GPU loué sous Linux répond sans que le cœur Rust y soit porté.
 
 Toute réponse est ramenée à la MÊME forme (`Reply`), pour que le scoring ne
 sache pas d'où elle vient. C'est la leçon apprise côté core : normaliser au
@@ -21,12 +24,14 @@ avalé ce qu'on lui a envoyé (`Reply.prompt_tokens`).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from pathlib import Path
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
 # `mlx_lm.server`, l'endpoint compatible OpenAI qui sert un modèle MLX et son
@@ -80,7 +85,7 @@ def parse_spec(spec: str) -> tuple[str, str]:
     if ":" not in spec:
         raise ValueError(f"spec de modèle invalide : {spec!r} (attendu 'provider:model')")
     provider, model = spec.split(":", 1)
-    if provider not in ("anthropic", "ollama", "gemini", "mlx"):
+    if provider not in ("anthropic", "ollama", "gemini", "mlx", "rejeu"):
         raise ValueError(f"provider inconnu : {provider!r}")
     return provider, model
 
@@ -106,11 +111,93 @@ def call(spec: str, system_blocks: list[str], user: str, max_tokens: int,
         if provider == "mlx":
             return _call_mlx(model, system_blocks, user, max_tokens, schema,
                              temperature)
+        if provider == "rejeu":
+            return _call_rejeu(model, system_blocks, user, max_tokens, schema,
+                               temperature)
         return _call_ollama(model, system_blocks, user, max_tokens, num_ctx, schema,
                             temperature)
     except Exception as exc:  # noqa: BLE001 — un modèle qui casse EST un résultat
         return Reply(text="", stop_reason=None, latency_s=0.0,
                      error=f"{type(exc).__name__}: {exc}")
+
+
+def cle_rejeu(system_blocks: list[str], user: str) -> str:
+    """L'empreinte qui lie une réponse à LA question qui l'a produite.
+
+    Elle couvre les blocs système ET la capture, avec le même séparateur que
+    l'appel réel. C'est ce qui rend le rejeu incapable de mentir : une réponse
+    obtenue sous le barreau 1 ne peut pas être servie au barreau 2, puisque le
+    prompt diffère donc l'empreinte aussi.
+    """
+    h = hashlib.sha256()
+    h.update("\n\n".join(system_blocks).encode())
+    h.update(b"\n<<<CAPTURE>>>\n")
+    h.update(user.encode())
+    return h.hexdigest()
+
+
+_REJEU_TABLE: dict[str, dict] | None = None
+
+
+def _call_rejeu(model: str, system_blocks: list[str], user: str, max_tokens: int,
+                schema: dict | None = None, temperature: float = 0.0) -> Reply:
+    """Enregistrer les questions ici, les faire répondre ailleurs, noter ici.
+
+    POURQUOI ce provider existe. Le harnais ne tourne pas partout : il importe
+    `context`, donc `dream_cycle.cycle`, donc `sinam_core`, la roue Rust. Or le
+    cœur n'est construit que pour macOS et Windows, jamais pour Linux, et c'est
+    précisément Linux qui tient les GPU qu'on loue. Compiler le cœur là-bas
+    ouvrirait la matrice ort/onnxruntime sur une plateforme neuve.
+
+    La sortie est de séparer les rôles plutôt que de porter le cœur : le VRAI
+    code fabrique les questions ici (`split._system`, l'échafaudage, le schéma),
+    la machine distante ne fait qu'une boucle d'inférence bête, et le VRAI
+    `score.py` note ici. Rien n'est réécrit, donc rien ne peut diverger.
+
+    ⚠ C'est la faute du 2026-09-01 qu'on refuse de refaire : ce jour-là une
+    mesure a été fausse en silence parce qu'on avait supposé le comportement
+    d'un serveur au lieu de le vérifier. Le principe posé ici est l'inverse :
+    on ne réimplémente aucune partie du harnais pour la faire tourner ailleurs.
+
+    Deux modes, par variable d'environnement :
+
+      * `SYNAPSE_REJEU_ENREGISTRER=<fichier.jsonl>` — chaque appel écrit sa
+        question et rend une ERREUR. Le run d'enregistrement produit donc des
+        scores volontairement nuls : il ne peut pas être pris pour une mesure.
+      * `SYNAPSE_REJEU_FICHIER=<reponses.json>` — chaque appel cherche sa
+        réponse par empreinte. Une empreinte absente est une erreur explicite,
+        jamais un repli silencieux : une réponse manquante doit se voir.
+    """
+    global _REJEU_TABLE
+    cle = cle_rejeu(system_blocks, user)
+
+    sortie = os.environ.get("SYNAPSE_REJEU_ENREGISTRER")
+    if sortie:
+        with open(sortie, "a") as f:
+            f.write(json.dumps({"cle": cle, "modele": model, "system": system_blocks,
+                                "user": user, "max_tokens": max_tokens,
+                                "schema": schema, "temperature": temperature},
+                               ensure_ascii=False) + "\n")
+        return Reply(text="", stop_reason=None, latency_s=0.0,
+                     error="rejeu: mode enregistrement, aucune réponse")
+
+    fichier = os.environ.get("SYNAPSE_REJEU_FICHIER")
+    if not fichier:
+        return Reply(text="", stop_reason=None, latency_s=0.0,
+                     error="rejeu: ni SYNAPSE_REJEU_ENREGISTRER ni SYNAPSE_REJEU_FICHIER")
+
+    if _REJEU_TABLE is None:
+        _REJEU_TABLE = {r["cle"]: r for r in json.loads(Path(fichier).read_text())}
+
+    rec = _REJEU_TABLE.get(cle)
+    if rec is None:
+        return Reply(text="", stop_reason=None, latency_s=0.0,
+                     error=f"rejeu: empreinte absente du fichier ({cle[:12]}…)")
+    return Reply(text=rec.get("text", ""), stop_reason=rec.get("stop_reason"),
+                 latency_s=rec.get("latency_s", 0.0),
+                 prompt_tokens=rec.get("prompt_tokens"),
+                 output_tokens=rec.get("output_tokens"),
+                 error=rec.get("error"))
 
 
 def _call_anthropic(model: str, system_blocks: list[str], user: str,

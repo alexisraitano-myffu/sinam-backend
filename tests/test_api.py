@@ -51,6 +51,35 @@ def test_capture_is_idempotent(client):
     assert sum(1 for x in feed if x["client_id"] == "uuid-1") == 1
 
 
+def test_capture_garde_le_brut_de_la_dictee(client):
+    """Le texte tel que la dictee l'a rendu survit a la correction a la main.
+
+    La colonne n'a de valeur que le jour ou le correcteur s'est trompe sur un
+    nom propre : une faute la ne produit pas une faute visible que l'on
+    rattrape, elle produit une entite en double, en silence. D'ou aussi le
+    second cas : une capture tapee n'a pas de brut distinct, et NULL y veut
+    dire « content EST le brut », jamais « le brut est perdu ».
+    """
+    from db import get_connection
+
+    client.post("/capture", json={
+        "id": "brut-1",
+        "content": "appeler Theo Marchand",
+        "raw_content": "appeler Theo Marchant",
+    })
+    client.post("/capture", json={"id": "brut-2", "content": "tape au clavier"})
+
+    conn = get_connection()
+    try:
+        rows = dict(conn.execute(
+            "SELECT client_id, raw_content FROM inbox WHERE client_id IN ('brut-1','brut-2')"
+        ))
+    finally:
+        conn.close()
+    assert rows["brut-1"] == "appeler Theo Marchant"
+    assert rows["brut-2"] is None
+
+
 def test_feed_reports_status(client):
     client.post("/capture", json={"id": "u2", "content": "à traiter", "device_id": "air"})
     feed = client.get("/feed").json()

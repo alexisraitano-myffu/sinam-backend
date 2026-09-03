@@ -416,6 +416,12 @@ class CaptureIn(BaseModel):
     captured_at: str | None = None
     type: str = "text"
     source: str = "manual"
+    # Ce que la dictee a rendu, avant que la main ne le corrige. None veut dire
+    # « content est deja le brut » : une capture tapee n'en a pas. Un correcteur
+    # se trompe la ou ca coute le plus cher, sur les noms propres, et rien
+    # derriere ne rattrape une source ecrasee. Champ optionnel des deux cotes :
+    # un client ancien ne l'envoie pas, un serveur ancien l'ignore.
+    raw_content: str | None = None
 
 
 class ValidateIn(BaseModel):
@@ -989,10 +995,11 @@ def capture(item: CaptureIn):
         with conn:
             conn.execute(
                 "INSERT OR IGNORE INTO inbox "
-                "(id, content, source, client_id, device_id, captured_at, status) "
-                "VALUES (?,?,?,?,?,?, 'queued')",
+                "(id, content, source, client_id, device_id, captured_at, status, "
+                " raw_content) "
+                "VALUES (?,?,?,?,?,?, 'queued', ?)",
                 (item.id, item.content, item.source, item.id, item.device_id,
-                 item.captured_at),
+                 item.captured_at, item.raw_content),
             )
         row = first_row(conn.execute(
             "SELECT id, created_at FROM inbox WHERE client_id=?", (item.id,)

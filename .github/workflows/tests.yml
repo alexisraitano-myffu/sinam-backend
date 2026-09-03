@@ -92,5 +92,15 @@ jobs:
       # Sans clé d'API, les tests qui appellent le modèle se sautent d'eux-mêmes
       # (`pytest.mark.skipif`). Aucune clé n'est posée ici et il ne faut pas en
       # poser : la suite doit rester exécutable par n'importe qui sur un fork.
+      # Le harnais cherche les prompts dans un depot VOISIN
+      # (`../sinam-core/prompts`), ce qui est vrai sur une machine de
+      # developpement et faux ici : actions/checkout ne sait ecrire que sous le
+      # workspace, donc le coeur est en `core/`. Les deux variables existent
+      # deja pour ce genre de cas ; le CI ne les posait simplement pas.
+      # SYNAPSE_SPLIT_PROMPTS_DIR se deduirait de l'autre, mais on l'ecrit :
+      # une derivation implicite se casse en silence le jour ou elle change.
       - name: pytest
+        env:
+          SYNAPSE_CLASSIFIER_MD: ${{ github.workspace }}/core/prompts/classifier.md
+          SYNAPSE_SPLIT_PROMPTS_DIR: ${{ github.workspace }}/core/prompts
         run: pytest -q

@@ -5287,6 +5287,17 @@
             "type": "string",
             "title": "Source",
             "default": "manual"
+          },
+          "raw_content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Content"
           }
         },
         "type": "object",

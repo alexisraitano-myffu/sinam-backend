@@ -1,8 +1,14 @@
 # Claude API — Dream Cycle classification/extraction (not embeddings; those are local)
 anthropic>=0.50.0
 
-# MCP server
-mcp>=1.9.0
+# MCP server.
+# Borne haute NON decorative : en 2.x, `FastMCP` est devenu `MCPServer` et
+# `mcp.server.fastmcp` n'existe plus. Sans elle, une machine de developpement
+# garde sa 1.x installee et reste verte pendant que le CI, qui resout a neuf a
+# chaque fois, prend la 2.x et casse a l'import. C'est exactement ce qui s'est
+# passe : 4 tests rouges des la creation du workflow. Lever la borne demande de
+# migrer le serveur vers MCPServer, pas seulement de changer ce chiffre.
+mcp>=1.9.0,<2
 
 # Storage substrate: SQLite + sqlite-vec now live inside the Rust
 # core. The `sinam_core` wheel is built from the sinam-core repo
@@ -34,6 +40,16 @@ zeroconf>=0.131.0
 # Was missing from a fresh install (prod venv had it transitively) — a clean
 # `pip install -r requirements.txt` could not start the API.
 requests>=2.31.0
+
+# Aretes semantiques de la carte : `graph_layout.semantic_edges` est son seul
+# consommateur. Meme histoire que `requests` juste au-dessus, en pire. numpy
+# arrivait transitivement par fastembed, qui a quitte ce fichier quand les
+# embeddings sont passes dans le coeur Rust ; les venv existants le gardent
+# installe, donc personne ne l'a vu partir. Et l'import est dans un `try` qui
+# rend `[]` sur toute erreur : sur une installation neuve, CI comme bundle
+# PyInstaller livre aux testeurs, les aretes semantiques de la carte
+# disparaissent EN SILENCE, sans trace ni message.
+numpy>=1.26
 
 # TESTS ONLY since the living map moved into the core. The map's clustering and
 # layout used to run here (networkx Louvain + ForceAtlas2); both now live in

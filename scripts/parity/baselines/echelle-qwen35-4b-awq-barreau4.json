@@ -2395,9 +2395,7 @@
       "uncached_tokens": 0,
       "output_tokens": 527,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=note obtenu=episode"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -4324,9 +4322,7 @@
       "uncached_tokens": 0,
       "output_tokens": 587,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=note obtenu=episode"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -5542,9 +5538,7 @@
       "uncached_tokens": 0,
       "output_tokens": 806,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=note obtenu=episode"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -9398,7 +9392,6 @@
       "output_tokens": 790,
       "confidence": 1.0,
       "gaps": [
-        "kind attendu=note obtenu=task",
         "souvenirs attendus=2 obtenus=1 (Écouter un épisode sur la Révolution et )"
       ],
       "axes": [
@@ -9586,7 +9579,7 @@
       ]
     }
   },
-  "ecarts": 36,
+  "ecarts": 33,
   "par_frontiere": {
     "X-CONF": [
       "g-ord-en-010",
@@ -9619,18 +9612,14 @@
       "g-ord-05",
       "g-ord-05-fr",
       "g-ord-08-work-franglais-fr",
-      "g-ord-10-fr",
       "g-ord-en-010",
       "g-ord-souvenir-barbecue-fr",
       "o-en-1",
       "o-en-4",
       "o-fr-sante-rdv",
-      "o-podcast-histoire-fr",
-      "ord-1-boulangerie-bruit",
       "ord-achat-bricolage-ampoules",
       "ord-en-007",
       "ord-en-009-2",
-      "ord-en-08",
       "ord-en-09",
       "ord-expo-lucas",
       "ord-rdv-banque-fr",
@@ -9646,5 +9635,6 @@
       "o-fr-lien-recette-partage"
     ]
   },
-  "prompt_tokens_max": 5346
+  "prompt_tokens_max": 5346,
+  "rescored": "2026-09-03"
 }

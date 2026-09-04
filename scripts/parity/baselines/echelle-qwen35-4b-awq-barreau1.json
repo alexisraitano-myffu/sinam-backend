@@ -2418,9 +2418,7 @@
       "uncached_tokens": 0,
       "output_tokens": 522,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=note obtenu=episode"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -4357,7 +4355,9 @@
       "uncached_tokens": 0,
       "output_tokens": 486,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "kind attendu=episode obtenu=note"
+      ],
       "axes": [
         "note",
         "kind",
@@ -5564,9 +5564,7 @@
       "uncached_tokens": 0,
       "output_tokens": 760,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=note obtenu=episode"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -9356,7 +9354,6 @@
       "output_tokens": 802,
       "confidence": 1.0,
       "gaps": [
-        "kind attendu=note obtenu=task",
         "souvenirs attendus=2 obtenus=1 (Épisode sur la Révolution écouté ce mati)"
       ],
       "axes": [
@@ -9544,7 +9541,7 @@
       ]
     }
   },
-  "ecarts": 35,
+  "ecarts": 34,
   "par_frontiere": {
     "autre": [
       "g-atomicity-mixed",
@@ -9570,16 +9567,14 @@
       "f2",
       "g-ord-05-fr",
       "g-ord-08-work-franglais-fr",
+      "g-ord-10-fr",
       "o-en-003",
       "o-en-1",
       "o-fr-sante-rdv",
-      "o-podcast-histoire-fr",
-      "ord-1-boulangerie-bruit",
       "ord-9-bureau-cafetiere-fr",
       "ord-en-005-b3",
       "ord-en-007",
       "ord-en-009-2",
-      "ord-en-08",
       "ord-en-09",
       "ord-expo-lucas",
       "ord-rdv-banque-fr",
@@ -9601,5 +9596,6 @@
       "ord-en-007"
     ]
   },
-  "prompt_tokens_max": 4957
+  "prompt_tokens_max": 4957,
+  "rescored": "2026-09-03"
 }

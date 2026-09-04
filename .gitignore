@@ -51,3 +51,6 @@ scripts/entrainement/adaptateur/
 scripts/entrainement/*.log
 # Modele fusionne : 1,6 Go de poids, refabricable par `mlx_lm fuse`
 scripts/entrainement/modele-fusionne/
+
+# adaptateurs LoRA rapatries du pod : binaires, hors git
+scripts/entrainement/pod/adaptateurs/

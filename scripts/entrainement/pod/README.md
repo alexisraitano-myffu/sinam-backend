@@ -112,3 +112,30 @@ Plate dès le pas 20, et l'évaluation ne gagne que 0,010 entre les points 30 et
 60 : prolonger jusqu'à l'époque entière n'aurait rien changé. Cadence mesurée
 136 s/pas en NF4, soit 3 à 4 fois plus lent qu'en bf16 (`bitsandbytes`
 déquantifie à chaque passe). Coût réel : 1,66 $ et 3 h de RTX A6000.
+
+## Porter l'adaptateur sur le Mac (MLX)
+
+```bash
+.venv/bin/python scripts/entrainement/pod/vers_mlx_adaptateur.py \
+  scripts/entrainement/pod/adaptateurs/checkpoint-60 \
+  scripts/entrainement/pod/adaptateurs/mlx-60
+```
+
+Vérifié le 04/09/2026 : sur trois questions rejouées, le Mac rend une réponse
+IDENTIQUE AU CARACTÈRE PRÈS à celle du GPU loué, alors que les quantifications
+diffèrent (bitsandbytes NF4 à l'entraînement, MLX 4 bits à l'arrivée).
+L'adaptateur se transporte.
+
+Deux pièges, tous deux rencontrés :
+
+* **`mlx_lm` charge un adaptateur avec `load_weights(strict=False)`.** Une clé
+  mal nommée n'est pas une erreur, elle est ignorée, et comme `lora_b` est
+  initialisé à zéro le modèle répond alors EXACTEMENT comme le modèle nu. On
+  mesurerait le nu en croyant mesurer l'entraîné. D'où le contrôle final du
+  script, qui relit les poids depuis le modèle chargé et refuse de rendre la
+  main s'ils n'y sont pas.
+* **Le préfixe des poids n'est pas `model.layers.` mais
+  `language_model.model.layers.`**, le modèle étant servi enveloppé. Le script
+  le détecte au lieu de le coder en dur.
+
+Compter environ 45 s par question sur un M1 8 Go, soit ~2 h 20 pour les 186.

@@ -14,12 +14,17 @@ sa mesure ont disparu des deux côtés le même jour. Donc : créer le pod AVEC 
 volume, et redescendre les résultats DANS CE DÉPÔT avant d'arrêter quoi que ce
 soit.
 
-## Régénérer `questions.json` (le jour de la mesure)
+## `questions.json` ne périme PAS
 
-Le bloc DATES du prompt suit la date du jour : un `questions.json` d'hier porte
-une autre empreinte que les baselines d'aujourd'hui, et la comparaison ne veut
-alors plus rien dire. Le régénérer, et vérifier que l'empreinte affichée est
-celle de la baseline à laquelle on veut se comparer.
+Contrairement à ce qui était écrit ici d'abord : le harnais fige `_TODAY` à
+2026-07-13 (`scripts/parity/pilote.py`, `scripts/lang_harness.py`), exprès, pour
+que la résolution des dates relatives soit reproductible. L'empreinte du prompt
+ne suit donc pas la date réelle. Vérifié le 04/09/2026 en régénérant les
+questions le lendemain de la mesure : même empreinte
+`ca3c6b99ef4f+1445e4946041`, 178 clés sur 178 communes.
+
+Une mesure faite des semaines plus tard reste donc comparable aux baselines
+d'aujourd'hui. Pour régénérer quand même (nouveau corpus, prompt modifié) :
 
 ```bash
 CAS=$(.venv/bin/python -c "import json; print(','.join(json.load(open(
@@ -139,3 +144,26 @@ Deux pièges, tous deux rencontrés :
   le détecte au lieu de le coder en dur.
 
 Compter environ 45 s par question sur un M1 8 Go, soit ~2 h 20 pour les 186.
+
+### La passe complète sur le Mac
+
+```bash
+.venv/bin/python scripts/entrainement/pod/mesurer_mlx.py lora-60-mlx
+```
+
+Écrit une réponse à la fois dans `reponses/lora-60-mlx.json` et REPREND là où
+elle s'est arrêtée : un Mac qui s'endort ne coûte pas les deux heures. Passer
+`nu` en second argument pour mesurer le modèle sans adaptateur.
+
+Puis la noter, avec le vrai harnais :
+
+```bash
+CAS=$(.venv/bin/python -c "import json; print(','.join(json.load(open(
+  'scripts/parity/baselines/nu-nf4.json'))['cases']))")
+SYNAPSE_REJEU_FICHIER="$PWD/scripts/entrainement/pod/reponses/lora-60-mlx.json" \
+  .venv/bin/python -m scripts.parity.baseline run "rejeu:Qwen3.5-4B-MLX-lora60" \
+  --label lora-60-mlx --cas "$CAS"
+```
+
+Le résultat se compare directement à `lora-60-nf4` (79/86) : c'est la même
+question posée au moteur qui tournera vraiment.

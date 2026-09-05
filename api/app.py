@@ -172,6 +172,45 @@ def _ensure_weekly_digest() -> None:
     generate_weekly_digest()  # gather → (skip if empty) → Haiku → store
 
 
+# Pourquoi ce backend ne tisse pas, quand c'est un autre
+# appareil qui porte le verrou. `None` = il tisse (ou personne ne le lui a
+# encore refusé). Sinon : le détail structuré que `ensure_cycle_owner` construit
+# déjà, plus l'instant où on l'a constaté pour la première fois.
+#
+# C'était la moitié silencieuse de la panne du 04/09 : le téléphone portait le
+# verrou et avait cessé de router, le Mac se faisait refuser toutes les 30 s, et
+# les deux se taisaient. Plus personne ne tissait, et rien ne le disait.
+_not_weaving: dict | None = None
+
+
+def _note_not_weaving(detail: dict) -> None:
+    """Retenir le refus, et ne le journaliser qu'au CHANGEMENT d'état : la
+    boucle tourne toutes les 30 s, un log par tour noierait le journal."""
+    global _not_weaving
+    previous = _not_weaving
+    if previous and previous.get("owner_device_id") == detail.get("owner_device_id"):
+        return
+    _not_weaving = dict(detail)
+    _not_weaving["since"] = datetime.now(timezone.utc).isoformat()
+    log.info("ce backend ne tisse pas : %s",
+             detail.get("message") or detail.get("code"))
+
+
+def _note_weaving() -> None:
+    """Le verrou est revenu : lever la marque, et le dire une fois."""
+    global _not_weaving
+    if _not_weaving is None:
+        return
+    _not_weaving = None
+    log.info("ce backend tisse de nouveau")
+
+
+def not_weaving_state() -> dict | None:
+    """Lu par `/sync/owner`, pour que l'app puisse afficher « c'est {nom} qui
+    tisse votre mémoire » au lieu de laisser croire à une panne."""
+    return _not_weaving
+
+
 def _scheduler_loop() -> None:
     global _last_digest_check
     # Act before sleeping so the first iteration runs at startup — that's the
@@ -217,6 +256,17 @@ def _scheduler_loop() -> None:
                 # Scheduled pass → Batch API (-50%); valve/stale → synchronous.
                 dream_cycle_run(trigger="auto", use_batch=(reason == "scheduled"))  # lock-guarded
                 _mark_consolidated()  # advance the catch-up marker (any auto run counts)
+                _note_weaving()
+            except HTTPException as exc:
+                # Un 409 « not_cycle_owner » n'est PAS une erreur :
+                # c'est une réponse, et elle est structurée exprès (owner_name,
+                # epoch, message prêt à afficher). L'avaler avec le reste
+                # transformait un état parfaitement normal d'une install
+                # multi-appareils en silence total.
+                detail = exc.detail if isinstance(exc.detail, dict) else None
+                if exc.status_code == 409 and detail and detail.get("code") == "not_cycle_owner":
+                    _note_not_weaving(detail)
+                # Les autres restent transitoires : on réessaie au tour suivant.
             except Exception:
                 pass  # retry next tick
         except Exception:
@@ -285,8 +335,12 @@ def _avertir_si_prompts_en_retard() -> None:
 
 @contextlib.asynccontextmanager
 async def lifespan(_app):
-    from api.access import warn_if_open
+    from api.access import harden_home, warn_if_open
     warn_if_open(os.environ.get("SYNAPSE_API_HOST", "0.0.0.0"))
+    # La mémoire est lisible par tout processus de la machine tant que ses
+    # droits sont ceux par défaut. À chaque démarrage, donc : une base recréée
+    # ou restaurée ne doit pas rouvrir la porte en silence.
+    harden_home(Path(os.environ.get("SYNAPSE_HOME", Path.home() / ".synapse")))
     _avertir_si_prompts_en_retard()
     _recover_interrupted_runs()
     # Le réglage « aller chercher les pages » vit dans config.json et se pose
@@ -331,17 +385,53 @@ app.add_middleware(
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
 def require_auth(authorization: str | None = Header(default=None)) -> None:
+    """Qui a le droit d'entrer — et, depuis les jetons par appareil, QUI entre.
+
+    Trois jetons peuvent ouvrir la porte, et ils ne disent pas la même chose :
+
+    * le jeton **de cet appareil**, délivré à son appairage. C'est le seul qui
+      identifie son porteur, donc le seul sur lequel un retrait peut mordre ;
+    * le jeton par-installation de ce backend, et celui du maillage adopté à
+      l'appairage. Tous deux sont **communs** : ils disent qu'on a le droit
+      d'entrer, jamais qui entre. Ils restent acceptés le temps que les installs
+      existantes se réappairent, sans quoi ce changement les désappairerait
+      toutes d'un coup — y compris celle depuis laquelle on répare.
+
+    Un appareil retiré est refusé en **403**, avec un code distinct : le client
+    doit pouvoir dire « cet appareil a été retiré de la mémoire » plutôt
+    qu'afficher une panne d'authentification que l'utilisateur ne comprendrait
+    pas et qu'il essaierait de réparer en ressaisissant une clé.
+    """
+    from api import device_tokens
     from api.access import resolve_token
-    from api.sync_peers import get_mesh_token
+    from api.sync_peers import device_revoked, get_mesh_token
+
+    presented = None
+    if authorization and authorization.startswith("Bearer "):
+        presented = authorization[len("Bearer "):]
 
     # a joined desktop accepts BOTH its per-install token (its own
     # app) and the mesh token adopted at join time (the peers).
-    accepted = {t for t in (resolve_token(), get_mesh_token()) if t}
-    if not accepted:
+    shared = {t for t in (resolve_token(), get_mesh_token()) if t}
+    if not shared:
         # Seulement en mode développement explicite : hors de là,
         # `resolve_token` fabrique un jeton plutôt que de rendre None.
         return
-    if authorization not in {f"Bearer {t}" for t in accepted}:
+
+    owner = device_tokens.device_of(presented) if presented else None
+    if owner is not None:
+        conn = get_connection()
+        try:
+            if device_revoked(conn, owner):
+                raise HTTPException(
+                    status_code=403,
+                    detail={"code": "device_revoked",
+                            "message": "cet appareil a été retiré de la mémoire"})
+        finally:
+            conn.close()
+        return
+
+    if presented not in shared:
         raise HTTPException(status_code=401, detail="invalid or missing bearer token")
 
 
@@ -483,6 +573,11 @@ class SyncOwnerClaimIn(BaseModel):
 
 
 # device pairing (member side)
+class PairAdoptIn(BaseModel):
+    request_id: str
+    sealed: str          # scellé sous la clé de canal, jamais journalisé
+
+
 class PairRequestIn(BaseModel):
     accept_pub_b64: str          # the scanner's ephemeral public key (base64)
     # Quelle offre a été scannée. Plusieurs peuvent être vivantes en même temps
@@ -490,6 +585,11 @@ class PairRequestIn(BaseModel):
     # champ le membre ne peut que deviner. Optionnel : un client d'une version
     # antérieure ne l'envoie pas et retombe sur l'offre la plus récente.
     offer_pub_b64: str | None = None
+    # L'identité de synchro du joiner. Elle sert à lui délivrer un jeton qui
+    # n'appartient qu'à lui, seule façon de pouvoir le retirer un jour sans
+    # déconnecter tout le maillage. Optionnel, comme le champ ci-dessus : un
+    # client d'une version antérieure repart avec le jeton commun.
+    device_id: str | None = None
     name: str | None = None
     platform: str | None = None
 
@@ -750,7 +850,9 @@ def sync_owner_get():
     finally:
         conn.close()
     return {"owner": owner, "device_id": me,
-            "is_owner": bool(owner) and owner["device_id"] == me}
+            "is_owner": bool(owner) and owner["device_id"] == me,
+            # Ce que le planificateur avalait jusqu'ici.
+            "not_weaving": not_weaving_state()}
 
 
 @app.put("/sync/owner", dependencies=[Depends(require_auth)])
@@ -796,7 +898,8 @@ def pair_request(body: PairRequestIn):
     except Exception:
         raise HTTPException(status_code=422, detail="accept_pub_b64 not base64")
     return _pair_guard(lambda: _pairing.submit_request(
-        accept_pub, body.name or "", body.platform or "", offer_pub))
+        accept_pub, body.name or "", body.platform or "", offer_pub,
+        body.device_id))
 
 
 @app.get("/pair/pending", dependencies=[Depends(require_auth)])
@@ -814,6 +917,19 @@ def pair_approve(body: PairApproveIn):
 @app.post("/pair/deny", dependencies=[Depends(require_auth)])
 def pair_deny(body: PairDenyIn):
     return _pair_guard(lambda: _pairing.deny(body.request_id))
+
+
+@app.post("/pair/adopt")
+def pair_adopt(body: PairAdoptIn):
+    """Joiner (no auth) : la jambe retour de l'appairage.
+
+    Le joiner nous renvoie, scellé sous la clé de canal, son identité, son
+    adresse s'il sait servir, un jeton à nous et son empreinte de certificat.
+    Pas d'authentification, comme les autres routes d'appairage : le scellement
+    EST l'authentification — seul celui qui a scanné le QR (ou connu le code) a
+    la clé, et un scellement qui ne s'ouvre pas est refusé.
+    """
+    return _pair_guard(lambda: _pairing.adopt_callback(body.request_id, body.sealed))
 
 
 @app.get("/pair/result/{request_id}")
@@ -893,6 +1009,25 @@ def space_get():
         conn.close()
     return {"space": space, "device_id": me,
             "owner_device_id": owner["device_id"] if owner else None}
+
+
+@app.post("/space", dependencies=[Depends(require_auth)])
+def space_found(body: SpacePatchIn):
+    """Fonder l'espace, avec le nom saisi par l'utilisateur.
+
+    Le geste « Créer ma mémoire » ne fondait rien : il posait un drapeau, et
+    l'espace naissait des heures plus tard, en effet de bord du premier verrou
+    de cycle, sous un nom écrit en dur. Cet appel rend le geste réel.
+
+    Idempotent : rejouer sur un espace déjà fondé le renvoie tel quel, sans
+    rien réécrire. C'est le seul comportement sûr — un second espace au HLC
+    plus frais gagnerait la fusion LWW et effacerait celui du maillage.
+    """
+    from api import sync_peers
+    name = body.name.strip()
+    if not name:
+        raise HTTPException(status_code=422, detail="name must not be empty")
+    return sync_peers.found_space(name)
 
 
 @app.patch("/space", dependencies=[Depends(require_auth)])
@@ -982,9 +1117,22 @@ def device_patch(device_id: str, body: DevicePatchIn):
             "FROM devices WHERE device_id = ?", (device_id,)))
         out = dict(row)
         out["revoked"] = bool(out["revoked_at"])
-        return out
     finally:
         conn.close()
+    if body.revoked is True:
+        # La coupure elle-même est faite par `require_auth`, qui refuse en 403
+        # tout jeton appartenant à un appareil portant `revoked_at`. On ne
+        # détruit pas la ligne de jeton : c'est elle qui permet de reconnaître
+        # le porteur et de lui répondre « tu as été retiré » plutôt qu'un 401
+        # indistinguable d'un mauvais jeton, qui enverrait l'utilisateur
+        # ressaisir une clé qui n'y est pour rien.
+        #
+        # Ce compte dit si la coupure va mordre : un appareil sans jeton propre
+        # ne tient que par le jeton commun, et celui-là ne se coupe pas
+        # individuellement tant que la fenêtre de migration est ouverte.
+        from api import device_tokens
+        out["own_tokens"] = device_tokens.tokens_held_by(device_id)
+    return out
 
 
 @app.post("/capture", dependencies=[Depends(require_auth)])

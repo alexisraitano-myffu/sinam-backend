@@ -322,15 +322,68 @@ def get_space(conn) -> dict | None:
     return dict(row) if row else None
 
 
-def ensure_space() -> None:
-    """Create the missing space singleton — OWNER ONLY. A fresh replica must
-    never self-create one: its newer HLC would win the LWW merge and
-    overwrite the mesh's space on bootstrap. Every live install has an owner
-    (self-claim at first cycle), so existing prods migrate on their next
-    boot; a genuinely fresh standalone install founds its space at its first
-    cycle (implicit claim → ensure_space)."""
+def found_space(name: str) -> dict:
+    """Fonder l'espace au moment où l'utilisateur le demande, avec
+    le nom qu'il a saisi.
+
+    Miroir de `actions.rs::found_space`, pour les hôtes sans cœur embarqué :
+    le desktop parle à SON backend local, c'est donc ici que passe son geste
+    « Créer ma mémoire ».
+
+    Idempotent, et c'est essentiel : un espace déjà fondé n'est jamais
+    réécrit. Le rejouer — file d'actions, réplica qui vient de recevoir sa
+    ligne — fabriquerait un espace rival dont le HLC plus frais gagnerait la
+    fusion LWW et effacerait celui du maillage.
+
+    Qui fonde tisse : le verrou est pris dans le même geste, mais seulement
+    s'il est libre. Fonder n'arrache jamais le tissage à un autre appareil.
+    """
     import uuid as _uuid
 
+    me = get_store().sync_device_id()
+    conn = get_connection()
+    try:
+        existing = get_space(conn)
+        if existing is not None:
+            return {"status": "already_founded", "space": existing}
+        clean = (name or "").strip() or "Ma mémoire"
+        with conn:
+            conn.execute(
+                "INSERT INTO space (id, space_id, name) VALUES ('space', ?, ?)",
+                (str(_uuid.uuid4()), clean))
+        founded = get_space(conn)
+    finally:
+        conn.close()
+    if get_owner_of_record() is None:
+        claim_owner(me)
+    return {"status": "founded", "space": founded}
+
+
+def get_owner_of_record() -> dict | None:
+    """`get_owner` sur une connexion à nous — les appelants qui n'en tiennent
+    pas déjà une ouverte."""
+    conn = get_connection()
+    try:
+        return get_owner(conn)
+    finally:
+        conn.close()
+
+
+def ensure_space() -> None:
+    """Filet de rattrapage : fonder l'espace manquant, OWNER ONLY.
+
+    Délègue désormais à `found_space`, qui est le seul endroit qui
+    écrit une ligne `space`. Cette fonction n'apporte plus qu'une garde : ne
+    rien fonder si le verrou du cycle n'est pas à nous. C'est ce qui empêche
+    un réplica fraîchement appairé de se fabriquer un espace rival, dont le
+    HLC plus frais gagnerait la fusion LWW et écraserait celui du maillage.
+
+    Ce chemin n'est plus le chemin nominal : l'utilisateur fonde désormais
+    son espace explicitement, en le nommant, dès l'écran d'accueil. Il
+    reste pour les installs d'avant, qui ont pris le verrou sans jamais voir
+    cet écran — d'où le nom générique, que plus personne ne découvre sur une
+    install neuve.
+    """
     me = get_store().sync_device_id()
     conn = get_connection()
     try:
@@ -339,12 +392,9 @@ def ensure_space() -> None:
         owner = get_owner(conn)
         if owner is None or owner["device_id"] != me:
             return
-        with conn:
-            conn.execute(
-                "INSERT OR IGNORE INTO space (id, space_id, name) "
-                "VALUES ('space', ?, 'Ma mémoire')", (str(_uuid.uuid4()),))
     finally:
         conn.close()
+    found_space("Ma mémoire")
 
 
 # L'espace dont nous nous réclamons. Normalement la ligne `space` répliquée ;

@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 
 from api import access as _access
+import logging
 import socket
 import threading
 import time
@@ -41,6 +42,8 @@ from db import first_row, get_connection
 
 # TTL for an offer and for an unclaimed request. Pairing is done face to face
 # in under a minute; anything older is stale and dropped.
+log = logging.getLogger(__name__)
+
 _OFFER_TTL = 120.0
 _REQUEST_TTL = 120.0
 # online guesses allowed on one displayed code. SPAKE2 makes offline
@@ -243,6 +246,13 @@ def _adopt_peer_fingerprint(req: dict, sealed: str) -> None:
             req["channel_key"], req["aad_a"], req["aad_b"], sealed))
         data = json.loads(opened)
         dev, fp = data.get("device_id"), data.get("cert_sha256")
+        if dev:
+            # L'identité du joiner arrive ici et nulle part ailleurs sur le
+            # canal par code : elle est scellée sous la clé SPAKE2, donc
+            # authentifiée. La retenir sur la demande permet de lui délivrer un
+            # jeton qui n'appartient qu'à lui — sans quoi ce chemin repartirait
+            # avec le jeton commun, et retirer cet appareil ne couperait rien.
+            req["device_id"] = str(dev)[:80]
         if dev and fp:
             sync_peers.set_peer_cert(str(dev), str(fp))
     except Exception:  # noqa: BLE001 — l'appairage prime, le TOFU couvre le reste
@@ -250,7 +260,8 @@ def _adopt_peer_fingerprint(req: dict, sealed: str) -> None:
 
 
 def submit_request(accept_pub: bytes, name: str, platform: str,
-                   offer_pub: bytes | None = None) -> dict:
+                   offer_pub: bytes | None = None,
+                   device_id: str | None = None) -> dict:
     """Joiner side (unauthenticated): submit the scanner's public key + who we
     are. Returns `{request_id}`. The member must still approve.
 
@@ -280,6 +291,11 @@ def submit_request(accept_pub: bytes, name: str, platform: str,
             # cette offre-là, même si une autre est apparue entre-temps.
             "offer_pub": offer["offer_pub"],
             "channel_key": channel_key,
+            # L'identité de synchro du joiner. C'est elle qui permet de lui
+            # délivrer un jeton qui n'appartient qu'à lui, et donc de le
+            # retirer un jour sans déconnecter tout le monde. Absente (client
+            # d'une version antérieure) : on retombe sur le jeton commun.
+            "device_id": (device_id or "").strip()[:80] or None,
             "status": "pending",
             "sealed": None,
             "created": _now(),
@@ -318,7 +334,7 @@ def approve(request_id: str, include_key: bool) -> dict:
             if req.get("offer_pub") is None:
                 raise _PairingError(409, "offer expired — restart pairing")
             aad_a, aad_b = req["offer_pub"], req["accept_pub"]
-        payload = _build_payload(include_key)
+        payload = _build_payload(include_key, req.get("device_id"))
         sealed = pairing_seal(req["channel_key"], aad_a, aad_b, payload)
         req["status"] = "approved"
         req["sealed"] = sealed
@@ -337,8 +353,14 @@ def deny(request_id: str) -> dict:
 
 def poll_result(request_id: str) -> dict:
     """Joiner side (unauthenticated): poll for the outcome. On approval,
-    returns the sealed payload ONCE, then consumes the request so the
-    single-use secret can't be re-fetched."""
+    returns the sealed payload ONCE.
+
+    C'est le SECRET qui est à usage unique, pas la session. La charge scellée
+    est effacée dès sa remise — un second appel ne la rendra pas — mais la
+    demande reste, le temps de son TTL, avec sa seule clé de canal. Sans ça la
+    jambe retour serait impossible : le joiner ne peut répondre qu'APRÈS avoir
+    ouvert la charge, donc après ce tour-ci, et il aurait trouvé porte close.
+    """
     with _lock:
         _prune(_now())
         req = _requests.get(request_id)
@@ -346,15 +368,20 @@ def poll_result(request_id: str) -> dict:
             return {"status": "expired"}
         if req["status"] == "approved":
             sealed = req["sealed"]
-            _requests.pop(request_id, None)  # one-shot delivery
+            req["sealed"] = None      # le secret ne se redonne pas
+            req["status"] = "delivered"
             return {"status": "approved", "sealed": sealed}
+        if req["status"] == "delivered":
+            # Déjà servi : on ne rend plus rien, et on ne prétend pas que la
+            # demande a expiré tant qu'elle vit encore pour la jambe retour.
+            return {"status": "expired"}
         if req["status"] == "denied":
             _requests.pop(request_id, None)
             return {"status": "denied"}
         return {"status": "pending"}
 
 
-def _build_payload(include_key: bool) -> bytes:
+def _build_payload(include_key: bool, device_id: str | None = None) -> bytes:
     """The secrets the joiner needs, as compact JSON bytes. Never logged."""
     import json
 
@@ -380,7 +407,17 @@ def _build_payload(include_key: bool) -> bytes:
         "cert_sha256": _cert_fingerprint(),
         "space_id": space_id,
         "space_name": space_name,
-        "token": _access.resolve_token() or "",
+        # QUI invite. Le joiner en a besoin pour deux choses : savoir à qui
+        # délivrer un jeton en retour, et savoir à qui il parle. Sans ça
+        # l'appairage restait à sens unique — le joiner apprenait tout du
+        # membre, le membre n'apprenait rien du joiner.
+        "device_id": _self_device_id(),
+        # Un jeton qui n'appartient qu'à ce nouvel appareil, quand il a dit qui
+        # il est. C'est ce qui rend « retirer un appareil » effectif : le
+        # retirer invalide le sien, et lui seul. Un client d'une version
+        # antérieure ne s'annonce pas et repart avec le jeton commun — il
+        # marchera, mais il ne sera pas coupable individuellement.
+        "token": _issue_token(device_id) or _access.resolve_token() or "",
         "peers": sorted(set(peers)),
     }
     if include_key:
@@ -388,6 +425,79 @@ def _build_payload(include_key: bool) -> bytes:
         if key:
             payload["anthropic_key"] = key
     return json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+
+def _self_device_id() -> str | None:
+    try:
+        from core_store import get_store
+        return get_store().sync_device_id()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def adopt_callback(request_id: str, sealed: str) -> dict:
+    """La jambe retour de l'appairage : ce que le joiner nous répond.
+
+    Le protocole n'allait que dans un sens. Le membre scellait tout ce qu'il
+    savait, le joiner posait son adresse de backend sur celle du membre, et le
+    membre n'apprenait rien. Tant que le membre est un Mac qui sert en
+    permanence, ça marche par accident. Dès que le membre est un téléphone —
+    qui n'écoute que le temps d'afficher son QR — l'appairage réussit et la
+    mémoire ne se synchronise jamais.
+
+    Le joiner nous renvoie donc, scellé sous la même clé de canal (donc
+    authentifié : personne d'autre ne peut l'avoir forgé), son identité, son
+    adresse s'il sait servir, un jeton à nous, et son empreinte de certificat.
+
+    Ce backend-ci sert en permanence : il n'adopte donc jamais l'adresse du
+    joiner, il se contente d'épingler son certificat. C'est l'écoute du
+    téléphone qui, elle, adopte — sinon elle n'aurait personne à qui parler
+    une fois refermée.
+    """
+    import json
+
+    with _lock:
+        _prune(_now())
+        req = _requests.get(request_id)
+        if req is None:
+            raise _PairingError(404, "unknown or expired request")
+        if req["status"] not in ("approved", "delivered"):
+            raise _PairingError(409, "request not approved")
+        if req.get("aad_a") is not None:
+            aad_a, aad_b = req["aad_a"], req["aad_b"]
+        else:
+            aad_a, aad_b = req["offer_pub"], req["accept_pub"]
+        channel_key = req["channel_key"]
+
+    try:
+        opened = bytes(pairing_open(channel_key, aad_a, aad_b, sealed))
+        data = json.loads(opened)
+    except Exception:  # noqa: BLE001 — jamais journaliser la charge
+        raise _PairingError(400, "callback could not be opened")
+
+    dev = str(data.get("device_id") or "").strip()[:80]
+    fp = str(data.get("cert_sha256") or "").strip().lower()
+    if dev and len(fp) == 64:
+        from api import sync_peers
+        sync_peers.set_peer_cert(dev, fp)
+    return {"status": "ok", "adopted": False}
+
+
+def _issue_token(device_id: str | None) -> str | None:
+    """Le jeton du nouvel appareil, ou None s'il ne s'est pas annoncé.
+
+    Meilleur effort : un magasin de jetons en panne ne doit pas faire échouer
+    un appairage, qui est un geste rare et fastidieux. On retombe alors sur le
+    jeton commun, ce qui est exactement le comportement d'avant.
+    """
+    if not device_id:
+        return None
+    try:
+        from api import device_tokens
+        return device_tokens.issue(device_id)
+    except Exception:  # noqa: BLE001
+        log.exception("jeton par appareil non délivré — repli sur le jeton commun")
+        return None
 
 
 class _PairingError(Exception):

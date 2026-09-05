@@ -89,6 +89,37 @@ def _read_or_create(path: Path) -> str:
     return token
 
 
+def harden_home(home: Path) -> None:
+    """Resserrer les droits du dossier de données, et de la base elle-même.
+
+    La base était en 0644 dans un dossier 0755 : lisible par tout processus de
+    la machine, quel que soit l'utilisateur. Sur un Mac personnel ça veut dire
+    que n'importe quelle application installée peut lire la mémoire entière
+    sans rien demander à personne — ce dossier n'est pas couvert par les
+    protections de macOS, qui ne visent que Documents, Bureau et
+    Téléchargements. FileVault, lui, ne protège que machine éteinte.
+
+    Le jeton d'accès était déjà créé en 0600 ; la mémoire, non. C'était
+    l'inverse de la hiérarchie qu'on veut.
+
+    Meilleur effort et silencieux : un système de fichiers qui ne porte pas ces
+    droits (un volume monté, un partage) ne doit pas empêcher le backend de
+    démarrer.
+    """
+    try:
+        home.mkdir(parents=True, exist_ok=True)
+        os.chmod(home, 0o700)
+    except OSError:
+        return
+    for name in ("synapse.db", "synapse.db-wal", "synapse.db-shm", "api_token"):
+        try:
+            target = home / name
+            if target.exists():
+                os.chmod(target, 0o600)
+        except OSError:
+            pass
+
+
 def warn_if_open(host: str) -> None:
     """Crié au démarrage : le mode ouvert sur autre chose que la boucle locale
     est exactement la configuration qui a laissé fuiter une mémoire entière."""

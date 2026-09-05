@@ -39,6 +39,17 @@ def _local_ip() -> str:
         s.close()
 
 
+def self_https_url() -> str:
+    """L'adresse chiffrée où un pair peut nous joindre sur le réseau local.
+
+    Même composition que ce qu'on annonce en mDNS — le port TLS, jamais le
+    clair, qui n'écoute plus sur l'interface réseau. Sert à la jambe retour de
+    l'appairage : le joiner dit au membre où le rappeler.
+    """
+    from api.tls import tls_port
+    return f"https://{_local_ip()}:{tls_port()}"
+
+
 def _self_space_id() -> str | None:
     """L'espace de cette instance, annoncé pour que les pairs sachent AVANT de
     nous contacter s'ils ont affaire à la bonne mémoire. Sans ça le premier

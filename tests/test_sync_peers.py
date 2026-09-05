@@ -528,6 +528,187 @@ def test_ensure_space_is_owner_only(client):
         conn.close()
 
 
+def test_founding_names_the_space_takes_the_lock_and_never_refounds(client):
+    """Le geste « Créer ma mémoire », vu du backend (le chemin du
+    desktop, qui n'a pas de cœur embarqué)."""
+    from api.sync_peers import get_owner, get_space
+    from core_store import get_store
+    me = get_store().sync_device_id()
+
+    # Vide : le nom vient de l'utilisateur, pas d'un défaut écrit en dur.
+    out = client.post("/space", json={"name": "La mémoire d'Alexis"}).json()
+    assert out["status"] == "founded"
+    assert out["space"]["name"] == "La mémoire d'Alexis"
+    first_id = out["space"]["space_id"]
+    assert first_id
+
+    # Qui fonde tisse : le verrou est pris dans le même geste.
+    conn = _conn()
+    try:
+        owner = get_owner(conn)
+    finally:
+        conn.close()
+    assert owner and owner["device_id"] == me and owner["epoch"] == 1
+
+    # Rejouée, la fondation ne réécrit RIEN — ni l'identifiant, ni le nom.
+    # Un second espace au HLC plus frais gagnerait la fusion LWW et effacerait
+    # celui du maillage.
+    again = client.post("/space", json={"name": "Un autre nom"}).json()
+    assert again["status"] == "already_founded"
+    assert again["space"]["space_id"] == first_id
+    assert again["space"]["name"] == "La mémoire d'Alexis"
+
+    # Un nom vide est refusé en amont : on ne fonde pas une mémoire anonyme.
+    assert client.post("/space", json={"name": "   "}).status_code == 422
+
+    conn = _conn()
+    try:
+        assert get_space(conn)["name"] == "La mémoire d'Alexis"
+    finally:
+        conn.close()
+
+
+def test_founding_never_steals_the_weave(client):
+    """L'ordre inverse existe pour de vrai : l'ancien chemin implicite prenait
+    le verrou AVANT que l'espace n'existe."""
+    from api.sync_peers import claim_owner, get_owner
+
+    claim_owner("dev-mac")
+    assert client.post("/space", json={"name": "Ma mémoire"}).json()["status"] == "founded"
+
+    conn = _conn()
+    try:
+        owner = get_owner(conn)
+    finally:
+        conn.close()
+    assert owner["device_id"] == "dev-mac", "fonder a arraché le tissage à un autre appareil"
+
+
+def test_retirer_un_appareil_lui_retire_vraiment_lacces(isolated_db, monkeypatch):
+    """Retirer un appareil coupait une ligne dans un écran, et rien d'autre.
+
+    Le jeton était commun à toute la mémoire : le révoquer déconnectait tout le
+    monde, ne pas le révoquer ne coupait personne. L'appareil « retiré »
+    continuait donc de lire et d'écrire la mémoire entière — la promesse la
+    plus dangereuse du produit, pour un geste dont tout l'intérêt est de
+    reprendre la main sur un téléphone perdu.
+
+    Ce test tient toute la chaîne : l'auth est ALLUMÉE, contrairement au reste
+    du fichier.
+    """
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "jeton-commun-historique")
+    monkeypatch.delenv("SYNAPSE_DEV_NO_AUTH", raising=False)
+    monkeypatch.delenv("SYNAPSE_SYNC_PEERS", raising=False)
+    from fastapi.testclient import TestClient
+
+    from api import device_tokens
+    from api.app import app
+    from api.sync_peers import claim_owner, register_self_device
+    from core_store import get_store
+
+    client = TestClient(app)
+    me = get_store().sync_device_id()
+    register_self_device()
+    claim_owner(me)
+
+    commun = {"Authorization": "Bearer jeton-commun-historique"}
+
+    # Un appareil entre par l'appairage et repart avec SON jeton.
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT INTO devices (device_id, name, platform) "
+                         "VALUES ('pixel', 'Pixel 9a', 'android')")
+    finally:
+        conn.close()
+    sien = device_tokens.issue("pixel")
+    assert device_tokens.device_of(sien) == "pixel"
+    a_lui = {"Authorization": f"Bearer {sien}"}
+
+    # Il lit la mémoire, comme il se doit.
+    assert client.get("/devices", headers=a_lui).status_code == 200
+
+    # On le retire.
+    out = client.patch("/device/pixel", json={"revoked": True}, headers=commun).json()
+    assert out["revoked"] and out["own_tokens"] == 1
+
+    # Il est coupé, et le refus est NOMMÉ. Un 401 générique enverrait
+    # l'utilisateur ressaisir une clé qui n'y est pour rien.
+    refus = client.get("/devices", headers=a_lui)
+    assert refus.status_code == 403
+    assert refus.json()["detail"]["code"] == "device_revoked"
+
+    # Il ne peut pas davantage écrire, ni pousser son journal.
+    assert client.post("/capture", json={"id": "c1", "content": "x"},
+                       headers=a_lui).status_code == 403
+    assert client.post("/sync/push", content="{}", headers=a_lui).status_code == 403
+
+    # Les autres appareils, eux, n'ont rien perdu.
+    assert client.get("/devices", headers=commun).status_code == 200
+
+
+def test_un_jeton_par_appareil_ne_coupe_que_le_sien(isolated_db, monkeypatch):
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "jeton-commun-historique")
+    monkeypatch.delenv("SYNAPSE_DEV_NO_AUTH", raising=False)
+    from fastapi.testclient import TestClient
+
+    from api import device_tokens
+    from api.app import app
+    from api.sync_peers import claim_owner, register_self_device
+    from core_store import get_store
+
+    client = TestClient(app)
+    register_self_device()
+    claim_owner(get_store().sync_device_id())
+
+    conn = _conn()
+    try:
+        with conn:
+            conn.execute("INSERT INTO devices (device_id, name, platform) VALUES "
+                         "('pixel', 'Pixel', 'android'), ('ipad', 'iPad', 'ios')")
+    finally:
+        conn.close()
+    du_pixel = {"Authorization": f"Bearer {device_tokens.issue('pixel')}"}
+    de_lipad = {"Authorization": f"Bearer {device_tokens.issue('ipad')}"}
+    commun = {"Authorization": "Bearer jeton-commun-historique"}
+
+    client.patch("/device/pixel", json={"revoked": True}, headers=commun)
+
+    assert client.get("/devices", headers=du_pixel).status_code == 403
+    assert client.get("/devices", headers=de_lipad).status_code == 200, (
+        "retirer un appareil a coupé les autres")
+
+
+def test_le_dossier_de_donnees_se_referme(tmp_path):
+    """La mémoire ne doit pas être lisible par tout processus de la machine.
+
+    Elle l'était : 0644 dans un dossier 0755. Sur un Mac personnel, ça veut
+    dire que n'importe quelle application installée peut la lire sans rien
+    demander — ce dossier n'est pas couvert par les protections de macOS, qui
+    ne visent que Documents, Bureau et Téléchargements.
+
+    Rejoué à chaque démarrage : une base recréée ou restaurée ne doit pas
+    rouvrir la porte en silence.
+    """
+    from api.access import harden_home
+
+    (tmp_path / "synapse.db").write_text("x")
+    (tmp_path / "synapse.db").chmod(0o644)
+    (tmp_path / "api_token").write_text("t")
+    (tmp_path / "api_token").chmod(0o644)
+    tmp_path.chmod(0o755)
+
+    harden_home(tmp_path)
+
+    assert tmp_path.stat().st_mode & 0o777 == 0o700
+    assert (tmp_path / "synapse.db").stat().st_mode & 0o777 == 0o600
+    assert (tmp_path / "api_token").stat().st_mode & 0o777 == 0o600
+
+    # Idempotent : rejouer ne casse rien et ne relâche rien.
+    harden_home(tmp_path)
+    assert tmp_path.stat().st_mode & 0o777 == 0o700
+
+
 def test_space_and_devices_endpoints(client):
     from api.sync_peers import claim_owner, ensure_space, register_self_device
     from core_store import get_store
@@ -636,6 +817,119 @@ def test_pairing_end_to_end_transfers_secrets(client, monkeypatch):
 
     # 5. One-shot: a second poll no longer returns the secret.
     assert client.get(f"/pair/result/{request_id}").json()["status"] == "expired"
+
+
+def test_lappairage_a_une_jambe_retour(client, monkeypatch):
+    """Le joiner répond au membre : qui il est, où le joindre, un jeton à lui.
+
+    Sans cette jambe, l'appairage n'apprend RIEN au membre : il scelle tout ce
+    qu'il sait, le joiner pose son adresse sur celle du membre, et le membre
+    reste avec un appairage réussi et aucune idée de qui vient d'entrer. Tant
+    que le membre est un Mac qui sert en permanence ça ne se voit pas ; dès que
+    c'est un téléphone, qui n'écoute que le temps d'afficher son QR, la mémoire
+    ne se synchronise jamais.
+
+    Le retour est scellé sous la MÊME clé de canal : c'est ce qui l'authentifie.
+    Personne d'autre que celui qui a scanné le QR ne peut l'avoir forgé.
+    """
+    import base64
+    import json
+
+    from sinam_core import pairing_accept, pairing_open, pairing_seal
+
+    from api import tls
+    from api.sync_peers import claim_owner, ensure_space
+    from core_store import get_store
+
+    tls.ensure_cert()
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
+    claim_owner(get_store().sync_device_id())
+    ensure_space()
+    auth = {"Authorization": "Bearer member-token"}
+
+    qr = client.post("/pair/offer", headers=auth).json()["qr"]
+    accept_pub, joiner_key = pairing_accept(qr)
+    offer_pub = base64.b64decode(_offer_pub_from_qr(qr))
+    request_id = client.post("/pair/request", json={
+        "accept_pub_b64": base64.b64encode(accept_pub).decode(),
+        "device_id": "mac-joiner",
+        "name": "Macmini", "platform": "darwin"}).json()["request_id"]
+    client.post("/pair/approve", headers=auth,
+                json={"request_id": request_id, "include_key": False})
+
+    res = client.get(f"/pair/result/{request_id}").json()
+    payload = json.loads(pairing_open(joiner_key, offer_pub, accept_pub, res["sealed"]))
+
+    # Le membre s'annonce : sans son device_id, le joiner ne saurait pas à qui
+    # délivrer un jeton en retour.
+    assert payload["device_id"] == get_store().sync_device_id()
+    # Et il a délivré un jeton qui n'appartient qu'au joiner (celui-ci s'est
+    # annoncé), pas le jeton commun.
+    assert payload["token"] and payload["token"] != "member-token"
+
+    # Le joiner répond, scellé sous la même clé.
+    retour = json.dumps({
+        "device_id": "mac-joiner",
+        "cert_sha256": "b" * 64,
+        "base_url": "https://192.168.1.50:8443",
+        "token": "jeton-pour-le-membre",
+    }).encode("utf-8")
+    sealed = str(pairing_seal(joiner_key, offer_pub, accept_pub, retour))
+    out = client.post("/pair/adopt",
+                      json={"request_id": request_id, "sealed": sealed})
+    assert out.status_code == 200, out.text
+
+    # Le membre a épinglé le certificat du joiner : son prochain tir vers lui
+    # n'aura pas de fenêtre TOFU.
+    conn = _conn()
+    try:
+        row = conn.execute(
+            "SELECT v FROM sync_meta WHERE k = 'peer_cert:mac-joiner'").fetchone()
+    finally:
+        conn.close()
+    assert row and row[0] == "b" * 64
+
+    # Ce backend-ci sert en permanence : il n'adopte pas l'adresse du joiner.
+    # C'est l'écoute du téléphone qui adoptera — elle n'a personne d'autre.
+    assert out.json()["adopted"] is False
+
+
+def test_une_jambe_retour_non_scellee_est_refusee(client, monkeypatch):
+    """Le scellement EST l'authentification de ces routes : sans lui, n'importe
+    qui sur le réseau pourrait dicter au membre à qui parler."""
+    import base64
+
+    from sinam_core import pairing_accept
+
+    from api.sync_peers import claim_owner, ensure_space
+    from core_store import get_store
+
+    monkeypatch.setenv("SYNAPSE_API_TOKEN", "member-token")
+    claim_owner(get_store().sync_device_id())
+    ensure_space()
+    auth = {"Authorization": "Bearer member-token"}
+
+    qr = client.post("/pair/offer", headers=auth).json()["qr"]
+    accept_pub, _ = pairing_accept(qr)
+    request_id = client.post("/pair/request", json={
+        "accept_pub_b64": base64.b64encode(accept_pub).decode(),
+        "device_id": "mac-joiner", "name": "Macmini",
+        "platform": "darwin"}).json()["request_id"]
+    client.post("/pair/approve", headers=auth,
+                json={"request_id": request_id, "include_key": False})
+
+    forge = client.post("/pair/adopt", json={
+        "request_id": request_id,
+        "sealed": base64.b64encode(b"n'importe quoi").decode()})
+    assert forge.status_code == 400
+
+    conn = _conn()
+    try:
+        row = conn.execute(
+            "SELECT v FROM sync_meta WHERE k = 'peer_cert:mac-joiner'").fetchone()
+    finally:
+        conn.close()
+    assert row is None, "une charge non scellée a été acceptée"
 
 
 def test_a_second_offer_does_not_kill_the_first(client, monkeypatch):

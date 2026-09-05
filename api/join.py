@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import socket
 import threading
 import time
@@ -29,6 +30,8 @@ from sinam_core import (
 )
 
 from db import get_connection
+
+log = logging.getLogger(__name__)
 
 # Le membre annonce désormais son port CHIFFRÉ (auto-signé). Pendant le handshake
 # on n'a pas encore l'empreinte du certificat (elle est DANS la charge scellée) :
@@ -190,6 +193,7 @@ def _try_member(code: str, base: str) -> str:
             _set(status="applying")
             payload = json.loads(bytes(pairing_open(key, msg_m, msg_j, res["sealed"])))
             _apply(payload, base)
+            _send_callback(base, request_id, key, msg_m, msg_j, payload)
             _set(status="done", space_name=payload.get("space_name"))
             return "done"
         if st in ("denied", "expired"):
@@ -198,6 +202,57 @@ def _try_member(code: str, base: str) -> str:
         time.sleep(2)
     _set(status="expired")
     return "expired"
+
+
+def _send_callback(base: str, request_id: str, key: bytes,
+                   aad_a: bytes, aad_b: bytes, payload: dict) -> None:
+    """La jambe retour : dire au membre qui nous sommes, où nous joindre, et
+    lui remettre un jeton à lui.
+
+    Sans elle, l'appairage n'apprenait rien au membre. Tant que le membre est
+    un Mac qui sert en permanence, ça ne se voit pas. Dès qu'il est un
+    téléphone — qui n'écoute que le temps d'afficher son QR — il se retrouve
+    avec un appairage réussi et personne à qui parler.
+
+    Nous, nous savons servir : c'est donc NOTRE adresse qui doit devenir le
+    lien, et notre jeton que le membre doit porter. Meilleur effort : un membre
+    d'une version antérieure répond 404, et l'appairage reste valable dans le
+    sens qui marchait déjà.
+    """
+    member_device = str(payload.get("device_id") or "").strip()[:80]
+    try:
+        from api import device_tokens
+        from api.tls import fingerprint as _cert_fingerprint
+        from core_store import get_store
+
+        blob = {
+            "device_id": get_store().sync_device_id(),
+            "cert_sha256": _cert_fingerprint(),
+            # Notre adresse joignable, telle que le membre pourra nous appeler.
+            "base_url": _self_base_url(),
+        }
+        if member_device:
+            # Un jeton qui n'appartient qu'à lui : c'est ce qui permettra de le
+            # retirer un jour sans déconnecter tout le maillage.
+            blob["token"] = device_tokens.issue(member_device, "membre appairant")
+        sealed = pairing_seal(key, aad_a, aad_b,
+                              json.dumps(blob).encode("utf-8"))
+        requests.post(f"{base}/pair/adopt",
+                      json={"request_id": request_id, "sealed": str(sealed)},
+                      timeout=5, verify=False)
+    except Exception:  # noqa: BLE001 — jamais journaliser la charge
+        log.warning("jambe retour de l'appairage non remise (membre plus ancien ?)")
+
+
+def _self_base_url() -> str | None:
+    """L'adresse où le membre pourra nous joindre. `None` si on ne sait pas
+    servir — un joiner qui n'écoute pas ne doit surtout pas s'annoncer comme
+    lien, sinon le membre pointerait dans le vide."""
+    try:
+        from api.discovery import self_https_url
+        return self_https_url()
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def _apply(payload: dict, base: str) -> None:

@@ -391,11 +391,16 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
 
     * le jeton **de cet appareil**, délivré à son appairage. C'est le seul qui
       identifie son porteur, donc le seul sur lequel un retrait peut mordre ;
-    * le jeton par-installation de ce backend, et celui du maillage adopté à
-      l'appairage. Tous deux sont **communs** : ils disent qu'on a le droit
-      d'entrer, jamais qui entre. Ils restent acceptés le temps que les installs
-      existantes se réappairent, sans quoi ce changement les désappairerait
-      toutes d'un coup — y compris celle depuis laquelle on répare.
+    * le jeton **par-installation** de ce backend. Il n'est pas partagé avec le
+      maillage : c'est celui que l'app locale présente à son propre backend, et
+      il reste accepté pour toujours ;
+    * le jeton **du maillage**, adopté à l'appairage et commun à tous. Il dit
+      qu'on a le droit d'entrer, jamais qui entre — c'est lui qui rendait un
+      retrait sans effet. Il n'est plus délivré à personne, et il n'est accepté
+      que **tant que la fenêtre de migration est ouverte** : le refuser d'un
+      coup désappairerait tout le monde, y compris l'appareil depuis lequel on
+      répare. La fenêtre se referme d'elle-même quand chaque appareil du
+      registre détient son propre jeton (`device_tokens.window_closed`).
 
     Un appareil retiré est refusé en **403**, avec un code distinct : le client
     doit pouvoir dire « cet appareil a été retiré de la mémoire » plutôt
@@ -411,8 +416,12 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
         presented = authorization[len("Bearer "):]
 
     # a joined desktop accepts BOTH its per-install token (its own
-    # app) and the mesh token adopted at join time (the peers).
-    shared = {t for t in (resolve_token(), get_mesh_token()) if t}
+    # app) and the mesh token adopted at join time (the peers) — ce dernier
+    # seulement tant que la migration n'est pas finie.
+    shared = {t for t in (resolve_token(),) if t}
+    mesh = get_mesh_token()
+    if mesh and not device_tokens.window_closed():
+        shared.add(mesh)
     if not shared:
         # Seulement en mode développement explicite : hors de là,
         # `resolve_token` fabrique un jeton plutôt que de rendre None.
@@ -623,6 +632,11 @@ class PairCodeConfirmIn(BaseModel):
 class PairJoinIn(BaseModel):
     code: str
     url: str | None = None       # explicit member URL (mDNS otherwise)
+    # Ce que devient le passé de CETTE machine quand elle a déjà vécu :
+    # `True` le verse dans l'espace rejoint, `False` le garde ici. Absent, un
+    # appareil non vierge est refusé — c'est ce que reçoit un client qui ne
+    # sait pas encore poser la question, et c'est la réponse prudente.
+    pour: bool | None = None
 
 
 # space + device registry
@@ -980,9 +994,12 @@ def pair_confirm_code(body: PairCodeConfirmIn):
 @app.post("/pair/join", dependencies=[Depends(require_auth)])
 def pair_join(body: PairJoinIn):
     """THIS device joins another space with a displayed code.
-    v1: virgin installs only (no captures, no entities)."""
+
+    Une install vierge rejoint sans rien demander. Une machine qui a déjà vécu
+    doit dire ce que devient son passé (`pour`), faute de quoi elle est refusée
+    par 409 `device_not_virgin`."""
     try:
-        return _join.start_join(body.code, body.url)
+        return _join.start_join(body.code, body.url, body.pour)
     except _join._JoinError as exc:  # noqa: SLF001
         raise HTTPException(status_code=exc.status, detail=exc.detail)
 

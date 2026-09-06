@@ -1114,7 +1114,7 @@
     "/pair/join": {
       "post": {
         "summary": "Pair Join",
-        "description": "THIS device joins another space with a displayed code.\nv1: virgin installs only (no captures, no entities).",
+        "description": "THIS device joins another space with a displayed code.\n\nUne install vierge rejoint sans rien demander. Une machine qui a déjà vécu\ndoit dire ce que devient son passé (`pour`), faute de quoi elle est refusée\npar 409 `device_not_virgin`.",
         "operationId": "pair_join_pair_join_post",
         "parameters": [
           {
@@ -5693,6 +5693,17 @@
               }
             ],
             "title": "Url"
+          },
+          "pour": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pour"
           }
         },
         "type": "object",

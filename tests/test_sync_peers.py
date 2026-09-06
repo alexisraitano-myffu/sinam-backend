@@ -709,6 +709,119 @@ def test_le_dossier_de_donnees_se_referme(tmp_path):
     assert tmp_path.stat().st_mode & 0o777 == 0o700
 
 
+def test_la_fenetre_du_jeton_commun_se_referme_toute_seule(isolated_db):
+    """Le jeton commun est la raison pour laquelle un retrait pouvait ne pas
+    mordre : tout le monde le porte, donc le révoquer coupe tout le monde et ne
+    pas le révoquer ne coupe personne.
+
+    Il ne peut pas être refusé d'un coup — ça désappairerait le maillage entier,
+    y compris l'appareil depuis lequel on répare. La fenêtre se referme donc
+    d'elle-même, quand plus personne n'en dépend. C'est ce que ce test tient :
+    ouverte tant qu'un appareil n'a pas son jeton, fermée sitôt qu'il l'a.
+    """
+    from api import device_tokens
+    from core_store import get_store
+    from db import get_connection
+
+    me = get_store().sync_device_id()
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO devices (device_id, name, platform) "
+                "VALUES ('pixel', 'Pixel', 'android')")
+    finally:
+        conn.close()
+
+    # Un appareil du registre n'a que le jeton commun : la fenêtre reste ouverte.
+    assert device_tokens.window_closed() is False
+
+    # Il se réappaire et repart avec le sien : plus personne n'en dépend.
+    device_tokens.issue("pixel", "Pixel")
+    assert device_tokens.window_closed() is True
+
+    # Un appareil RETIRÉ ne la rouvre pas. Attendre qu'un téléphone perdu se
+    # réappaire pour refermer la fenêtre reviendrait à ne jamais la refermer —
+    # c'est-à-dire à ne jamais couper celui qu'on voulait couper.
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO devices (device_id, name, platform, revoked_at) "
+                "VALUES ('vieux', 'Vieux téléphone', 'android', CURRENT_TIMESTAMP)")
+    finally:
+        conn.close()
+    assert device_tokens.window_closed() is True
+
+    # Le nôtre non plus : l'app locale n'entre pas par le jeton du maillage,
+    # elle présente celui de cette installation.
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO devices (device_id, name, platform) "
+                "VALUES (?, 'Ce Mac', 'desktop')", (me,))
+    finally:
+        conn.close()
+    assert device_tokens.window_closed() is True
+
+
+def test_le_passe_ne_sort_pas_quand_on_a_dit_de_le_garder(client):
+    """La contamination silencieuse que `join` laissait passer.
+
+    Rejoindre est un amorçage par TIRAGE : rien ne part au moment du join, et
+    l'écran dit « rejoint ». Mais le pair vient ensuite tirer nos changements
+    depuis `seq > 0`, et le journal complet d'une machine qui a déjà vécu part
+    alors dans le maillage, une minute plus tard, sans que rien ne l'annonce.
+    Constaté le 04/09 : 1 409 lignes d'une base abandonnée en juin, prêtes à
+    remonter vers l'appareil qui portait la vérité.
+
+    Le test regarde donc ce que le pair VERRAIT, pas ce que le join a fait.
+    """
+    from api.join import _garder_le_passe_ici
+
+    client.post("/capture", json={"id": "cap-vieille", "content": "d'avant"})
+    avant = client.get("/sync/changes", params={"since": 0, "limit": 10000}).json()
+    assert any(r["pk"] == "cap-vieille" for r in avant["rows"])
+
+    _garder_le_passe_ici()
+
+    apres = client.get("/sync/changes", params={"since": 0, "limit": 10000}).json()
+    assert apres["rows"] == [], "le passé continue de sortir malgré le plancher"
+
+    # Rien n'a été SUPPRIMÉ : la capture est toujours là, elle ne voyage plus.
+    feed = client.get("/feed").json()
+    entries = feed["entries"] if isinstance(feed, dict) else feed
+    assert any(e["id"] == "cap-vieille" for e in entries)
+
+    # Et ce qui vient après passe : sceller n'est pas se taire pour toujours.
+    client.post("/capture", json={"id": "cap-apres", "content": "d'après"})
+    suite = client.get("/sync/changes", params={"since": 0, "limit": 10000}).json()
+    assert any(r["pk"] == "cap-apres" for r in suite["rows"])
+    assert not any(r["pk"] == "cap-vieille" for r in suite["rows"])
+
+
+def test_une_machine_qui_a_vecu_ne_rejoint_pas_sans_quon_ait_tranche(client):
+    """Le refus reste la réponse par défaut — mais il n'est plus la seule.
+
+    Verser son journal dans l'espace qu'on rejoint est parfois exactement ce
+    qu'on veut : c'est le seul chemin par lequel la mémoire d'un maître non
+    vierge atteint une base vide. Refuser toujours rendait ce cas impossible ;
+    accepter toujours était la contamination.
+    """
+    client.post("/capture", json={"id": "cap-1", "content": "cette machine a vécu"})
+
+    # Sans réponse : refus, avec un code que le client sait nommer.
+    r = client.post("/pair/join", json={"code": "123456"})
+    assert r.status_code == 409
+    assert r.json()["detail"] == "device_not_virgin"
+
+    # Avec une réponse, le join démarre (il échouera plus loin faute de membre,
+    # ce qui n'est pas ce qu'on mesure ici).
+    r = client.post("/pair/join", json={"code": "123456", "pour": False})
+    assert r.status_code == 200
+
+
 def test_space_and_devices_endpoints(client):
     from api.sync_peers import claim_owner, ensure_space, register_self_device
     from core_store import get_store

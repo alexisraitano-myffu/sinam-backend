@@ -99,18 +99,24 @@ def _sealed_self_fingerprint(key: bytes, msg_m: bytes, msg_j: bytes) -> str | No
         return None
 
 
-def start_join(code: str, url: str | None) -> dict:
+def start_join(code: str, url: str | None, pour: bool | None = None) -> dict:
     code = (code or "").strip().replace(" ", "")
     if len(code) != 6 or not code.isdigit():
         raise _JoinError(422, "code must be 6 digits")
-    if not is_virgin():
+    # Un appareil qui a déjà vécu ne rejoint pas sans qu'on ait tranché le sort
+    # de son passé. Le refus sec restait la réponse par défaut — c'est ce que
+    # reçoit un client qui ne sait pas encore poser la question — mais ce n'est
+    # plus la seule : verser son journal dans l'espace qu'on rejoint est parfois
+    # exactement ce qu'on veut (un maître non vierge qui rejoint une base vide),
+    # et le refuser toujours rendait ce cas-là impossible.
+    if not is_virgin() and pour is None:
         raise _JoinError(409, "device_not_virgin")
     with _lock:
         if _state.get("status") in ("searching", "waiting_approval", "applying"):
             raise _JoinError(409, "join already in progress")
         _state.clear()
         _state.update({"status": "searching"})
-    threading.Thread(target=_run, args=(code, url), daemon=True).start()
+    threading.Thread(target=_run, args=(code, url, pour), daemon=True).start()
     return {"status": "searching"}
 
 
@@ -122,21 +128,21 @@ def _candidates(url: str | None) -> list[str]:
     return [p["url"] for p in known_peers()]
 
 
-def _run(code: str, url: str | None) -> None:
+def _run(code: str, url: str | None, pour: bool | None) -> None:
     try:
         cands = _candidates(url)
         if not cands:
             _set(status="not_found")
             return
         for base in cands:
-            if _try_member(code, base) != "next":
+            if _try_member(code, base, pour) != "next":
                 return  # terminal state already set
         _set(status="not_found")
     except Exception:  # noqa: BLE001 — never leak handshake material in a trace
         _set(status="failed")
 
 
-def _try_member(code: str, base: str) -> str:
+def _try_member(code: str, base: str, pour: bool | None) -> str:
     """One full attempt against one candidate member. Returns "next" to try
     the following candidate; any other value means a terminal state was set."""
     session = CodePairing(code)
@@ -192,7 +198,7 @@ def _try_member(code: str, base: str) -> str:
         if st == "approved":
             _set(status="applying")
             payload = json.loads(bytes(pairing_open(key, msg_m, msg_j, res["sealed"])))
-            _apply(payload, base)
+            _apply(payload, base, pour)
             _send_callback(base, request_id, key, msg_m, msg_j, payload)
             _set(status="done", space_name=payload.get("space_name"))
             return "done"
@@ -255,10 +261,13 @@ def _self_base_url() -> str | None:
         return None
 
 
-def _apply(payload: dict, base: str) -> None:
+def _apply(payload: dict, base: str, pour: bool | None = None) -> None:
     """Adopt the space: mesh token (local, never replicated), opt-in Anthropic
     key, founding rows dropped, bootstrap pull, then our device row joins the
-    replicated registry."""
+    replicated registry.
+
+    `pour` dit ce que devient le passé de CETTE machine : le verser dans
+    l'espace rejoint (comportement historique), ou le garder ici."""
     from api import sync_peers
     from config_store import set_anthropic_key
 
@@ -269,6 +278,13 @@ def _apply(payload: dict, base: str) -> None:
     if key:
         set_anthropic_key(key)
     _adopt_reset()
+    # Le passé de cette machine ne sort pas, si l'utilisateur l'a dit. Posé
+    # AVANT le tir de bootstrap : rejoindre ne pousse rien, mais le pair, lui,
+    # viendra tirer nos changements depuis `seq > 0` — c'est là que le journal
+    # d'une base abandonnée partait, une minute après un join qui avait l'air
+    # propre.
+    if pour is False:
+        _garder_le_passe_ici()
     # `_adopt_reset` vient de supprimer notre ligne `space` : sans repère, la
     # garde d'espace du tir refuserait le bootstrap. L'identifiant visé était
     # dans la charge scellée, on le pose le temps de la première réplication.
@@ -280,6 +296,31 @@ def _apply(payload: dict, base: str) -> None:
     # fenêtre TOFU. Le membre la mémorise ensuite pour ce device_id.
     sync_peers.pull_from_peer(base, expected_fp=payload.get("cert_sha256"))
     sync_peers.register_self_device()
+
+
+def _garder_le_passe_ici() -> None:
+    """Le plancher de partage : rien de plus ancien ne sortira d'ici.
+
+    Miroir EXACT de l'action `keep_past_local` du cœur — même clé, même
+    sémantique de relèvement. Le cœur ne l'expose pas à PyO3 (le backend porte
+    ses propres écritures en Python), mais la LECTURE du plancher, elle, est
+    unique : elle vit dans `changes_since`, par où sortent tous les changements
+    des trois hôtes. Ce qui est dupliqué ici est la pose, pas le respect.
+
+    `max` et pas une écriture sèche : le plancher se relève, il ne recule
+    jamais — le faire reculer rouvrirait en silence un passé qu'on a fermé.
+    Et il ne SUPPRIME rien : le contenu reste lisible sur cette machine.
+    """
+    conn = get_connection()
+    try:
+        with conn:
+            conn.execute(
+                "INSERT INTO sync_meta (k, v) VALUES ('partage_plancher', "
+                "  (SELECT COALESCE(MAX(seq), 0) FROM sync_log)) "
+                "ON CONFLICT(k) DO UPDATE SET v = max(v, excluded.v)"
+            )
+    finally:
+        conn.close()
 
 
 def _adopt_reset() -> None:

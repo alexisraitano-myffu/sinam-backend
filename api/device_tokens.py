@@ -36,10 +36,13 @@ désappairerait tout le monde, y compris l'appareil depuis lequel on essaie de
 réparer. L'ancien jeton commun reste donc accepté ; simplement, il n'est plus
 délivré à personne, et un appareil qui se réappaire repart avec le sien.
 
-Conséquence à assumer : tant qu'un appareil retiré détient l'ancien jeton
-commun, la coupure ne le concerne pas. Elle sera complète le jour où le jeton
-commun sera retiré — ce qui suppose que tous les appareils du maillage aient été
-réappairés au moins une fois.
+Cette fenêtre **se referme toute seule**, et c'est le point : `window_closed()`
+répond oui dès que chaque appareil du registre, hors le nôtre et hors les
+retirés, détient son propre jeton. Aucune date, aucun geste, aucun drapeau à
+penser à lever — et surtout aucun risque d'enfermer dehors un appareil qui ne
+s'est pas encore réappairé, puisque c'est précisément lui qui tient la fenêtre
+ouverte. Tant qu'elle l'est, un appareil retiré qui détient l'ancien jeton commun
+n'est pas coupé ; le jour où le dernier se réappaire, il l'est.
 """
 
 import hashlib
@@ -154,3 +157,39 @@ def forget_device(device_id: str) -> int:
     if removed:
         log.info("jetons détruits pour l'appareil %s (%d)", device_id, removed)
     return removed
+
+
+def window_closed() -> bool:
+    """La fenêtre de migration est-elle refermée ?
+
+    Oui quand plus personne n'a besoin du jeton commun : chaque appareil du
+    registre répliqué, le nôtre et les retirés exceptés, détient au moins un
+    jeton à lui. Le nôtre est hors du compte parce qu'il n'entre pas par là —
+    l'app locale présente le jeton par-installation de ce backend. Les retirés
+    aussi : attendre qu'un téléphone perdu se réappaire pour refermer la
+    fenêtre reviendrait à ne jamais la refermer, ce qui est exactement l'inverse
+    du but.
+
+    Prudente par construction : la moindre erreur de lecture répond « ouverte »,
+    donc on accepte encore le jeton commun. Se tromper dans ce sens fait durer
+    une faiblesse connue ; se tromper dans l'autre désappaire le maillage.
+    """
+    try:
+        from core_store import get_store
+
+        me = get_store().sync_device_id()
+        conn = get_connection()
+        try:
+            ensure_schema(conn)
+            rows = conn.execute(
+                "SELECT d.device_id FROM devices d "
+                "WHERE d.revoked_at IS NULL AND d.device_id <> ? "
+                "  AND NOT EXISTS (SELECT 1 FROM device_tokens t "
+                "                  WHERE t.device_id = d.device_id)",
+                (me,)).fetchall()
+        finally:
+            conn.close()
+        return not rows
+    except Exception:  # noqa: BLE001 — voir la docstring : on reste ouvert
+        log.debug("état de la fenêtre de migration illisible", exc_info=True)
+        return False

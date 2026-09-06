@@ -617,6 +617,9 @@ class PairCodeRequestIn(BaseModel):
     msg: str                     # the joiner's SPAKE2 message (base64)
     name: str | None = None
     platform: str | None = None
+    # Notre identité de synchro, comme sur le canal QR : sans elle on repart
+    # avec le jeton commun, et un retrait ne mord pas sur nous.
+    device_id: str | None = None
 
 
 class PairCodeConfirmIn(BaseModel):
@@ -976,7 +979,7 @@ def pair_request_code(body: PairCodeRequestIn):
     except Exception:
         raise HTTPException(status_code=422, detail="msg not base64")
     return _pair_guard(lambda: _pairing.submit_code_request(
-        msg, body.name or "", body.platform or ""))
+        msg, body.name or "", body.platform or "", body.device_id))
 
 
 @app.post("/pair/confirm-code")

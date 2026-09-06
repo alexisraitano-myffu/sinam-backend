@@ -80,6 +80,18 @@ def is_virgin() -> bool:
         conn.close()
 
 
+def _self_sync_device_id() -> str | None:
+    """Notre identité de synchro, annoncée à l'appairage pour repartir avec un
+    jeton qui n'est qu'à nous. Best-effort : sans elle, on repart avec le jeton
+    commun, ce qui marche mais ne se coupe pas individuellement."""
+    try:
+        from core_store import get_store
+
+        return get_store().sync_device_id() or None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _sealed_self_fingerprint(key: bytes, msg_m: bytes, msg_j: bytes) -> str | None:
     """Notre empreinte de certificat + notre device_id, scellés sous la clé
     SPAKE2 (mêmes AAD que la charge du membre : sa msg d'abord, la nôtre
@@ -154,6 +166,7 @@ def _try_member(code: str, base: str, pour: bool | None) -> str:
                 "msg": base64.b64encode(msg_j).decode("ascii"),
                 "name": socket.gethostname().split(".", 1)[0] or "Nouvel appareil",
                 "platform": "desktop",
+                "device_id": _self_sync_device_id(),
             },
             timeout=5, verify=False,
         )

@@ -168,7 +168,8 @@ def start_code_offer() -> dict:
     return {"code": code}
 
 
-def submit_code_request(msg_joiner: bytes, name: str, platform: str) -> dict:
+def submit_code_request(msg_joiner: bytes, name: str, platform: str,
+                        device_id: str | None = None) -> dict:
     """Joiner side (unauthenticated): the joiner's SPAKE2 message.
     We run our half on the displayed code and answer with our message; the
     channel key exists on both sides but the request stays OUT of the
@@ -190,6 +191,10 @@ def submit_code_request(msg_joiner: bytes, name: str, platform: str) -> dict:
             "aad_a": msg_member,
             "aad_b": bytes(msg_joiner),
             "channel_key": channel_key,
+            # Le canal du code délivre lui aussi un jeton par appareil : sans
+            # ce champ, tout ce qui rejoint par code repartait avec le jeton
+            # commun, donc hors de portée d'un retrait.
+            "device_id": (device_id or "").strip()[:80] or None,
             "status": "awaiting_confirm",
             "sealed": None,
             "created": _now(),

@@ -5656,6 +5656,17 @@
               }
             ],
             "title": "Platform"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
           }
         },
         "type": "object",

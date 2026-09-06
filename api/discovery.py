@@ -99,6 +99,21 @@ async def start_advertising(port: int | None = None) -> AsyncZeroconf | None:
     space = _self_space_id()
     if space:
         props["space_id"] = space
+    # L'empreinte de notre certificat. Elle voyage en clair et n'authentifie donc
+    # RIEN par elle-même : c'est une amorce, pas une preuve. Elle sert au joiner
+    # par code, qui n'a pas de QR pour l'apporter et devrait sinon ouvrir la
+    # première poignée sans épingler quoi que ce soit. Il l'épingle à l'aveugle,
+    # puis la CONFRONTE à celle que porte la charge scellée sous SPAKE2 : si les
+    # deux coïncident, le lien était bien celui du membre — et un attaquant qui
+    # n'a pas les six chiffres ne peut pas fabriquer cette charge-là.
+    try:
+        from api.tls import fingerprint as _cert_fp
+
+        fp = _cert_fp()
+        if fp:
+            props["fp"] = fp
+    except Exception:  # noqa: BLE001 — jamais bloquer l'annonce là-dessus
+        pass
     info = AsyncServiceInfo(
         type_=SERVICE_TYPE,
         name=f"sinam on {hostname}.{SERVICE_TYPE}",
@@ -152,6 +167,7 @@ async def _resolve_peer(zc, service_type: str, name: str) -> None:
         "device_id": dev,
         "space_id": props.get("space_id") or None,
         "host": props.get("host"),
+        "fp": props.get("fp") or None,
     }
     log.info("mDNS peer discovered: %s → %s", name, _PEERS[name]["url"])
 

@@ -1,8 +1,8 @@
 # Politique de confidentialité de sinam
 
-**Dernière mise à jour : 20 août 2026**
+**Dernière mise à jour : 18 septembre 2026**
 
-> **sinam s'appelait sinam.** Le produit a été renommé le 20 août 2026 pour des
+> **sinam s'appelait Synapse.** Le produit a été renommé le 20 août 2026 pour des
 > raisons juridiques. Il s'agit de la même application, éditée par la même
 > personne : rien de ce que dit ce document n'a changé avec le nom. Certains
 > identifiants techniques gardent l'ancien nom — l'identifiant d'installation
@@ -79,13 +79,19 @@ contrôlais pas, quelqu'un qui l'écoutait pouvait en lire le contenu. Si tu as
 utilisé sinam sur un Wi-Fi partagé avant cette version, considère que ce qui y a
 transité a pu être vu.
 
-### La sauvegarde Android
+### La sauvegarde de ton téléphone
 
 Si la sauvegarde automatique d'Android est activée sur ton téléphone (réglage du
 système, pas de l'application), les données de sinam en font partie et sont
 copiées vers ton propre espace Google Drive. Depuis Android 9, ces sauvegardes
 sont chiffrées avec le code de verrouillage de ton téléphone, et Google ne peut
 pas les lire. Tu peux désactiver cette sauvegarde dans les réglages Android.
+
+Sur iPhone, la sauvegarde iCloud joue le même rôle : si elle est activée, les
+données de sinam en font partie et sont copiées vers ton propre espace iCloud.
+Ces sauvegardes sont chiffrées, mais Apple en détient les clés, sauf si tu as
+activé la protection avancée des données. Tu peux exclure sinam de la
+sauvegarde, ou la désactiver, dans les réglages iCloud de ton iPhone.
 
 ### Le téléchargement du modèle
 
@@ -121,7 +127,7 @@ l'autre laisse le reste de l'application pleinement utilisable.
 ## Ta clé de classement
 
 Ta clé Anthropic, ou ton token de beta, est conservée dans le magasin sécurisé du
-système (Android Keystore), chiffrée par une clé qui ne peut pas sortir de
+système (Android Keystore, ou le Trousseau sur iPhone), chiffrée par une clé qui ne peut pas sortir de
 l'appareil. Elle n'est jamais synchronisée vers tes autres appareils, sauf si tu
 choisis explicitement de la partager au moment d'appairer un appareil.
 
@@ -134,8 +140,9 @@ imposée, parce qu'aucun serveur ne les détient.
 - Désinstaller l'application efface les données qu'elle détient sur cet appareil.
 - Sur l'ordinateur, désinstaller l'application de bureau retire son moteur ; le
   dossier de données peut être supprimé à la main.
-- Si la sauvegarde Android est activée, pense à la supprimer aussi, depuis les
-  réglages Google de ton téléphone.
+- Si la sauvegarde de ton téléphone est activée (Google Drive sur Android,
+  iCloud sur iPhone), pense à la supprimer aussi, depuis les réglages
+  correspondants.
 
 L'éditeur ne détient aucune copie de tes captures et ne peut donc ni te les
 restituer ni les supprimer à ta place.

@@ -568,6 +568,10 @@ class FetchResourcesIn(BaseModel):
     enabled: bool
 
 
+class LlmModeIn(BaseModel):
+    mode: str
+
+
 class OwnerIn(BaseModel):
     entity_id: str | None = None  # the entity that IS the user (« moi »); null clears it
 
@@ -699,7 +703,52 @@ def get_config():
     """Status only — never echoes the key back. Used by the wizard to know
     whether to prompt for one."""
     return {"anthropic_key_set": config_store.has_anthropic_key(),
-            "fetch_resources": config_store.get_fetch_resources()}
+            "fetch_resources": config_store.get_fetch_resources(),
+            "llm_mode": config_store.get_llm_mode()}
+
+
+@app.put("/config/llm-mode", dependencies=[Depends(require_auth)])
+def put_llm_mode(body: LlmModeIn):
+    """Qui fait le tri : "cloud" (Anthropic, la clé) ou "local" (le modèle
+    installé sur cette machine). En local, rien ne part vers Anthropic, même
+    si une clé reste enregistrée, et il n'y a pas de repli vers le cloud."""
+    import moteur_local
+    if body.mode == "local" and not moteur_local.est_installe():
+        # Accepter ici, c'est un cycle qui échoue cette nuit sans que personne
+        # ne soit devant : on refuse tant que le moteur n'est pas là.
+        raise HTTPException(status_code=409, detail="moteur local non installé")
+    try:
+        config_store.set_llm_mode(body.mode)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "ok", "llm_mode": config_store.get_llm_mode()}
+
+
+@app.get("/moteur-local", dependencies=[Depends(require_auth)])
+def get_moteur_local():
+    """État du moteur local : `incompatible` (avec `raison`), `absent`,
+    `telechargement` (`recu`/`total` en octets), `installe` ou `erreur`."""
+    import moteur_local
+    return moteur_local.etat()
+
+
+@app.post("/moteur-local/installer", dependencies=[Depends(require_auth)])
+def post_moteur_local_installer():
+    """Lance le téléchargement (~3 Go) en fond ; l'app suit par GET /moteur-local.
+    Relancer après une coupure reprend là où le fichier s'était arrêté."""
+    import moteur_local
+    return moteur_local.installer_en_fond()
+
+
+@app.delete("/moteur-local", dependencies=[Depends(require_auth)])
+def delete_moteur_local():
+    """Retire le moteur et rend ~3 Go. Repasse d'abord en cloud : un mode local
+    sans moteur ferait échouer chaque cycle."""
+    import moteur_local
+    if config_store.get_llm_mode() == "local":
+        config_store.set_llm_mode("cloud")
+    moteur_local.desinstaller()
+    return {"status": "ok", "llm_mode": config_store.get_llm_mode()}
 
 
 @app.put("/config/anthropic-key", dependencies=[Depends(require_auth)])

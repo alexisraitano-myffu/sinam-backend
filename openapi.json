@@ -66,6 +66,194 @@
         }
       }
     },
+    "/config/llm-mode": {
+      "put": {
+        "summary": "Put Llm Mode",
+        "description": "Qui fait le tri : \"cloud\" (Anthropic, la clé) ou \"local\" (le modèle\ninstallé sur cette machine). En local, rien ne part vers Anthropic, même\nsi une clé reste enregistrée, et il n'y a pas de repli vers le cloud.",
+        "operationId": "put_llm_mode_config_llm_mode_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmModeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/moteur-local": {
+      "get": {
+        "summary": "Get Moteur Local",
+        "description": "État du moteur local : `incompatible` (avec `raison`), `absent`,\n`telechargement` (`recu`/`total` en octets), `installe` ou `erreur`.",
+        "operationId": "get_moteur_local_moteur_local_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Moteur Local",
+        "description": "Retire le moteur et rend ~3 Go. Repasse d'abord en cloud : un mode local\nsans moteur ferait échouer chaque cycle.",
+        "operationId": "delete_moteur_local_moteur_local_delete",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/moteur-local/installer": {
+      "post": {
+        "summary": "Post Moteur Local Installer",
+        "description": "Lance le téléchargement (~3 Go) en fond ; l'app suit par GET /moteur-local.\nRelancer après une coupure reprend là où le fichier s'était arrêté.",
+        "operationId": "post_moteur_local_installer_moteur_local_installer_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/config/anthropic-key": {
       "put": {
         "summary": "Put Anthropic Key",
@@ -5516,6 +5704,19 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LlmModeIn": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "LlmModeIn"
       },
       "MergeAcceptIn": {
         "properties": {

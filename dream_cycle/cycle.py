@@ -32,6 +32,7 @@ load_dotenv()
 
 import anthropic
 
+import llm_target
 from config import CLAUDE_MODEL
 from db import get_connection, cursor_to_dicts, init_db
 from core_store import get_brain
@@ -161,21 +162,10 @@ def step1_classify(
     interrompt le run, politique anthropic.APIError) ; un contenu invalide en
     ValueError (l'entrée passe en 'failed'). `client`/`conn` gardés pour la
     signature historique."""
-    from anthropic_client import is_fuel_token, _fuel_base_url
-    from config_store import get_anthropic_key
-
-    key = get_anthropic_key()
-    if not key:
-        raise EnvironmentError(
-            "ANTHROPIC_API_KEY manquante — exporte-la, mets-la dans .env, ou "
-            "règle-la depuis l'app (Réglages → Clé Anthropic API)."
-        )
-    fuel = is_fuel_token(key)
+    t = _llm_args()
     raw = get_brain().classify(
-        entry["content"], day_context, CLAUDE_MODEL,
-        "" if fuel else key, str(PROMPTS_DIR), _TODAY,
-        base_url=_fuel_base_url() if fuel else None,
-        fuel_token=key if fuel else None,
+        entry["content"], day_context, t.model, t.api_key, str(PROMPTS_DIR), _TODAY,
+        **t.core_kwargs(),
     )
     result = json.loads(raw)
     if verbose:
@@ -184,22 +174,11 @@ def step1_classify(
 
 
 
-def _llm_args() -> tuple[str, str | None, str | None]:
-    """(api_key, base_url, fuel_token) pour les appels LLM du core — la
-    résolution de la clé et le seam fuel-proxy restent côté hôte.
-    Lève EnvironmentError sans clé (même message que step1_classify)."""
-    from anthropic_client import is_fuel_token, _fuel_base_url
-    from config_store import get_anthropic_key
-
-    key = get_anthropic_key()
-    if not key:
-        raise EnvironmentError(
-            "ANTHROPIC_API_KEY manquante — exporte-la, mets-la dans .env, ou "
-            "règle-la depuis l'app (Réglages → Clé Anthropic API)."
-        )
-    if is_fuel_token(key):
-        return "", _fuel_base_url(), key
-    return key, None, None
+def _llm_args() -> llm_target.LlmTarget:
+    """La cible des appels LLM du core (voir `llm_target`) : Anthropic avec la
+    clé de l'hôte et le seam fuel-proxy, ou le modèle local.
+    Lève EnvironmentError en cloud sans clé (même message qu'avant)."""
+    return llm_target.resolve()
 
 
 def _batch_classify(
@@ -301,10 +280,10 @@ def step_resummarize(
     stale survivent) ; retourne les ids régénérés (à re-vectoriser). Le core
     écrit sur sa propre connexion : ne PAS appeler sous `with conn:`.
     `conn`/`client` gardés pour la signature historique."""
-    key, base_url, fuel = _llm_args()
+    t = _llm_args()
     raw = get_brain().resummarize(
-        list(touched_ids), CLAUDE_MODEL, key, str(PROMPTS_DIR), _TODAY,
-        base_url=base_url, fuel_token=fuel,
+        list(touched_ids), t.model, t.api_key, str(PROMPTS_DIR), _TODAY,
+        **t.core_kwargs(),
     )
     regenerated = json.loads(raw)
     if verbose:
@@ -348,13 +327,13 @@ def synthesize_project(project_id: str, project_name: str,
     (l'entrée est déjà persistée, la synthèse rattrapera au prochain append).
     Appeler HORS transaction hôte (le core écrit sur sa propre connexion)."""
     try:
-        key, base_url, fuel = _llm_args()
+        t = _llm_args()
     except EnvironmentError:
         return None
     summary = get_brain().synthesize_project(
         project_id, project_name, entry_content, int(entry_count),
-        CLAUDE_MODEL, key, str(PROMPTS_DIR), _TODAY,
-        base_url=base_url, fuel_token=fuel,
+        t.model, t.api_key, str(PROMPTS_DIR), _TODAY,
+        **t.core_kwargs(),
     )
     if verbose and summary:
         print(f"    [project_summary] v{entry_count} for '{project_name}'")
@@ -423,7 +402,8 @@ def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None,
 
     # la synthèse vivante des projets touchés (un appel Haiku chacun)
     # reste côté hôte — le core a persisté les entrées et renvoie la work-list.
-    if client is not None:
+    # Pas de client en local, mais la synthèse passe par le modèle local.
+    if client is not None or llm_target.mode() == llm_target.MODE_LOCAL:
         for s in report["project_syntheses"]:
             synthesize_project(
                 s["project_id"], s["project_name"],
@@ -437,13 +417,28 @@ def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None,
 # ── Orchestrator ───────────────────────────────────────────────────────────────
 
 def run_dream_cycle(dry_run: bool = False, verbose: bool = False, use_batch: bool = False) -> None:
+    """En local, le moteur est lancé pour la durée du cycle et arrêté après :
+    le modèle ne garde pas ~3 Go de mémoire entre deux passes."""
+    if llm_target.mode() == llm_target.MODE_LOCAL and not dry_run:
+        import moteur_local
+        with moteur_local.session():
+            return _run_dream_cycle(dry_run, verbose, use_batch)
+    return _run_dream_cycle(dry_run, verbose, use_batch)
+
+
+def _run_dream_cycle(dry_run: bool, verbose: bool, use_batch: bool) -> None:
     print("═" * 60)
     print("  SYNAPSE  ·  Dream Cycle  A+")
     if dry_run:
         print("  ⚠  DRY RUN — no writes to database")
     print("═" * 60)
 
-    client = _get_client()
+    # En local il n'y a pas de client Anthropic (le core parle au modèle local)
+    # et donc pas de Batch API, qui n'existe que chez Anthropic.
+    local = llm_target.mode() == llm_target.MODE_LOCAL
+    client = None if local else _get_client()
+    if local:
+        use_batch = False
     init_db()
 
     conn = get_connection()

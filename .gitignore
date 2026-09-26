@@ -36,6 +36,8 @@ logs/
 build/
 dist/
 *.spec
+# Écrit à la main, lui (le moteur local), pas régénéré par un script.
+!sinam-moteur.spec
 
 # graphify knowledge graph (generated artifact)
 graphify-out/

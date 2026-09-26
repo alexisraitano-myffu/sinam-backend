@@ -52,6 +52,22 @@ def has_anthropic_key() -> bool:
     return bool(get_anthropic_key())
 
 
+def get_llm_mode() -> str:
+    """"cloud" (Anthropic, la clé ci-dessus) ou "local" (le moteur installé sur
+    cette machine). Absent → cloud : une installation d'avant le mode local
+    garde son comportement. Toute autre valeur lue aussi, pour qu'un fichier
+    abîmé ne fasse jamais croire qu'on est en local."""
+    return "local" if _load().get("llm_mode") == "local" else "cloud"
+
+
+def set_llm_mode(mode: str) -> None:
+    if mode not in ("cloud", "local"):
+        raise ValueError(f"mode inconnu : {mode!r}")
+    data = _load()
+    data["llm_mode"] = mode
+    _save(data)
+
+
 def get_owner_entity_id() -> str | None:
     """Point 2 — the entity that IS the user (« moi »). First-person captures
     (je/mon/moi) resolve to this entity instead of a phantom 'auteur'. Single-user

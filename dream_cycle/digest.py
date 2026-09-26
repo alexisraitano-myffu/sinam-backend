@@ -34,7 +34,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import sinam_core
 
-from config import CLAUDE_MODEL
 from core_store import get_brain
 from db import get_connection, init_db
 from dream_cycle.cycle import PROMPTS_DIR, _TODAY, _llm_args
@@ -82,11 +81,21 @@ def has_content(week: dict) -> bool:
 def summarize_digest(week: dict, *, client=None) -> str:
     """Render the gathered week into French markdown via Haiku (core HTTP
     path). `client` kept for the historical signature (ignored)."""
-    key, base_url, fuel = _llm_args()
-    return get_brain().summarize_digest(
-        json.dumps(week, ensure_ascii=False), CLAUDE_MODEL, key,
-        str(PROMPTS_DIR), _TODAY, base_url=base_url, fuel_token=fuel,
-    )
+    t = _llm_args()
+
+    def appel():
+        return get_brain().summarize_digest(
+            json.dumps(week, ensure_ascii=False), t.model, t.api_key,
+            str(PROMPTS_DIR), _TODAY, **t.core_kwargs(),
+        )
+
+    if not t.is_local:
+        return appel()
+    # Le digest part aussi hors cycle (lundi 8 h, rattrapage horaire) : il lance
+    # le moteur lui-même, ou réutilise celui du cycle en cours.
+    import moteur_local
+    with moteur_local.session():
+        return appel()
 
 
 # ── 3. Persist as an atomic_note (kind="digest", idempotent per week) ─────────────

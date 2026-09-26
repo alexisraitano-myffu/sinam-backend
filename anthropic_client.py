@@ -37,7 +37,18 @@ def _fuel_base_url() -> str:
 
 
 def get_client() -> anthropic.Anthropic:
-    """Build the Anthropic client from the configured key. Raises if no key."""
+    """Build the Anthropic client from the configured key. Raises if no key.
+
+    Refuse aussi en mode local, et c'est le verrou du mode : tout ce qui sort
+    vers Anthropic sans passer par le core (Batch API, noms des zones de la
+    carte, et tout appelant futur) passe par ici. Un appelant qui traite
+    l'absence de client comme « fonction éteinte » (`get_client_or_none`)
+    s'éteint donc en local au lieu de fuir."""
+    from config_store import get_llm_mode
+    if get_llm_mode() == "local":
+        raise EnvironmentError(
+            "mode local : aucun appel ne part vers Anthropic (Réglages → Tri)."
+        )
     key = get_anthropic_key()
     if not key:
         raise EnvironmentError(

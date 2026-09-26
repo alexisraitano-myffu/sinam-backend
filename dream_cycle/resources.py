@@ -58,16 +58,18 @@ def fetch_and_extract(url: str, *, timeout: float = 10.0) -> dict | None:
 def _config_args(client) -> dict:
     """LLM kwargs for the core resource calls — `client is None` (offline,
     tests) or a missing key mean no LLM: the summary falls back to a snippet."""
-    if client is None:
+    import llm_target
+    # En local il n'y a pas de client Anthropic, et c'est normal : le résumé
+    # passe quand même par le modèle local.
+    if client is None and llm_target.mode() != llm_target.MODE_LOCAL:
         return {}
-    from config import CLAUDE_MODEL
     from dream_cycle.cycle import PROMPTS_DIR, _TODAY, _llm_args
     try:
-        key, base_url, fuel = _llm_args()
+        t = _llm_args()
     except EnvironmentError:
         return {}
-    return {"model": CLAUDE_MODEL, "api_key": key, "prompts_dir": str(PROMPTS_DIR),
-            "today": _TODAY, "base_url": base_url, "fuel_token": fuel}
+    return {"model": t.model, "api_key": t.api_key, "prompts_dir": str(PROMPTS_DIR),
+            "today": _TODAY, **t.core_kwargs()}
 
 
 def process_resource(url: str, conn, client, *, capture_id=None, verbose=False) -> str | None:

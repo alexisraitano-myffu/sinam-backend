@@ -1,0 +1,9 @@
+# Le moteur local (moteur_entry.py), empaqueté à part du backend par
+# scripts/paqueter-moteur.sh. Versions EXACTES : moteur_entry.py corrige un
+# défaut interne de mlx-lm 0.31.3 (l'adaptateur ignoré), et c'est avec ces
+# versions que la mesure du 26/09/2026 (80/86) a été faite. En changer, c'est
+# remesurer avant de publier.
+mlx==0.32.2
+mlx-lm==0.31.3
+transformers==5.16.1
+pyinstaller==6.20.0

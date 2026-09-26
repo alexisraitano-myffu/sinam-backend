@@ -477,7 +477,10 @@ starts it for the length of a cycle or a digest (re-entrant) and stops it after,
 leave memory between passes. The settings that change the answers (thinking off, temperature 0)
 are frozen in `moteur_entry.py`, the same as `scripts/entrainement/pod/mesurer_mlx.py`, which
 produced the measured score. `scripts/paqueter-moteur.sh <version>` builds the three archives and
-the manifest from the pinned weights revision. Apple Silicon only (MLX); 8 GB minimum.
+the manifest from the pinned weights revision (downloaded if missing), installing the engine's exact
+dependency versions from `requirements-moteur.txt` first. Upload order matters: the three archives,
+then the manifest; `wrangler r2 object put` caps at 315 MB, so the weights go through R2's S3 API.
+Apple Silicon only (MLX); 8 GB minimum.
 
 **Anthropic client (`anthropic_client.py`).** *Single* place that builds the Anthropic client: `cycle.py`, `digest.py`, `api/app.py` all call `get_client()`/`get_client_or_none()`. A normal key (`sk-ant-…`) → direct. A beta **fuel token** (`syn-fuel-…`, the closed-beta proxy that lends testers my credits) → client pointed at the fuel proxy with the token in an `x-synapse-token` header and a placeholder api_key; the real key lives only on the Cloudflare Worker (separate repo `synapse-fuel-proxy/`, **deployed** at `synapse-fuel-proxy.alexis-raitano.workers.dev`). The proxy URL is baked in (`_DEFAULT_FUEL_BASE_URL`), overridable via `SYNAPSE_FUEL_BASE_URL` (set it empty to disable the fuel path). Only consulted for `syn-fuel-` tokens, so a normal key (Mac mini) is unaffected. Disposable by design: stop issuing fuel tokens and the seam is inert.
 

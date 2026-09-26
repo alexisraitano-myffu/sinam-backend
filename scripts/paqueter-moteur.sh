@@ -20,11 +20,20 @@ ADAPTATEUR="scripts/entrainement/pod/adaptateurs/mlx-60"
 BASE_URL="https://pub-91e19c4a15ec4d9ab1a26673a2b7c0ce.r2.dev/moteur-local/$VERSION"
 
 SNAP="$HOME/.cache/huggingface/hub/models--${MODELE_REPO//\//--}/snapshots/$MODELE_REVISION"
+if [ ! -f "$SNAP/model.safetensors" ]; then
+    # Une machine qui n'a jamais joué la mesure n'a pas les poids en cache :
+    # on les tire à la révision épinglée, jamais à la dernière.
+    echo "▸ poids absents du cache, téléchargement de la révision ${MODELE_REVISION:0:8} (~2,9 Go)"
+    .venv/bin/python -c "from huggingface_hub import snapshot_download as d; d('$MODELE_REPO', revision='$MODELE_REVISION')"
+fi
 [ -f "$SNAP/model.safetensors" ] || { echo "✘ poids absents du cache : $SNAP" >&2; exit 1; }
 [ -f "$ADAPTATEUR/adapters.safetensors" ] || { echo "✘ adaptateur absent : $ADAPTATEUR" >&2; exit 1; }
 
 SORTIE="dist/moteur-local/$VERSION"
 rm -rf "$SORTIE"; mkdir -p "$SORTIE"
+
+echo "▸ dépendances du moteur (versions figées)"
+.venv/bin/pip install -q -r requirements-moteur.txt
 
 echo "▸ moteur (PyInstaller)"
 .venv/bin/pyinstaller --noconfirm --distpath build/moteur-dist --workpath build/moteur-work \
@@ -96,3 +105,12 @@ json.dump({"version": version, "fichiers": fichiers},
 print(f"   {sum(f['taille'] for f in fichiers) / 1e9:.2f} Go au total")
 PY
 echo "✔ $SORTIE"
+cat <<FIN
+
+Dépôt sur R2, dans cet ordre (le manifeste EN DERNIER : il annonce des
+fichiers, qui doivent déjà être là) :
+  1. les trois .tar sous moteur-local/$VERSION/
+  2. $SORTIE/manifeste.json sous moteur-local/manifeste.json
+⚠ \`wrangler r2 object put\` plafonne à 315 Mo : modele.tar (~2,9 Go) doit
+  passer par l'API S3 de R2 (rclone ou aws s3 cp, qui découpent en parties).
+FIN

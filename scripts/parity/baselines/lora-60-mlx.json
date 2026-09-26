@@ -1,7 +1,7 @@
 {
-  "model": "rejeu:Qwen3.5-4B-NF4-lora60",
+  "model": "rejeu:Qwen3.5-4B-MLX-lora60",
   "fingerprint": "ca3c6b99ef4f+1445e4946041",
-  "label": "lora-60-nf4",
+  "label": "lora-60-mlx",
   "schema_constrained": false,
   "split": true,
   "temperature": 0.0,
@@ -51,17 +51,17 @@
       "text": "Répondre à l'e-mail de Vincent",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5319,
-      "graph_prompt_tokens": 4930,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5319,
-      "input_tokens": 10249,
+      "latency_s": 75.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 141,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -115,17 +115,17 @@
       "text": "Notre rencontre avec Marie, c'était le 18 avril",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5323,
-      "graph_prompt_tokens": 4934,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5323,
-      "input_tokens": 10257,
+      "latency_s": 75.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 183,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -137,7 +137,7 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Acheté du pain ce matin",
+            "note": "J'ai acheté du pain ce matin",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
@@ -166,17 +166,17 @@
       "text": "J'ai acheté du pain ce matin",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5317,
-      "graph_prompt_tokens": 4928,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5317,
-      "input_tokens": 10245,
+      "latency_s": 73.8,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 104,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -199,7 +199,7 @@
           }
         ],
         "cancels_action": null,
-        "classification_confidence": 0.5,
+        "classification_confidence": 1.0,
         "entities": [
           {
             "canonical_name": "Yanis",
@@ -207,7 +207,7 @@
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
-            "summary": "Anniversaire le 12 juin.",
+            "summary": null,
             "attributes": {},
             "facts": [
               {
@@ -238,19 +238,21 @@
       "text": "Le 12 juin c'est l'anniversaire de Yanis",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5325,
-      "graph_prompt_tokens": 4936,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5325,
-      "input_tokens": 10261,
+      "latency_s": 81.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 269,
-      "confidence": 0.5,
-      "gaps": [],
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [
+        "doit passer par « À valider » : confiance 1.0 (seuil 0.7), trace laissée=oui"
+      ],
       "axes": [
         "note",
         "kind",
@@ -264,12 +266,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Alexis va au salon Vivatech le 12 juillet 2026",
+            "note": "Vivatech le 12 juillet 2026",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-12",
             "event_recurring": false,
-            "summary": "Alexis participe au salon Vivatech"
+            "summary": "Alexis va au salon Vivatech le 12 juillet"
           }
         ],
         "cancels_action": null,
@@ -304,17 +306,17 @@
       "text": "Je vais au salon Vivatech le 12",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5321,
-      "graph_prompt_tokens": 4932,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5321,
-      "input_tokens": 10253,
+      "latency_s": 80.7,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 152,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -328,12 +330,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Visite au zoo avec un ours nommé Balthazar",
+            "note": "J'ai vu un ours nommé Balthazar au zoo",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a vu un ours nommé Balthazar au zoo"
+            "summary": "Visite d'un ours nommé Balthazar au zoo"
           }
         ],
         "cancels_action": null,
@@ -347,7 +349,22 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": []
+            "facts": [
+              {
+                "predicate": "species",
+                "value": "ours",
+                "persistence_value": 1,
+                "evidence_strength": "explicit",
+                "category": "other"
+              },
+              {
+                "predicate": "name",
+                "value": "Balthazar",
+                "persistence_value": 1,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
           }
         ],
         "relations": [],
@@ -360,7 +377,7 @@
       "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
-      "facts": 0,
+      "facts": 2,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -368,17 +385,17 @@
       "text": "J'ai vu un ours au zoo qui s'appelait Balthazar",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5325,
-      "graph_prompt_tokens": 4936,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5325,
-      "input_tokens": 10261,
+      "latency_s": 84.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 264,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "entité 'Balthazar' créée alors qu'elle est sous le seuil de persistance"
@@ -392,20 +409,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Julie déménage à Bordeaux en janvier",
-            "kind": "event",
+            "note": "Julie déménage à Bordeaux en janvier et cherche un architecte",
+            "kind": "episode",
             "owner": null,
             "event_date": "2026-01-01",
             "event_recurring": false,
-            "summary": "Julie déménage à Bordeaux en janvier"
-          },
-          {
-            "note": "Julie cherche un architecte",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Trouver un architecte pour Julie"
+            "summary": "Julie a annoncé son déménagement à Bordeaux et sa recherche d'un architecte"
           }
         ],
         "cancels_action": null,
@@ -419,42 +428,62 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": []
+            "facts": [
+              {
+                "predicate": "lives_in",
+                "value": "Bordeaux",
+                "persistence_value": 3,
+                "evidence_strength": "implicit",
+                "category": "places"
+              },
+              {
+                "predicate": "has_birthday",
+                "value": null,
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
           }
         ],
-        "relations": [],
+        "relations": [
+          {
+            "from": "Julie",
+            "predicate": "lives_in",
+            "to": "Bordeaux",
+            "confidence": 0.85
+          }
+        ],
         "project_entries": [],
         "obsoleted_facts": [],
         "resources": []
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "event",
-      "memories": 2,
+      "kind": "episode",
+      "memories": 1,
       "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
+      "facts": 2,
+      "relations": 1,
       "projects": 0,
       "fields": 9,
       "set": "atomicity",
       "text": "Julie m'a dit qu'elle déménageait à Bordeaux en janvier et qu'elle cherchait un architecte",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5334,
-      "graph_prompt_tokens": 4945,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5334,
-      "input_tokens": 10279,
+      "latency_s": 94.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 222,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "facts_min",
         "drop_guard"
@@ -475,7 +504,18 @@
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -494,17 +534,17 @@
       "text": "I need to renew my passport",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5316,
-      "graph_prompt_tokens": 4927,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5316,
-      "input_tokens": 10243,
+      "latency_s": 76.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 106,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -548,17 +588,17 @@
       "text": "Reunión de equipo el jueves",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5317,
-      "graph_prompt_tokens": 4928,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5317,
-      "input_tokens": 10245,
+      "latency_s": 74.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 106,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -576,7 +616,7 @@
             "note": "Anniversaire de mariage des parents : 8 août",
             "kind": "event",
             "owner": null,
-            "event_date": "2027-08-08",
+            "event_date": "2026-08-08",
             "event_recurring": true,
             "summary": "Anniversaire de mariage des parents"
           }
@@ -638,21 +678,19 @@
       "text": "L'anniversaire de mariage de mes parents est le 8 août",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5325,
-      "graph_prompt_tokens": 4936,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5325,
-      "input_tokens": 10261,
+      "latency_s": 83.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 323,
+      "output_tokens": 0,
       "confidence": 0.5,
-      "gaps": [
-        "event_date attendu=2026-08-08 obtenu=['2027-08-08']"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -705,17 +743,17 @@
       "text": "Répondre à l'e-mail de Vincent",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5319,
-      "graph_prompt_tokens": 4930,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5319,
-      "input_tokens": 10249,
+      "latency_s": 75.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 141,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -734,7 +772,7 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis ran this morning and felt good"
+            "summary": "Alexis went for a run this morning and felt good"
           }
         ],
         "cancels_action": null,
@@ -758,17 +796,17 @@
       "text": "Went for a run this morning, felt good",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 71.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 269,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -787,15 +825,15 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis a entrepris un projet de rénovation de son appartement"
+            "summary": "Alexis a lancé un projet de rénovation de son appartement"
           }
         ],
         "cancels_action": null,
-        "classification_confidence": 0.5,
+        "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Rénovation de l'appartement",
-            "type": "project",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -807,8 +845,8 @@
         "relations": [],
         "project_entries": [
           {
-            "project_canonical": "Rénovation de l'appartement",
-            "content": "Nouveau projet : rénovation de l'appartement",
+            "project_canonical": "Synapse",
+            "content": "Rénovation de l'appartement",
             "is_new": true
           }
         ],
@@ -828,18 +866,18 @@
       "text": "Nouveau projet : rénovation de l'appartement",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 80.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 183,
-      "confidence": 0.5,
+      "output_tokens": 0,
+      "confidence": 1.0,
       "gaps": [],
       "axes": [
         "proj"
@@ -850,16 +888,16 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Anniversaire de Yanis le 23 juillet",
+            "note": "Yanis a 23 juillet comme anniversaire",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-23",
             "event_recurring": false,
-            "summary": "Anniversaire de Yanis"
+            "summary": "Anniversaire de Yanis le 23 juillet"
           }
         ],
         "cancels_action": null,
-        "classification_confidence": 0.5,
+        "classification_confidence": 1.0,
         "entities": [
           {
             "canonical_name": "Yanis",
@@ -867,14 +905,14 @@
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
-            "summary": "Fils de Marc et Julie, neveu d'Alexis, frère de Léna.",
+            "summary": null,
             "attributes": {},
             "facts": [
               {
                 "predicate": "has_birthday",
                 "value": "2026-07-23",
                 "persistence_value": 5,
-                "evidence_strength": "explicit",
+                "evidence_strength": "implicit",
                 "category": "dates"
               }
             ]
@@ -905,7 +943,7 @@
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
-            "summary": "Fille de Marc et Julie, sœur de Yanis.",
+            "summary": null,
             "attributes": {},
             "facts": []
           }
@@ -952,12 +990,6 @@
             "predicate": "parent_of",
             "to": "Léna",
             "confidence": 1.0
-          },
-          {
-            "from": "Yanis",
-            "predicate": "sibling_of",
-            "to": "Léna",
-            "confidence": 1.0
           }
         ],
         "project_entries": [],
@@ -970,28 +1002,26 @@
       "memories": 1,
       "kind_defaulted": false,
       "facts": 1,
-      "relations": 8,
+      "relations": 7,
       "projects": 0,
       "fields": 9,
       "set": "gate",
       "text": "C'est l'anniversaire de Yanis le 23 juillet, Yanis est le fils de Marc et Julie donc mon neveu et le frère de Léna",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5345,
-      "graph_prompt_tokens": 4956,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5345,
-      "input_tokens": 10301,
+      "latency_s": 94.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 512,
-      "confidence": 0.5,
-      "gaps": [
-        "fait 'birthday' sur 'Yanis' : asserté au lieu d'être proposé"
-      ],
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -1046,17 +1076,17 @@
       "text": "Répondre à l'e-mail de Vincent",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5319,
-      "graph_prompt_tokens": 4930,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5319,
-      "input_tokens": 10249,
+      "latency_s": 75.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 141,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1070,17 +1100,28 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Appeler le dentiste",
+            "note": "Appeler le dentiste avant le 20",
             "kind": "task",
             "owner": null,
             "event_date": "2026-07-20",
             "event_recurring": false,
-            "summary": "Appel à faire au dentiste avant le 20 juillet"
+            "summary": "Appeler le dentiste avant le 20 juillet"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -1099,17 +1140,17 @@
       "text": "Appeler le dentiste avant le 20",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 81.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 115,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1134,7 +1175,18 @@
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -1153,17 +1205,17 @@
       "text": "Dentist appointment next Tuesday",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5316,
-      "graph_prompt_tokens": 4927,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5316,
-      "input_tokens": 10243,
+      "latency_s": 77.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 115,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1182,7 +1234,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis necesita comprar pan"
+            "summary": "Tarea pendiente: comprar pan"
           }
         ],
         "cancels_action": null,
@@ -1206,17 +1258,17 @@
       "text": "Comprar pan",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5312,
-      "graph_prompt_tokens": 4923,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5312,
-      "input_tokens": 10235,
+      "latency_s": 76.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 200,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1229,17 +1281,28 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Les gens surestiment le court terme et sous-estiment le long terme",
+            "note": "Les gens surestiment le court terme et sous-estiment le long terme — une observation sur la façon dont les gens perçoivent le temps.",
             "kind": "note",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis a une opinion sur la façon dont les gens perçoivent les échelles de temps"
+            "summary": "Alexis note une tendance humaine : surestimer le court terme et sous-estimer le long terme"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -1258,17 +1321,17 @@
       "text": "C'est marrant comme les gens surestiment le court terme et sous-estiment le long terme",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5331,
-      "graph_prompt_tokens": 4942,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5331,
-      "input_tokens": 10273,
+      "latency_s": 81.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 216,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1286,15 +1349,15 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis a entrepris un projet de rénovation de son appartement"
+            "summary": "Alexis a lancé un projet de rénovation de son appartement"
           }
         ],
         "cancels_action": null,
-        "classification_confidence": 0.5,
+        "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Rénovation de l'appartement",
-            "type": "project",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -1306,8 +1369,8 @@
         "relations": [],
         "project_entries": [
           {
-            "project_canonical": "Rénovation de l'appartement",
-            "content": "Nouveau projet : rénovation de l'appartement",
+            "project_canonical": "Synapse",
+            "content": "Rénovation de l'appartement",
             "is_new": true
           }
         ],
@@ -1327,18 +1390,18 @@
       "text": "Nouveau projet : rénovation de l'appartement",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 80.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 183,
-      "confidence": 0.5,
+      "output_tokens": 0,
+      "confidence": 1.0,
       "gaps": [],
       "axes": [
         "proj"
@@ -1359,7 +1422,15 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": []
+            "facts": [
+              {
+                "predicate": "works_at",
+                "value": "Acme",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
           },
           {
             "canonical_name": "Acme",
@@ -1389,7 +1460,7 @@
       "kind": null,
       "memories": 0,
       "kind_defaulted": false,
-      "facts": 0,
+      "facts": 1,
       "relations": 1,
       "projects": 0,
       "fields": 9,
@@ -1397,17 +1468,17 @@
       "text": "Pierre travaille chez Acme",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5315,
-      "graph_prompt_tokens": 4926,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5315,
-      "input_tokens": 10241,
+      "latency_s": 77.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 198,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1418,16 +1489,7 @@
     "f2": {
       "parsed": {
         "language": "fr",
-        "memories": [
-          {
-            "note": "Ma mère a un nouveau chat",
-            "kind": "episode",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis apprend que sa mère a adopté un nouveau chat"
-          }
-        ],
+        "memories": [],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
@@ -1448,9 +1510,9 @@
         "resources": []
       },
       "kind_valid": true,
-      "has_note": true,
-      "kind": "episode",
-      "memories": 1,
+      "has_note": false,
+      "kind": null,
+      "memories": 0,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -1460,21 +1522,19 @@
       "text": "Ma mère a un nouveau chat",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5316,
-      "graph_prompt_tokens": 4927,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5316,
-      "input_tokens": 10243,
+      "latency_s": 71.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 200,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "note attendue=False obtenue=True"
-      ],
+      "gaps": [],
       "axes": [
         "note"
       ]
@@ -1489,7 +1549,7 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis ran this morning and felt good"
+            "summary": "Alexis went for a run this morning and felt good"
           }
         ],
         "cancels_action": null,
@@ -1513,17 +1573,17 @@
       "text": "Went for a run this morning, felt good",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 71.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 269,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1537,20 +1597,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Kid has tooth pain",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "The kid started complaining about tooth pain today."
-          },
-          {
-            "note": "Book dentist appointment for the kid",
+            "note": "Kid started complaining about tooth pain, need to book a dentist appointment for him",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Need to schedule a dentist appointment for the kid."
+            "summary": "Need to schedule a dental appointment for the kid due to tooth pain"
           }
         ],
         "cancels_action": null,
@@ -1564,15 +1616,7 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": [
-              {
-                "predicate": "has_dental_pain",
-                "value": "tooth pain",
-                "persistence_value": 2,
-                "evidence_strength": "explicit",
-                "category": "health"
-              }
-            ]
+            "facts": []
           }
         ],
         "relations": [],
@@ -1582,10 +1626,10 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "episode",
-      "memories": 2,
+      "kind": "task",
+      "memories": 1,
       "kind_defaulted": false,
-      "facts": 1,
+      "facts": 0,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -1593,17 +1637,17 @@
       "text": "kid started complaining about tooth pain, gotta book dentist appointment for him",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5323,
-      "graph_prompt_tokens": 4934,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5323,
-      "input_tokens": 10257,
+      "latency_s": 73.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 237,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1622,7 +1666,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis needs to water the balcony plants"
+            "summary": "A chore to remember: watering the balcony plants before work"
           }
         ],
         "cancels_action": null,
@@ -1646,17 +1690,17 @@
       "text": "forgot to water the balcony plants before leaving for work",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5320,
-      "graph_prompt_tokens": 4931,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5320,
-      "input_tokens": 10251,
+      "latency_s": 71.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 147,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "doit passer par « À valider » : confiance 1.0 (seuil 0.7), trace laissée=oui"
@@ -1673,36 +1717,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "buy milk",
+            "note": "buy milk eggs coffee filters and dog food",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis needs to buy milk"
-          },
-          {
-            "note": "buy eggs",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to buy eggs"
-          },
-          {
-            "note": "buy coffee filters",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to buy coffee filters"
-          },
-          {
-            "note": "buy dog food",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to buy dog food"
+            "summary": "Shopping list for groceries: milk, eggs, coffee filters, and dog food"
           }
         ],
         "cancels_action": null,
@@ -1716,7 +1736,7 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "task",
-      "memories": 4,
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -1726,17 +1746,17 @@
       "text": "buy milk eggs coffee filters and dog food",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5318,
-      "graph_prompt_tokens": 4929,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5318,
-      "input_tokens": 10247,
+      "latency_s": 71.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 269,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1755,7 +1775,7 @@
             "owner": null,
             "event_date": "2026-07-12",
             "event_recurring": false,
-            "summary": "Alexis watched 4 episodes of Severance season 2 last night"
+            "summary": "Watched 4 episodes of Severance season 2 last night"
           }
         ],
         "cancels_action": null,
@@ -1790,17 +1810,17 @@
       "text": "Binge watched 4 episodes of Severance last night, season 2 is so good",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 75.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 158,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
@@ -1819,12 +1839,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Oil change scheduled at QuickLube on Wednesday 9am",
+            "note": "Car oil change scheduled for Wednesday 9am at QuickLube",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-15",
             "event_recurring": false,
-            "summary": "Alexis has an oil change appointment at QuickLube on Wednesday at 9am"
+            "summary": "Oil change appointment at QuickLube on Wednesday at 9am"
           }
         ],
         "cancels_action": null,
@@ -1859,17 +1879,17 @@
       "text": "car oil change scheduled for Wednesday 9am at QuickLube",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5323,
-      "graph_prompt_tokens": 4934,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5323,
-      "input_tokens": 10257,
+      "latency_s": 74.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 277,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1890,12 +1910,23 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis has noticed a pattern of creative inspiration during dog walks when not using a phone"
+            "summary": "A recurring observation about when creative ideas tend to emerge"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -1914,17 +1945,17 @@
       "text": "funny how I always get my best ideas while walking the dog without my phone",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5326,
-      "graph_prompt_tokens": 4937,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5326,
-      "input_tokens": 10263,
+      "latency_s": 72.8,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 236,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1938,12 +1969,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "pick up dry cleaning after work",
+            "note": "Pick up dry cleaning after work",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Pick up dry cleaning after work"
+            "summary": "A chore to do after work: pick up dry cleaning"
           }
         ],
         "cancels_action": null,
@@ -1967,17 +1998,17 @@
       "text": "pick up dry cleaning after work",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5316,
-      "graph_prompt_tokens": 4927,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5316,
-      "input_tokens": 10243,
+      "latency_s": 69.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 115,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -1993,11 +2024,11 @@
         "memories": [
           {
             "note": "Tom's flight lands at 8pm on Thursday, pick him up at terminal 2",
-            "kind": "event",
+            "kind": "task",
             "owner": null,
             "event_date": "2026-07-16",
             "event_recurring": false,
-            "summary": "Tom arrives from a flight landing at 8pm Thursday at terminal 2"
+            "summary": "Pick up Tom at terminal 2 when his flight lands at 8pm on Thursday"
           }
         ],
         "cancels_action": null,
@@ -2021,7 +2052,7 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "event",
+      "kind": "task",
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
@@ -2032,19 +2063,21 @@
       "text": "Tom's flight lands at 8pm on Thursday, pick him up at terminal 2",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 75.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 300,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "kind attendu=event obtenu=task"
+      ],
       "axes": [
         "note",
         "kind",
@@ -2060,12 +2093,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Found a cool TypeScript library for date parsing on GitHub",
+            "note": "Found a cool library for handling date parsing in TypeScript",
             "kind": "note",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis discovered a useful GitHub repository for handling date parsing in TypeScript"
+            "summary": "A TypeScript library for date parsing was discovered and deemed useful"
           }
         ],
         "cancels_action": null,
@@ -2073,7 +2106,7 @@
         "entities": [
           {
             "canonical_name": "example/repo",
-            "type": "resource",
+            "type": "tool",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -2107,17 +2140,17 @@
       "text": "https://github.com/example/repo cool library for handling date parsing in typescript",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5326,
-      "graph_prompt_tokens": 4937,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5326,
-      "input_tokens": 10263,
+      "latency_s": 83.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 201,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2133,20 +2166,20 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Vérifier le filtre de la clim de la chambre",
+            "note": "La clim de la chambre fait un bruit bizarre depuis deux jours, il faut vérifier le filtre.",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Action à faire concernant le bruit de la climatisation"
+            "summary": "Vérifier le filtre de la climatisation de la chambre à cause d'un bruit inhabituel"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "clim chambre",
-            "type": "tool",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -2173,17 +2206,17 @@
       "text": "la clim de la chambre fait un bruit bizarre depuis deux jours, faudra vérifier le filtre",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5327,
-      "graph_prompt_tokens": 4938,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5327,
-      "input_tokens": 10265,
+      "latency_s": 79.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 196,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2199,12 +2232,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Soirée barbecue chez Antoine et Clara hier soir",
+            "note": "Soirée barbecue chez Antoine et Clara hier soir. La viande était excellente et les enfants ont joué dans le jardin tout l'apéro.",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-12",
             "event_recurring": false,
-            "summary": "Alexis a assisté à une soirée barbecue avec Antoine et Clara, où la viande était excellente et les enfants ont joué dans le jardin pendant l'apéro"
+            "summary": "Soirée barbecue chez Antoine et Clara avec une excellente viande et les enfants qui ont joué dans le jardin"
           }
         ],
         "cancels_action": null,
@@ -2249,17 +2282,17 @@
       "text": "super soirée barbecue chez Antoine et Clara hier soir, la viande était excellente et les enfants ont joué dans le jardin tout l'apéro",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5337,
-      "graph_prompt_tokens": 4948,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5337,
-      "input_tokens": 10285,
+      "latency_s": 81.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 310,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
@@ -2280,17 +2313,28 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Renouveler la carte de tiers payant sur le site de la mutuelle",
+            "note": "Renouveler la carte de tiers payant sur le site de la mutuelle avant la fin du mois",
             "kind": "task",
             "owner": null,
-            "event_date": "2026-08-01",
+            "event_date": "2026-07-31",
             "event_recurring": false,
-            "summary": "Action à faire avant la fin du mois : renouveler la carte de tiers payant"
+            "summary": "Action à faire : renouveler la carte de tiers payant sur le site de la mutuelle"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -2309,21 +2353,19 @@
       "text": "Renouveler la carte de tiers payant sur le site de la mutuelle avant la fin du mois",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5331,
-      "graph_prompt_tokens": 4942,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5331,
-      "input_tokens": 10273,
+      "latency_s": 80.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 223,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "event_date attendu=2026-07-31 obtenu=['2026-08-01']"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -2336,20 +2378,20 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Le colis Amazon doit arriver mercredi entre 14h et 17h",
-            "kind": "event",
+            "note": "Le colis Amazon doit arriver mercredi entre 14h et 17h, quelqu'un doit être à la maison pour ouvrir au livreur",
+            "kind": "task",
             "owner": null,
             "event_date": "2026-07-15",
             "event_recurring": false,
-            "summary": "Arrivée prévue du colis Amazon mercredi après-midi"
+            "summary": "Recevoir le colis Amazon mercredi entre 14h et 17h"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Amazon",
-            "type": "organization",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -2365,7 +2407,7 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "event",
+      "kind": "task",
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
@@ -2376,22 +2418,19 @@
       "text": "le colis Amazon doit arriver entre 14h et 17h mercredi, faut que quelqu'un soit à la maison pour ouvrir au livreur",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5340,
-      "graph_prompt_tokens": 4951,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5340,
-      "input_tokens": 10291,
+      "latency_s": 78.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 512,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=task obtenu=event",
-        "entité 'Amazon' créée alors qu'elle est sous le seuil de persistance"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -2410,15 +2449,15 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a déposé la voiture au garage ce matin"
+            "summary": "Alexis a déposé sa voiture au garage ce matin"
           },
           {
-            "note": "Passé à la boulangerie pour prendre des chouquettes en rentrant à pied",
+            "note": "Passé à la boulangerie en rentrant à pied pour prendre des chouquettes",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a acheté des chouquettes à la boulangerie"
+            "summary": "Alexis est rentré à pied et a acheté des chouquettes à la boulangerie"
           }
         ],
         "cancels_action": null,
@@ -2442,17 +2481,17 @@
       "text": "euh alors j'ai déposé la voiture au garage ce matin et en rentrant à pied je suis passé à la boulangerie prendre des chouquettes",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5341,
-      "graph_prompt_tokens": 4952,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5341,
-      "input_tokens": 10293,
+      "latency_s": 78.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 310,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2467,12 +2506,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Julien conseille la série Le Bureau des Légendes, saison 3 exceptionnelle",
-            "kind": "note",
+            "note": "Julien a conseillé la série Le Bureau des Légendes, avec la saison 3 exceptionnelle",
+            "kind": "episode",
             "owner": null,
-            "event_date": null,
+            "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a reçu une recommandation de Julien sur la série Le Bureau des Légendes, saison 3"
+            "summary": "Julien a recommandé la série Le Bureau des Légendes, en particulier la saison 3"
           }
         ],
         "cancels_action": null,
@@ -2513,7 +2552,7 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "note",
+      "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
@@ -2524,21 +2563,19 @@
       "text": "Julien m'a conseillé la série Le Bureau des Légendes, il paraît que la saison 3 est exceptionnelle",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 83.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 218,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=episode obtenu=note"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -2552,12 +2589,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Acheter des ampoules LED culot E27 60W et un rouleau de scotch de peintre",
+            "note": "Achat : ampoules LED culot E27 60W et rouleau de scotch de peintre",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Liste de courses : ampoules LED et scotch de peintre"
+            "summary": "Liste d'articles à acheter : ampoules LED culot E27 60W et scotch de peintre"
           }
         ],
         "cancels_action": null,
@@ -2581,17 +2618,17 @@
       "text": "ampoules LED culot E27 60W et un rouleau de scotch de peintre",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 80.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 147,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2606,12 +2643,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Le voisin a confirmé que les travaux finissent la semaine prochaine",
+            "note": "Le voisin a dit que les travaux allaient se terminer la semaine prochaine",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a discuté avec le voisin sur les travaux qui se terminent la semaine prochaine"
+            "summary": "Discussion avec le voisin sur la fin des travaux"
           }
         ],
         "cancels_action": null,
@@ -2626,9 +2663,26 @@
             "summary": null,
             "attributes": {},
             "facts": []
+          },
+          {
+            "canonical_name": "Le voisin",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
           }
         ],
-        "relations": [],
+        "relations": [
+          {
+            "from": "Alexis",
+            "predicate": "discussed_with",
+            "to": "Le voisin",
+            "confidence": 1.0
+          }
+        ],
         "project_entries": [],
         "obsoleted_facts": [],
         "resources": []
@@ -2639,24 +2693,24 @@
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
-      "relations": 0,
+      "relations": 1,
       "projects": 0,
       "fields": 9,
       "set": "ordinaire",
       "text": "euh alors ce matin j'ai discuté avec le voisin du bruit des travaux il a dit qu'ils finissaient la semaine prochaine",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5337,
-      "graph_prompt_tokens": 4948,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5337,
-      "input_tokens": 10285,
+      "latency_s": 82.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 220,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2671,12 +2725,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "RDV Veto samedi à 11h",
+            "note": "Rendez-vous avec Veto samedi à 11h",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-18",
             "event_recurring": false,
-            "summary": "Rencontre prévue samedi à 11h"
+            "summary": "Rendez-vous prévu samedi à 11h avec Veto"
           }
         ],
         "cancels_action": null,
@@ -2687,7 +2741,7 @@
             "type": "concept",
             "type_proposal": {
               "value": "event",
-              "reason": "Un rendez-vous à venir, pas encore nommé comme projet"
+              "reason": "Une rendez-vous à venir est un événement ponctuel, pas une entité durable"
             },
             "aliases": [],
             "renamed_to": null,
@@ -2714,17 +2768,17 @@
       "text": "rdv veto samedi 11h",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5318,
-      "graph_prompt_tokens": 4929,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5318,
-      "input_tokens": 10247,
+      "latency_s": 79.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 200,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -2740,12 +2794,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Changer le filtre de la caraf d'eau",
+            "note": "Changer le filtre de la carafe d'eau",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Remplacer le filtre de la caraf d'eau"
+            "summary": "Tâche à faire : remplacer le filtre de la carafe d'eau"
           },
           {
             "note": "Racheter du café moulu",
@@ -2753,115 +2807,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Acheter du café moulu"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [],
-        "relations": [],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "task",
-      "memories": 2,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "changer le filtre de la caraf d'eau et racheter du café moulu",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5326,
-      "graph_prompt_tokens": 4937,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5326,
-      "input_tokens": 10263,
-      "uncached_tokens": 0,
-      "output_tokens": 229,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "language"
-      ]
-    },
-    "g-ord-05-fr": {
-      "parsed": {
-        "language": "fr",
-        "memories": [
-          {
-            "note": "Meeting de synchro sur le budget avec l'équipe marketing",
-            "kind": "event",
-            "owner": null,
-            "event_date": "2026-07-14",
-            "event_recurring": false,
-            "summary": "Réunion de synchronisation sur le budget avec l'équipe marketing"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [],
-        "relations": [],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "event",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "meeting de synchro sur le budget avec l'équipe marketing demain à 15h",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5329,
-      "graph_prompt_tokens": 4940,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5329,
-      "input_tokens": 10269,
-      "uncached_tokens": 0,
-      "output_tokens": 196,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "event_date",
-        "language",
-        "no_entity"
-      ]
-    },
-    "g-ord-08-fr": {
-      "parsed": {
-        "language": "fr",
-        "memories": [
-          {
-            "note": "La batterie du scooter tourne un peu au ralenti",
-            "kind": "episode",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis a constaté que la batterie du scooter tourne au ralenti"
+            "summary": "Tâche à faire : acheter du café moulu"
           }
         ],
         "cancels_action": null,
@@ -2885,67 +2831,127 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "episode",
-      "memories": 1,
+      "kind": "task",
+      "memories": 2,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
       "projects": 0,
       "fields": 9,
       "set": "ordinaire",
-      "text": "la batterie du scooter tourne un peu au ralenti, si ça persiste faudra la faire tester avant le week-end",
+      "text": "changer le filtre de la caraf d'eau et racheter du café moulu",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 80.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 224,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=task obtenu=episode",
-        "event_date attendu=2026-07-18 obtenu=[None]"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
-        "event_date",
         "language"
       ]
     },
-    "g-ord-10-fr": {
+    "g-ord-05-fr": {
       "parsed": {
         "language": "fr",
         "memories": [
           {
-            "note": "Le virement de la mutuelle a été reçu ce matin",
-            "kind": "episode",
+            "note": "Synchro sur le budget avec l'équipe marketing demain à 15h",
+            "kind": "event",
             "owner": null,
-            "event_date": "2026-07-13",
+            "event_date": "2026-07-14",
             "event_recurring": false,
-            "summary": "Alexis a bien reçu le virement de la mutuelle ce matin"
-          },
-          {
-            "note": "La mutuelle n'a pas remboursé la partie ostéo",
-            "kind": "note",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "La mutuelle n'a pas remboursé la partie ostéo"
+            "summary": "Réunion de synchronisation sur le budget avec l'équipe marketing"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Mutuelle",
-            "type": "organization",
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Synapse",
+            "content": "Meeting de synchro sur le budget avec l'équipe marketing demain à 15h",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "meeting de synchro sur le budget avec l'équipe marketing demain à 15h",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 77.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "no_entity"
+      ]
+    },
+    "g-ord-08-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "La batterie du scooter tourne un peu au ralenti. Si ça persiste, il faudra la faire tester avant le week-end.",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-19",
+            "event_recurring": false,
+            "summary": "Tester la batterie du scooter si le ralenti persiste avant le week-end"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -2961,10 +2967,85 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "episode",
-      "memories": 2,
+      "kind": "task",
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "la batterie du scooter tourne un peu au ralenti, si ça persiste faudra la faire tester avant le week-end",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 77.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [
+        "event_date attendu=2026-07-18 obtenu=['2026-07-19']"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language"
+      ]
+    },
+    "g-ord-10-fr": {
+      "parsed": {
+        "language": "fr",
+        "memories": [
+          {
+            "note": "Alexis a reçu le virement de la mutuelle ce matin, mais la partie ostéo n'a pas été remboursée.",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Virement de la mutuelle reçu ce matin, mais l'ostéo n'est pas remboursée"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_insurance",
+                "value": "mutuelle",
+                "persistence_value": 4,
+                "evidence_strength": "explicit",
+                "category": "other"
+              }
+            ]
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 1,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -2972,17 +3053,17 @@
       "text": "j'ai bien reçu le virement de la mutuelle ce matin par contre ils ont pas remboursé la partie ostéo",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5334,
-      "graph_prompt_tokens": 4945,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5334,
-      "input_tokens": 10279,
+      "latency_s": 80.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 285,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3001,7 +3082,7 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Pixel a été vu chez le vétérinaire pour son rappel de vaccin ce matin"
+            "summary": "Pixel a eu son rappel de vaccin chez le vétérinaire ce matin"
           }
         ],
         "cancels_action": null,
@@ -3014,21 +3095,12 @@
             "aliases": [],
             "renamed_to": null,
             "summary": null,
-            "attributes": {
-              "weight": "4.2 kg"
-            },
+            "attributes": {},
             "facts": [
               {
-                "predicate": "species",
-                "value": "dog",
-                "persistence_value": 5,
-                "evidence_strength": "explicit",
-                "category": "identity"
-              },
-              {
-                "predicate": "vaccination_status",
-                "value": "up to date",
-                "persistence_value": 4,
+                "predicate": "weight",
+                "value": "4.2 kg",
+                "persistence_value": 3,
                 "evidence_strength": "explicit",
                 "category": "health"
               }
@@ -3045,7 +3117,7 @@
       "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
-      "facts": 2,
+      "facts": 1,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -3053,17 +3125,17 @@
       "text": "J'ai emmené Pixel chez le vétérinaire ce matin pour son rappel de vaccin, tout va bien il pèse 4 kilos 2.",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5340,
-      "graph_prompt_tokens": 4951,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5340,
-      "input_tokens": 10291,
+      "latency_s": 79.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 224,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3117,17 +3189,17 @@
       "text": "paid the wifi bill and renewed the Spotify subscription",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5319,
-      "graph_prompt_tokens": 4930,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5319,
-      "input_tokens": 10249,
+      "latency_s": 77.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 147,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3146,7 +3218,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Consider visiting the Apple store to address the laptop battery issue"
+            "summary": "Need to visit Apple store next week to address laptop battery issues"
           }
         ],
         "cancels_action": null,
@@ -3160,15 +3232,7 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": [
-              {
-                "predicate": "has_laptop",
-                "value": "Apple laptop",
-                "persistence_value": 5,
-                "evidence_strength": "explicit",
-                "category": "preferences"
-              }
-            ]
+            "facts": []
           }
         ],
         "relations": [],
@@ -3181,7 +3245,7 @@
       "kind": "task",
       "memories": 1,
       "kind_defaulted": false,
-      "facts": 1,
+      "facts": 0,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -3189,17 +3253,17 @@
       "text": "laptop battery is dying super fast lately, might need to drop by the Apple store next week",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5329,
-      "graph_prompt_tokens": 4940,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5329,
-      "input_tokens": 10269,
+      "latency_s": 75.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 222,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "kind attendu=note obtenu=task"
@@ -3215,17 +3279,28 @@
         "language": "en",
         "memories": [
           {
-            "note": "Water heater in the basement is leaking again",
+            "note": "Checked the water heater in the basement — it's leaking again",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis inspected the water heater and found a leak"
+            "summary": "Alexis inspected the water heater in the basement and found it leaking again"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -3244,17 +3319,17 @@
       "text": "um so I checked the water heater in the basement and it looks like it's leaking again, might need to call someone tomorrow",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5335,
-      "graph_prompt_tokens": 4946,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5335,
-      "input_tokens": 10281,
+      "latency_s": 78.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 220,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "kind attendu=task obtenu=episode",
@@ -3272,12 +3347,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Dave returned the laptop charger he borrowed last week",
+            "note": "Dave dropped by the office this afternoon to return the laptop charger he borrowed last week",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Dave visited the office this afternoon to return a borrowed item"
+            "summary": "Dave returned the borrowed laptop charger at the office this afternoon"
           }
         ],
         "cancels_action": null,
@@ -3312,17 +3387,17 @@
       "text": "so uh Dave dropped by the office this afternoon to return the laptop charger he borrowed last week",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 79.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 218,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
@@ -3347,15 +3422,7 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis went to the market and purchased bread and cheese"
-          },
-          {
-            "note": "Forgot to get olive oil at the market",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Need to buy olive oil"
+            "summary": "Alexis went to the market and purchased fresh bread and cheese"
           }
         ],
         "cancels_action": null,
@@ -3369,7 +3436,7 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "episode",
-      "memories": 2,
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -3379,19 +3446,20 @@
       "text": "bough some fresh bread and cheese at the market, totally forgot to get olive oil though",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 74.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 216,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
+        "kind attendu=task obtenu=episode",
         "doit passer par « À valider » : confiance 1.0 (seuil 0.7), trace laissée=oui"
       ],
       "axes": [
@@ -3407,89 +3475,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "buy coffee beans",
+            "note": "Buy coffee beans, paper towels, bananas, and AA batteries",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis needs to purchase coffee beans"
-          },
-          {
-            "note": "buy paper towels",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to purchase paper towels"
-          },
-          {
-            "note": "buy bananas",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to purchase bananas"
-          },
-          {
-            "note": "buy AA batteries",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis needs to purchase AA batteries"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [],
-        "relations": [],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "task",
-      "memories": 4,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "buy coffee beans paper towels bananas and AA batteries",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5319,
-      "graph_prompt_tokens": 4930,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5319,
-      "input_tokens": 10249,
-      "uncached_tokens": 0,
-      "output_tokens": 323,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "language"
-      ]
-    },
-    "ord-en-006-3": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "Car key battery is low, needs replacement before the weekend trip",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Replace the car key battery before the weekend trip"
+            "summary": "Shopping list for coffee beans, paper towels, bananas, and AA batteries"
           }
         ],
         "cancels_action": null,
@@ -3510,20 +3501,84 @@
       "projects": 0,
       "fields": 9,
       "set": "ordinaire",
-      "text": "car key battery is low, need to replace it before the weekend trip",
+      "text": "buy coffee beans paper towels bananas and AA batteries",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5324,
-      "graph_prompt_tokens": 4935,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5324,
-      "input_tokens": 10259,
+      "latency_s": 73.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 158,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "ord-en-006-3": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Car key battery is low, needs replacement before the weekend trip",
+            "kind": "task",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Replace car key battery before the weekend trip"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "car key battery is low, need to replace it before the weekend trip",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 75.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3577,17 +3632,17 @@
       "text": "need to send the updated slide deck to Chris before noon tomorrow",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5322,
-      "graph_prompt_tokens": 4933,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5322,
-      "input_tokens": 10255,
+      "latency_s": 77.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 158,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3603,12 +3658,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "returned the library books",
+            "note": "Alexis returned the library books",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis returned the library books today."
+            "summary": "Alexis returned the library books today"
           }
         ],
         "cancels_action": null,
@@ -3632,17 +3687,17 @@
       "text": "returned the library books",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5314,
-      "graph_prompt_tokens": 4925,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5314,
-      "input_tokens": 10239,
+      "latency_s": 79.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 106,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3703,17 +3758,17 @@
       "text": "https://example.com/design-systems-guide really cool article on building component libraries",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5325,
-      "graph_prompt_tokens": 4936,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5325,
-      "input_tokens": 10261,
+      "latency_s": 83.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 218,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3728,12 +3783,20 @@
         "language": "fr",
         "memories": [
           {
-            "note": "La rue va être fermée toute la semaine prochaine pour travaux",
-            "kind": "event",
+            "note": "Alexis a cherché des viennoiseries ce matin",
+            "kind": "episode",
             "owner": null,
-            "event_date": "2026-07-20",
+            "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Fermeture de la rue pour travaux"
+            "summary": "Alexis a fait une sortie ce matin pour chercher des viennoiseries"
+          },
+          {
+            "note": "La rue va être fermée toute la semaine prochaine pour travaux",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Fermeture de la rue pour travaux toute la semaine prochaine"
           }
         ],
         "cancels_action": null,
@@ -3744,7 +3807,6 @@
             "type": "person",
             "type_proposal": null,
             "aliases": [],
-            "renamed_to": null,
             "summary": null,
             "attributes": {},
             "facts": []
@@ -3757,8 +3819,8 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "event",
-      "memories": 1,
+      "kind": "episode",
+      "memories": 2,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -3768,21 +3830,19 @@
       "text": "je suis passé chercher des viennoiseries ce matin et le boulanger m'a dit que la rue allait être fermée toute la semaine prochaine pour travaux",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5341,
-      "graph_prompt_tokens": 4952,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5341,
-      "input_tokens": 10293,
+      "latency_s": 80.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 164,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "kind attendu=episode obtenu=event"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -3799,7 +3859,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis a été recommandé de regarder The Bear par Thomas"
+            "summary": "Thomas a recommandé la série The Bear, avec une préférence pour la saison 2"
           }
         ],
         "cancels_action": null,
@@ -3819,14 +3879,7 @@
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
-        "resources": [
-          {
-            "url": null,
-            "category": "video|podcast|paper|thread|page",
-            "entity_canonical": "The Bear",
-            "user_comment": "Thomas m'a recommandé de regarder, apparemment la saison 2 est encore meilleure que la première"
-          }
-        ]
+        "resources": []
       },
       "kind_valid": true,
       "has_note": true,
@@ -3841,17 +3894,17 @@
       "text": "Thomas m'a recommandé de regarder The Bear, apparemment la saison 2 est encore meilleure que la première",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5332,
-      "graph_prompt_tokens": 4943,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5332,
-      "input_tokens": 10275,
+      "latency_s": 75.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 224,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
@@ -3870,12 +3923,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "La machine à café du 2ème étage est en panne",
+            "note": "La machine à café du 2ème étage est en panne, il faut utiliser celle de la pause de la compta.",
             "kind": "note",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Problème technique de la machine à café du 2ème étage"
+            "summary": "Problème technique : la machine à café du 2ème étage est hors service, à utiliser celle de la pause de la compta"
           }
         ],
         "cancels_action": null,
@@ -3899,17 +3952,17 @@
       "text": "la machine à café du 2ème étage est encore en panne, faut utiliser celle de la pause de la compta",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5334,
-      "graph_prompt_tokens": 4945,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5334,
-      "input_tokens": 10279,
+      "latency_s": 73.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 218,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -3923,36 +3976,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Acheter des croquettes pour le chat",
+            "note": "Acheter croquettes pour chat, filtre à eau, liquide vaisselle et ampoules E14",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Commande à faire des croquettes pour le chat"
-          },
-          {
-            "note": "Faire le plein de liquide vaisselle",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Commande à faire du liquide vaisselle"
-          },
-          {
-            "note": "Faire le plein de filtre à eau",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Commande à faire d'un filtre à eau"
-          },
-          {
-            "note": "Acheter des ampoules E14",
-            "kind": "task",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Commande à faire d'ampoules E14"
+            "summary": "Liste d'articles à acheter : croquettes chat, filtre à eau, liquide vaisselle, ampoules E14"
           }
         ],
         "cancels_action": null,
@@ -3966,7 +3995,7 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "task",
-      "memories": 4,
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -3976,17 +4005,17 @@
       "text": "croquettes chat, filtre à eau, liquide vaisselle, ampoules E14",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5329,
-      "graph_prompt_tokens": 4940,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5329,
-      "input_tokens": 10269,
+      "latency_s": 72.7,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 300,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4000,12 +4029,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Clara a eu une longue conversation téléphonique avec Alexis",
+            "note": "J'ai eu Clara au téléphone longuement — sa petite dernière fait enfin ses nuits, ça lui change la vie !",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a eu une conversation longue avec Clara"
+            "summary": "Appel téléphonique avec Clara où elle a partagé la bonne nouvelle que sa petite dernière fait enfin ses nuits"
           }
         ],
         "cancels_action": null,
@@ -4019,7 +4048,15 @@
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": []
+            "facts": [
+              {
+                "predicate": "has_birthday",
+                "value": null,
+                "persistence_value": 5,
+                "evidence_strength": "implicit",
+                "category": "dates"
+              }
+            ]
           }
         ],
         "relations": [],
@@ -4032,7 +4069,7 @@
       "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
-      "facts": 0,
+      "facts": 1,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -4040,21 +4077,19 @@
       "text": "J'ai eu Clara au téléphone longuement, sa petite dernière fait enfin ses nuits ça lui change la vie !",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 75.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 285,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
+      "gaps": [],
       "axes": [
         "note",
         "kind",
@@ -4068,20 +4103,20 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Vidéo claire sur la fabrication des étagères suspendues dans le couloir",
+            "note": "Vidéo claire sur la fabrication d'étagères suspendues dans le couloir",
             "kind": "note",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Alexis a trouvé une vidéo utile pour fabriquer des étagères suspendues"
+            "summary": "Vidéo trouvée pour fabriquer des étagères suspendues dans le couloir"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Tuto brico étagères suspendues",
-            "type": "resource",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -4097,7 +4132,7 @@
           {
             "url": "https://example.com/tuto-brico-etagere",
             "category": "video",
-            "entity_canonical": "Tuto brico étagères suspendues",
+            "entity_canonical": "Alexis",
             "user_comment": "vidéo claire pour fabriquer les étagères suspendues dans le couloir"
           }
         ]
@@ -4115,17 +4150,17 @@
       "text": "https://example.com/tuto-brico-etagere vidéo claire pour fabriquer les étagères suspendues dans le couloir",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5337,
-      "graph_prompt_tokens": 4948,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5337,
-      "input_tokens": 10285,
+      "latency_s": 76.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 227,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4144,15 +4179,7 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a eu des problèmes de sommeil la nuit dernière à cause des voisins"
-          },
-          {
-            "note": "Journée compliquée au boulot",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Alexis a eu une journée difficile au travail"
+            "summary": "Alexis a eu du mal à dormir la nuit du 13 juillet 2026 à cause des voisins du dessus"
           }
         ],
         "cancels_action": null,
@@ -4166,7 +4193,7 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "episode",
-      "memories": 2,
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -4176,17 +4203,17 @@
       "text": "j'ai trop mal dormi cette nuit à cause des voisins du dessus, journée compliquée au boulot du coup",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5334,
-      "graph_prompt_tokens": 4945,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5334,
-      "input_tokens": 10279,
+      "latency_s": 71.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 268,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4201,23 +4228,22 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Kickoff du projet avec l'équipe design",
+            "note": "Kickoff du projet avec l'équipe design, jeudi à 10h",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-16",
             "event_recurring": false,
-            "summary": "Réunion de lancement du projet avec l'équipe design"
+            "summary": "Réunion de kickoff du projet avec l'équipe design prévue jeudi à 10h"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Kickoff projet",
-            "type": "event",
+            "canonical_name": "Kickoff",
+            "type": "project",
             "type_proposal": null,
             "aliases": [],
-            "renamed_to": null,
             "summary": null,
             "attributes": {},
             "facts": []
@@ -4228,7 +4254,7 @@
           {
             "project_canonical": "Synapse",
             "content": "Le kickoff du projet est décalé à jeudi 10h avec l'équipe design.",
-            "is_new": false
+            "is_new": true
           }
         ],
         "obsoleted_facts": [],
@@ -4247,17 +4273,17 @@
       "text": "le kickoff du projet est décalé à jeudi 10h avec l'équipe design",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5329,
-      "graph_prompt_tokens": 4940,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5329,
-      "input_tokens": 10269,
+      "latency_s": 74.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 192,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4272,17 +4298,43 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Petite sortie course à pied ce matin : 6km sous la fraîcheur, pas de douleur au genou",
+            "note": "Petite sortie course à ce matin, 6 km sous la fraîcheur, pas de douleur au genou",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a fait une course à pied de 6km sans douleur au genou"
+            "summary": "Alexis a fait une petite course à pied ce matin, 6 km sous la fraîcheur, sans douleur au genou"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "runs_5k",
+                "value": "6km",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "work"
+              },
+              {
+                "predicate": "runs_10k",
+                "value": "6km",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "work"
+              }
+            ]
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -4293,7 +4345,7 @@
       "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
-      "facts": 0,
+      "facts": 2,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -4301,17 +4353,17 @@
       "text": "petite sortie course à pied ce matin 6km sous la fraîcheur, pas de douleur au genou",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5332,
-      "graph_prompt_tokens": 4943,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5332,
-      "input_tokens": 10275,
+      "latency_s": 77.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 201,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4326,12 +4378,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Prendre des chevilles de 8 et des vis à bois au magasin de bricolage",
+            "note": "Repasser au magasin d'bricolage pour prendre des chevilles de 8 et des vis à bois",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Acheter des chevilles de 8 et des vis à bois au magasin de bricolage"
+            "summary": "Acheter des chevilles de 8 et des vis à bois au magasin d'bricolage"
           }
         ],
         "cancels_action": null,
@@ -4355,17 +4407,17 @@
       "text": "bon euh faut que je repasse au magasin d'bricolage prendre des chevilles de 8 et des vis à bois",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5337,
-      "graph_prompt_tokens": 4948,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5337,
-      "input_tokens": 10285,
+      "latency_s": 70.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 230,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4411,17 +4463,17 @@
       "text": "pression des pneus voiture faite ce matin",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5317,
-      "graph_prompt_tokens": 4928,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5317,
-      "input_tokens": 10245,
+      "latency_s": 70.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 190,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4439,25 +4491,28 @@
         "language": "en",
         "memories": [
           {
-            "note": "forgot to lock the back shed again",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Alexis forgot to lock the back shed today"
-          },
-          {
-            "note": "need to get a new padlock for the back shed",
+            "note": "forgot to lock the back shed again, need to get a new padlock tomorrow",
             "kind": "task",
             "owner": null,
             "event_date": "2026-07-14",
             "event_recurring": false,
-            "summary": "Buy a new padlock for the back shed"
+            "summary": "Need to buy a new padlock for the back shed tomorrow"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -4465,8 +4520,8 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "episode",
-      "memories": 2,
+      "kind": "task",
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -4476,17 +4531,17 @@
       "text": "forgot to lock the back shed again, need to get a new padlock tomorrow",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5326,
-      "graph_prompt_tokens": 4937,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5326,
-      "input_tokens": 10263,
+      "latency_s": 73.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 252,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4501,17 +4556,28 @@
         "language": "en",
         "memories": [
           {
-            "note": "Tried new running route near the river, did 6k in 32 mins, feeling great",
+            "note": "Alexis tried a new running route near the river, completed 6k in 32 minutes, feeling great",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis completed a 6k run on the new river route in 32 minutes and felt great"
+            "summary": "Alexis ran 6k in 32 minutes on a new route near the river, feeling great"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -4530,17 +4596,17 @@
       "text": "um so I tried that new running route near the river, did 6k in 32 mins, feeling great",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5334,
-      "graph_prompt_tokens": 4945,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5334,
-      "input_tokens": 10279,
+      "latency_s": 74.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 251,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4560,7 +4626,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Buy groceries for the weekend trip"
+            "summary": "Shopping list for weekend trip groceries"
           }
         ],
         "cancels_action": null,
@@ -4584,17 +4650,17 @@
       "text": "groceries for weekend trip: bread, cheddar, apples, bottled water and instant coffee",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 69.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 201,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4613,7 +4679,15 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Coffee meeting with Sarah at the park"
+            "summary": "Met Sarah for coffee near the park this morning"
+          },
+          {
+            "note": "Sarah's brother is moving to London next month",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "Sarah mentioned her brother is relocating to London in the coming month"
           }
         ],
         "cancels_action": null,
@@ -4638,20 +4712,30 @@
             "summary": null,
             "attributes": {},
             "facts": []
+          },
+          {
+            "canonical_name": "London",
+            "type": "place",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
           }
         ],
         "relations": [
           {
-            "from": "Sarah's brother",
-            "predicate": "lives_in",
-            "to": "London",
-            "confidence": 0.9
+            "from": "Sarah",
+            "predicate": "sibling_of",
+            "to": "Sarah's brother",
+            "confidence": 1.0
           },
           {
             "from": "Sarah's brother",
-            "predicate": "moving_to",
+            "predicate": "lives_in",
             "to": "London",
-            "confidence": 0.9
+            "confidence": 0.5
           }
         ],
         "project_entries": [],
@@ -4661,7 +4745,7 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "episode",
-      "memories": 1,
+      "memories": 2,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 2,
@@ -4671,17 +4755,17 @@
       "text": "got coffee with Sarah near the park this morning, she said her brother is moving to London next month",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5330,
-      "graph_prompt_tokens": 4941,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5330,
-      "input_tokens": 10271,
+      "latency_s": 81.8,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 285,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4703,14 +4787,14 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Review pruning shears on the gardening tools page before making a purchase"
+            "summary": "Review the pruning shears before making a purchase decision"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "best-gardening-tools-2026",
+            "canonical_name": "Best Gardening Tools 2026 Review",
             "type": "resource",
             "type_proposal": null,
             "aliases": [],
@@ -4727,7 +4811,7 @@
           {
             "url": "https://example.com/best-gardening-tools-2026",
             "category": "article",
-            "entity_canonical": "best-gardening-tools-2026",
+            "entity_canonical": "Best Gardening Tools 2026 Review",
             "user_comment": "check the pruning shears review before buying"
           }
         ]
@@ -4745,17 +4829,17 @@
       "text": "https://example.com/best-gardening-tools-2026 check the pruning shears review before buying",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 74.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 218,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4769,12 +4853,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Had a light headache since 3pm today, took a nap but still feeling a bit drained",
+            "note": "Had a light headache since 3pm, took a nap but still feeling a bit drained",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis experienced a light headache today and felt drained after napping"
+            "summary": "Alexis experienced a light headache starting at 3pm on Monday, took a nap but remains feeling drained"
           }
         ],
         "cancels_action": null,
@@ -4798,17 +4882,17 @@
       "text": "had a light headache since 3pm, took a nap but still feeling a bit drained",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 71.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 252,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -4822,20 +4906,20 @@
         "language": "en",
         "memories": [
           {
-            "note": "Garage light bulb fitting is corroded, need to pick up a new fixture at Home Depot",
-            "kind": "task",
+            "note": "Alexis tried fixing the garage light this afternoon but the bulb fitting is corroded",
+            "kind": "episode",
             "owner": null,
-            "event_date": null,
+            "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis needs to buy a new garage light fixture at Home Depot"
+            "summary": "Alexis attempted to fix the garage light but found the bulb fitting corroded"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Home Depot",
-            "type": "place",
+            "canonical_name": "Alexis",
+            "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -4851,7 +4935,7 @@
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "task",
+      "kind": "episode",
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
@@ -4862,20 +4946,20 @@
       "text": "um so I tried fixing the garage light this afternoon but the bulb fitting is totally corroded, need to pick up a new fixture at Home Depot",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5339,
-      "graph_prompt_tokens": 4950,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5339,
-      "input_tokens": 10289,
+      "latency_s": 73.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 237,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
-        "entité 'Home Depot' créée alors qu'elle est sous le seuil de persistance"
+        "kind attendu=task obtenu=episode"
       ],
       "axes": [
         "note",
@@ -4889,20 +4973,20 @@
         "language": "en",
         "memories": [
           {
-            "note": "Check the 8-mile loop route on the Catskills hiking trails page for the August trip",
+            "note": "Check the 8-mile loop route for the August trip to the Catskills hiking trails",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Review the 8-mile loop hiking route options for the upcoming August trip"
+            "summary": "Review the 8-mile loop route option for the upcoming August hiking trip in the Catskills"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "Hiking Trails Catskills",
-            "type": "resource",
+            "canonical_name": "Catskills hiking trails",
+            "type": "place",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
@@ -4915,8 +4999,8 @@
         "project_entries": [
           {
             "project_canonical": "Climbing",
-            "content": "Check the 8-mile loop route for our trip in August",
-            "is_new": false
+            "content": "Check the 8-mile loop route in Catskills for our trip in August",
+            "is_new": true
           }
         ],
         "obsoleted_facts": [],
@@ -4924,7 +5008,7 @@
           {
             "url": "https://example.com/hiking-trails-catskills",
             "category": "page",
-            "entity_canonical": "Hiking Trails Catskills",
+            "entity_canonical": "Catskills hiking trails",
             "user_comment": "check the 8-mile loop route for our trip in August"
           }
         ]
@@ -4942,17 +5026,17 @@
       "text": "https://example.com/hiking-trails-catskills check the 8-mile loop route for our trip in August",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5333,
-      "graph_prompt_tokens": 4944,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5333,
-      "input_tokens": 10277,
+      "latency_s": 77.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 261,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "entité 'Catskills' : absente au lieu d'être proposée"
@@ -4974,20 +5058,39 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis's back improved after stretching on Monday"
+            "summary": "Alexis's back improved after stretching today"
           },
           {
-            "note": "Planning a short run tomorrow morning",
+            "note": "Planning to try a short run tomorrow morning",
             "kind": "task",
             "owner": null,
             "event_date": "2026-07-14",
             "event_recurring": false,
-            "summary": "Run planned for Tuesday morning"
+            "summary": "Alexis will try a short run tomorrow morning"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": [
+              {
+                "predicate": "has_condition",
+                "value": "back pain",
+                "persistence_value": 3,
+                "evidence_strength": "explicit",
+                "category": "health"
+              }
+            ]
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -4998,7 +5101,7 @@
       "kind": "episode",
       "memories": 2,
       "kind_defaulted": false,
-      "facts": 0,
+      "facts": 1,
       "relations": 0,
       "projects": 0,
       "fields": 9,
@@ -5006,17 +5109,17 @@
       "text": "my back is feeling much better today after stretching, gonna try a short run tomorrow morning",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5327,
-      "graph_prompt_tokens": 4938,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5327,
-      "input_tokens": 10265,
+      "latency_s": 76.7,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 243,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5036,15 +5139,15 @@
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis completed reading chapter 4 of the biography today."
+            "summary": "Alexis completed chapter 4 of the biography today"
           },
           {
-            "note": "Return the biography to Mark",
+            "note": "Need to return the book to Mark tomorrow",
             "kind": "task",
             "owner": null,
             "event_date": "2026-07-14",
             "event_recurring": false,
-            "summary": "Alexis needs to return the book to Mark tomorrow."
+            "summary": "Return the biography to Mark on 2026-07-14"
           }
         ],
         "cancels_action": null,
@@ -5079,17 +5182,17 @@
       "text": "um finished reading chapter 4 of the biography, need to return the book to Mark tomorrow",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
+      "latency_s": 75.5,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 222,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5105,377 +5208,12 @@
         "language": "en",
         "memories": [
           {
-            "note": "Chris is bringing his new dog along to dinner on Friday",
+            "note": "Chris called to confirm dinner on Friday, bringing his new dog along",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-17",
             "event_recurring": false,
-            "summary": "Chris's dinner with Alexis on Friday, with his new dog"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [
-          {
-            "canonical_name": "Chris",
-            "type": "person",
-            "type_proposal": null,
-            "aliases": [],
-            "renamed_to": null,
-            "summary": null,
-            "attributes": {},
-            "facts": []
-          },
-          {
-            "canonical_name": "Chris's dog",
-            "type": "animal",
-            "type_proposal": null,
-            "aliases": [],
-            "renamed_to": null,
-            "summary": null,
-            "attributes": {},
-            "facts": []
-          }
-        ],
-        "relations": [
-          {
-            "from": "Chris",
-            "predicate": "has",
-            "to": "Chris's dog",
-            "confidence": 1.0
-          }
-        ],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "event",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 1,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "Chris called to confirm dinner on Friday, he's bringing his new dog along",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5325,
-      "graph_prompt_tokens": 4936,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5325,
-      "input_tokens": 10261,
-      "uncached_tokens": 0,
-      "output_tokens": 252,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "event_date",
-        "language",
-        "facts_min",
-        "entity_expected"
-      ]
-    },
-    "o-en-003": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "useful article on refactor patterns to share with the dev team during standup",
-            "kind": "note",
-            "owner": null,
-            "event_date": null,
-            "event_recurring": false,
-            "summary": "Alexis found a useful article on refactor patterns to share with the dev team"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [
-          {
-            "canonical_name": "clean-code-notes",
-            "type": "resource",
-            "type_proposal": null,
-            "aliases": [],
-            "renamed_to": null,
-            "summary": null,
-            "attributes": {},
-            "facts": []
-          }
-        ],
-        "relations": [],
-        "project_entries": [
-          {
-            "project_canonical": "Synapse",
-            "content": "useful article on refactor patterns to share with the dev team during standup",
-            "is_new": false
-          }
-        ],
-        "obsoleted_facts": [],
-        "resources": [
-          {
-            "url": "https://example.com/clean-code-notes",
-            "category": "article",
-            "entity_canonical": "clean-code-notes",
-            "user_comment": "useful article on refactor patterns to share with the dev team during standup"
-          }
-        ]
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "note",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 1,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "https://example.com/clean-code-notes useful article on refactor patterns to share with the dev team during standup",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5332,
-      "graph_prompt_tokens": 4943,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5332,
-      "input_tokens": 10275,
-      "uncached_tokens": 0,
-      "output_tokens": 505,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "language"
-      ]
-    },
-    "o-en-1": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "Spoke to Dave about the deck renovation; he's coming Saturday to give a quote",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Conversation with Dave regarding the deck renovation project"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [
-          {
-            "canonical_name": "Dave",
-            "type": "person",
-            "type_proposal": null,
-            "aliases": [],
-            "renamed_to": null,
-            "summary": null,
-            "attributes": {},
-            "facts": []
-          }
-        ],
-        "relations": [],
-        "project_entries": [
-          {
-            "project_canonical": "Synapse",
-            "content": "Dave is coming Saturday to give a quote for the deck renovation.",
-            "is_new": false
-          }
-        ],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "episode",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 1,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "spoke to Dave this morning about the deck renovation, he's coming by Saturday to give a quote",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5330,
-      "graph_prompt_tokens": 4941,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5330,
-      "input_tokens": 10271,
-      "uncached_tokens": 0,
-      "output_tokens": 261,
-      "confidence": 1.0,
-      "gaps": [
-        "kind attendu=event obtenu=episode",
-        "event_date attendu=2026-07-18 obtenu=['2026-07-13']",
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
-      ],
-      "axes": [
-        "note",
-        "kind",
-        "event_date",
-        "language",
-        "facts_min",
-        "entity_expected"
-      ]
-    },
-    "o-en-2": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "forgot umbrella at the office, need to retrieve it before Thursday's rain",
-            "kind": "task",
-            "owner": null,
-            "event_date": "2026-07-16",
-            "event_recurring": false,
-            "summary": "Retrieve the umbrella left at the office before Thursday's rain"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [],
-        "relations": [],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "task",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "forgot my umbrella at the office again, need to get it back before rain starts on Thursday",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5328,
-      "graph_prompt_tokens": 4939,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5328,
-      "input_tokens": 10267,
-      "uncached_tokens": 0,
-      "output_tokens": 188,
-      "confidence": 1.0,
-      "gaps": [],
-      "axes": [
-        "note",
-        "kind",
-        "event_date",
-        "language",
-        "no_entity"
-      ]
-    },
-    "o-en-4": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "Tried Sam's sourdough recipe; dough was too wet but tasted okay",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Alexis attempted Sam's sourdough recipe today, finding the dough overly wet but the taste acceptable"
-          }
-        ],
-        "cancels_action": null,
-        "classification_confidence": 1.0,
-        "entities": [
-          {
-            "canonical_name": "Sourdough recipe from Sam",
-            "type": "concept",
-            "type_proposal": {
-              "value": "recipe",
-              "reason": "A specific recipe mentioned by name, likely from a person named Sam"
-            },
-            "aliases": [],
-            "renamed_to": null,
-            "summary": null,
-            "attributes": {},
-            "facts": []
-          }
-        ],
-        "relations": [],
-        "project_entries": [],
-        "obsoleted_facts": [],
-        "resources": []
-      },
-      "kind_valid": true,
-      "has_note": true,
-      "kind": "episode",
-      "memories": 1,
-      "kind_defaulted": false,
-      "facts": 0,
-      "relations": 0,
-      "projects": 0,
-      "fields": 9,
-      "set": "ordinaire",
-      "text": "um so I tried making that sourdough recipe from Sam, dough was way too wet but tasted okay",
-      "note_parsed": true,
-      "graph_parsed": true,
-      "note_prompt_tokens": 5331,
-      "graph_prompt_tokens": 4942,
-      "note_error": null,
-      "graph_error": null,
-      "note_stop": "stop",
-      "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5331,
-      "input_tokens": 10273,
-      "uncached_tokens": 0,
-      "output_tokens": 218,
-      "confidence": 1.0,
-      "gaps": [
-        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)",
-        "entité 'Sam' absente"
-      ],
-      "axes": [
-        "note",
-        "kind",
-        "language",
-        "facts_min",
-        "entity_expected"
-      ]
-    },
-    "o-en-6": {
-      "parsed": {
-        "language": "en",
-        "memories": [
-          {
-            "note": "Went to the gym with Chris after work, did upper body",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Gym session with Chris focusing on upper body exercises"
+            "summary": "Chris confirmed dinner plans for Friday and will bring his new dog"
           }
         ],
         "cancels_action": null,
@@ -5504,12 +5242,299 @@
         ],
         "relations": [
           {
-            "from": "Alexis",
-            "predicate": "gym_partner_of",
-            "to": "Chris",
-            "confidence": 0.8
+            "from": "Chris",
+            "predicate": "dinner_with",
+            "to": "Alexis",
+            "confidence": 0.95
           }
         ],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "event",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 1,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "Chris called to confirm dinner on Friday, he's bringing his new dog along",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 75.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "o-en-003": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Found a useful article on refactor patterns to share with the dev team during standup",
+            "kind": "note",
+            "owner": null,
+            "event_date": null,
+            "event_recurring": false,
+            "summary": "A resource about clean code refactor patterns identified for team sharing"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Clean Code Notes",
+            "type": "resource",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Synapse",
+            "content": "useful article on refactor patterns to share with the dev team during standup",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": [
+          {
+            "url": "https://example.com/clean-code-notes",
+            "category": "article",
+            "entity_canonical": "Clean Code Notes",
+            "user_comment": "useful article on refactor patterns to share with the dev team during standup"
+          }
+        ]
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "note",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "https://example.com/clean-code-notes useful article on refactor patterns to share with the dev team during standup",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 76.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "language"
+      ]
+    },
+    "o-en-1": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Spoke to Dave this morning about the deck renovation; he's coming by Saturday to give a quote",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Talked with Dave about the deck renovation project"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Dave",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [
+          {
+            "project_canonical": "Climbing",
+            "content": "Spoke to Dave this morning about the deck renovation; he's coming by Saturday to give a quote.",
+            "is_new": true
+          }
+        ],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 1,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "spoke to Dave this morning about the deck renovation, he's coming by Saturday to give a quote",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 75.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [
+        "kind attendu=event obtenu=episode",
+        "event_date attendu=2026-07-18 obtenu=['2026-07-13']",
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "o-en-2": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Forgot umbrella at the office, need to retrieve it before Thursday's rain",
+            "kind": "task",
+            "owner": null,
+            "event_date": "2026-07-16",
+            "event_recurring": false,
+            "summary": "Need to get umbrella back from office before Thursday's rain"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "task",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "forgot my umbrella at the office again, need to get it back before rain starts on Thursday",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 72.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [],
+      "axes": [
+        "note",
+        "kind",
+        "event_date",
+        "language",
+        "no_entity"
+      ]
+    },
+    "o-en-4": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Tried Sam's sourdough recipe; dough was too wet but tasted okay",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Attempted Sam's sourdough recipe with wet dough that still tasted acceptable"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Sam",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
         "resources": []
@@ -5520,26 +5545,96 @@
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
-      "relations": 1,
+      "relations": 0,
+      "projects": 0,
+      "fields": 9,
+      "set": "ordinaire",
+      "text": "um so I tried making that sourdough recipe from Sam, dough was way too wet but tasted okay",
+      "note_parsed": true,
+      "graph_parsed": true,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
+      "note_error": null,
+      "graph_error": null,
+      "note_stop": "stop",
+      "graph_stop": "stop",
+      "latency_s": 73.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
+      "uncached_tokens": 0,
+      "output_tokens": 0,
+      "confidence": 1.0,
+      "gaps": [
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+      ],
+      "axes": [
+        "note",
+        "kind",
+        "language",
+        "facts_min",
+        "entity_expected"
+      ]
+    },
+    "o-en-6": {
+      "parsed": {
+        "language": "en",
+        "memories": [
+          {
+            "note": "Went to the gym with Chris after work, did upper body, feeling sore already",
+            "kind": "episode",
+            "owner": null,
+            "event_date": "2026-07-13",
+            "event_recurring": false,
+            "summary": "Gym session with Chris focusing on upper body, already feeling sore"
+          }
+        ],
+        "cancels_action": null,
+        "classification_confidence": 1.0,
+        "entities": [
+          {
+            "canonical_name": "Chris",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
+        "relations": [],
+        "project_entries": [],
+        "obsoleted_facts": [],
+        "resources": []
+      },
+      "kind_valid": true,
+      "has_note": true,
+      "kind": "episode",
+      "memories": 1,
+      "kind_defaulted": false,
+      "facts": 0,
+      "relations": 0,
       "projects": 0,
       "fields": 9,
       "set": "ordinaire",
       "text": "went to the gym with Chris after work, did upper body, feeling sore already",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5326,
-      "graph_prompt_tokens": 4937,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5326,
-      "input_tokens": 10263,
+      "latency_s": 73.3,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 237,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
+      ],
       "axes": [
         "note",
         "kind",
@@ -5590,17 +5685,17 @@
       "text": "changer la pile de la sonnette et racheter du timbre",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5323,
-      "graph_prompt_tokens": 4934,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5323,
-      "input_tokens": 10257,
+      "latency_s": 72.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 323,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5615,12 +5710,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Rendez-vous avec le conseiller bancaire pour le prêt immobilier",
+            "note": "Rendez-vous avec le conseiller bancaire mercredi à 14h30 pour le prêt immobilier",
             "kind": "event",
             "owner": null,
             "event_date": "2026-07-15",
             "event_recurring": false,
-            "summary": "Rendez-vous prévu mercredi à 14h30 pour discuter du prêt immobilier"
+            "summary": "Rendez-vous avec le conseiller bancaire pour le prêt immobilier"
           }
         ],
         "cancels_action": null,
@@ -5638,7 +5733,13 @@
           }
         ],
         "relations": [],
-        "project_entries": [],
+        "project_entries": [
+          {
+            "project_canonical": "Synapse",
+            "content": "Rendez-vous avec le conseiller bancaire mercredi à 14h30 pour le prêt immobilier",
+            "is_new": true
+          }
+        ],
         "obsoleted_facts": [],
         "resources": []
       },
@@ -5649,23 +5750,23 @@
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
-      "projects": 0,
+      "projects": 1,
       "fields": 9,
       "set": "ordinaire",
       "text": "Rendez-vous avec le conseiller bancaire mercredi à 14h30 pour le prêt immobilier",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5329,
-      "graph_prompt_tokens": 4940,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5329,
-      "input_tokens": 10269,
+      "latency_s": 75.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 237,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5686,7 +5787,7 @@
             "owner": null,
             "event_date": "2026-07-14",
             "event_recurring": false,
-            "summary": "Acheter des cartouches d'encre noire HP 302 à la Fnac"
+            "summary": "Acheter des cartouches d'encre noire HP 302 à la Fnac demain"
           }
         ],
         "cancels_action": null,
@@ -5721,17 +5822,17 @@
       "text": "L'imprimante n'a plus d'encre noire, faut que j'achète des cartouches HP 302 à la Fnac demain",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5342,
-      "graph_prompt_tokens": 4953,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5342,
-      "input_tokens": 10295,
+      "latency_s": 73.2,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 261,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5747,7 +5848,7 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Rappel effectué à la secrétaire du Dr Martin ce matin",
+            "note": "Rappelé la secrétaire du Dr Martin ce matin",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
@@ -5755,12 +5856,12 @@
             "summary": "Alexis a rappelé la secrétaire du Dr Martin ce matin"
           },
           {
-            "note": "Nouveau rendez-vous ophtalmo décalé au 18 août à 14h",
+            "note": "Rendez-vous ophtalmologique décalé au 18 août à 14h",
             "kind": "event",
             "owner": null,
             "event_date": "2026-08-18",
             "event_recurring": false,
-            "summary": "Rendez-vous ophtalmo avec le Dr Martin"
+            "summary": "Rendez-vous ophtalmologique avec le Dr Martin le 18 août à 14h"
           }
         ],
         "cancels_action": null,
@@ -5795,17 +5896,17 @@
       "text": "J'ai rappelé la secrétaire du Dr Martin ce matin, rdv ophtalmo décalé au 18 août à 14h",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5341,
-      "graph_prompt_tokens": 4952,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5341,
-      "input_tokens": 10293,
+      "latency_s": 77.0,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 216,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [
         "atomicité : 0 fait(s)/relation(s) pour 1 attendu(s)"
@@ -5824,21 +5925,24 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Tester la recette crumble pommes amandes ce weekend pour la venue des beaux-parents",
+            "note": "Tester la recette de crumble pommes amandes ce weekend pour la venue des beaux-parents",
             "kind": "task",
             "owner": null,
-            "event_date": "2026-07-18",
+            "event_date": null,
             "event_recurring": false,
-            "summary": "Tester une recette de crumble aux pommes et amandes pour la venue des beaux-parents"
+            "summary": "Tester une recette de crumble ce weekend pour la venue des beaux-parents"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
         "entities": [
           {
-            "canonical_name": "recette-crumble-pommes-amandes",
-            "type": "resource",
-            "type_proposal": null,
+            "canonical_name": "Recette crumble pommes amandes",
+            "type": "concept",
+            "type_proposal": {
+              "value": "recipe",
+              "reason": "Une recette culinaire n'a pas de type actif disponible, donc concept est la seule option valide"
+            },
             "aliases": [],
             "renamed_to": null,
             "summary": null,
@@ -5853,7 +5957,7 @@
           {
             "url": "https://example.com/recette-crumble-pommes-amandes",
             "category": "page",
-            "entity_canonical": "recette-crumble-pommes-amandes",
+            "entity_canonical": "Recette crumble pommes amandes",
             "user_comment": "tester cette recette ce weekend pour la venue des beaux-parents"
           }
         ]
@@ -5871,19 +5975,21 @@
       "text": "https://example.com/recette-crumble-pommes-amandes tester cette recette ce weekend pour la venue des beaux-parents",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5336,
-      "graph_prompt_tokens": 4947,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5336,
-      "input_tokens": 10283,
+      "latency_s": 77.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 220,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "event_date attendu=2026-07-18 obtenu=[None]"
+      ],
       "axes": [
         "note",
         "kind",
@@ -5896,12 +6002,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Visite de l'exposition photo au Grand Palais avec Lucas ce matin",
+            "note": "Alexis a fait une super photo ce matin avec Lucas au Grand Palais, la série sur le Japon était vraiment magnifique.",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a visité l'exposition photo au Grand Palais avec Lucas"
+            "summary": "Alexis a pris une belle photo avec Lucas au Grand Palais, impressionné par la série sur le Japon"
           }
         ],
         "cancels_action": null,
@@ -5923,17 +6029,23 @@
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
-            "summary": "Grand Palais, salle d'exposition à Paris.",
+            "summary": "Musée d'art moderne et galerie d'exposition à Paris.",
             "attributes": {},
             "facts": []
           }
         ],
         "relations": [
           {
-            "from": "Lucas",
-            "predicate": "attended_with",
+            "from": "Alexis",
+            "predicate": "visited_with",
+            "to": "Lucas",
+            "confidence": 1.0
+          },
+          {
+            "from": "Alexis",
+            "predicate": "visited",
             "to": "Grand Palais",
-            "confidence": 0.9
+            "confidence": 1.0
           }
         ],
         "project_entries": [],
@@ -5946,24 +6058,24 @@
       "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
-      "relations": 1,
+      "relations": 2,
       "projects": 0,
       "fields": 9,
       "set": "ordinaire",
       "text": "Super expo photo ce matin avec Lucas au Grand Palais, la série sur le Japon était vraiment magnifique.",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5330,
-      "graph_prompt_tokens": 4941,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5330,
-      "input_tokens": 10271,
+      "latency_s": 79.4,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 244,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -5985,7 +6097,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Action à faire : nettoyer le filtre de la hotte"
+            "summary": "Tâche à faire : nettoyer le filtre de la hotte"
           },
           {
             "note": "Changer l'ampoule du buffet",
@@ -5993,7 +6105,7 @@
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Action à faire : remplacer l'ampoule du buffet"
+            "summary": "Tâche à faire : changer l'ampoule du buffet"
           }
         ],
         "cancels_action": null,
@@ -6017,17 +6129,17 @@
       "text": "nettoyer le filtre de la hotte et changer l'ampoule du buffet",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5327,
-      "graph_prompt_tokens": 4938,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5327,
-      "input_tokens": 10265,
+      "latency_s": 72.6,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 300,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -6043,20 +6155,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Alexis a emmené la petite chez le pédiatre pour son vaccin ce matin",
+            "note": "Emmené la petite chez le pédiatre pour son vaccin ce matin. Elle a presque pas pleuré.",
             "kind": "episode",
             "owner": null,
             "event_date": "2026-07-13",
             "event_recurring": false,
-            "summary": "Alexis a conduit la petite chez le pédiatre pour son vaccin ce matin"
-          },
-          {
-            "note": "La petite est crevée cet après-midi",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "La petite a eu une réaction après le vaccin et est épuisée cet après-midi"
+            "summary": "Vaccin de la petite chez le pédiatre ce matin, elle a presque pas pleuré mais est crevée cet après-midi"
           }
         ],
         "cancels_action": null,
@@ -6073,29 +6177,21 @@
             "facts": []
           },
           {
-            "canonical_name": "Alexis's child",
+            "canonical_name": "La petite",
             "type": "person",
             "type_proposal": null,
             "aliases": [],
             "renamed_to": null,
             "summary": null,
             "attributes": {},
-            "facts": [
-              {
-                "predicate": "has_vaccination",
-                "value": "pending",
-                "persistence_value": 3,
-                "evidence_strength": "explicit",
-                "category": "health"
-              }
-            ]
+            "facts": []
           }
         ],
         "relations": [
           {
-            "from": "Alexis's child",
-            "predicate": "child_of",
-            "to": "Alexis",
+            "from": "Alexis",
+            "predicate": "took_to_doctor",
+            "to": "La petite",
             "confidence": 1.0
           }
         ],
@@ -6106,9 +6202,9 @@
       "kind_valid": true,
       "has_note": true,
       "kind": "episode",
-      "memories": 2,
+      "memories": 1,
       "kind_defaulted": false,
-      "facts": 1,
+      "facts": 0,
       "relations": 1,
       "projects": 0,
       "fields": 9,
@@ -6116,17 +6212,17 @@
       "text": "euh alors ce matin j'ai emmené la petite chez le pédiatre pour son vaccin elle a presque pas pleuré par contre elle est crevée cet aprèm",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5346,
-      "graph_prompt_tokens": 4957,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5346,
-      "input_tokens": 10303,
+      "latency_s": 77.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 310,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -6141,20 +6237,12 @@
         "language": "fr",
         "memories": [
           {
-            "note": "Épisode sur la Révolution écouté ce matin",
-            "kind": "episode",
-            "owner": null,
-            "event_date": "2026-07-13",
-            "event_recurring": false,
-            "summary": "Alexis a écouté un épisode sur la Révolution pendant son trajet ce matin"
-          },
-          {
-            "note": "Transférer l'épisode à Marc",
+            "note": "Épisode de podcast 'Histoire' écouté ce matin pendant le trajet, à transférer à Marc",
             "kind": "task",
             "owner": null,
             "event_date": null,
             "event_recurring": false,
-            "summary": "Transférer l'épisode écouté à Marc"
+            "summary": "Transférer l'épisode de podcast Histoire à Marc"
           }
         ],
         "cancels_action": null,
@@ -6179,14 +6267,14 @@
             "url": "https://example.com/podcast-histoire",
             "category": "podcast",
             "entity_canonical": "Marc",
-            "user_comment": "super épisode sur la Révolution écouté pendant mon trajet ce matin, à transférer"
+            "user_comment": "super épisode sur la Révolution écouté pendant mon trajet ce matin, à transférer à Marc"
           }
         ]
       },
       "kind_valid": true,
       "has_note": true,
-      "kind": "episode",
-      "memories": 2,
+      "kind": "task",
+      "memories": 1,
       "kind_defaulted": false,
       "facts": 0,
       "relations": 0,
@@ -6196,19 +6284,21 @@
       "text": "https://example.com/podcast-histoire super épisode sur la Révolution écouté pendant mon trajet ce matin, à transférer à Marc",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5338,
-      "graph_prompt_tokens": 4949,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5338,
-      "input_tokens": 10287,
+      "latency_s": 74.9,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 281,
+      "output_tokens": 0,
       "confidence": 1.0,
-      "gaps": [],
+      "gaps": [
+        "souvenirs attendus=2 obtenus=1 (Épisode de podcast 'Histoire' écouté ce )"
+      ],
       "axes": [
         "note",
         "kind",
@@ -6227,12 +6317,23 @@
             "owner": null,
             "event_date": "2026-07-19",
             "event_recurring": false,
-            "summary": "Alexis doit acheter du fromage à la coupe et une tarte au citron pour le repas de dimanche chez sa maman"
+            "summary": "Acheter du fromage à la coupe et une tarte au citron pour le repas de dimanche chez maman"
           }
         ],
         "cancels_action": null,
         "classification_confidence": 1.0,
-        "entities": [],
+        "entities": [
+          {
+            "canonical_name": "Alexis",
+            "type": "person",
+            "type_proposal": null,
+            "aliases": [],
+            "renamed_to": null,
+            "summary": null,
+            "attributes": {},
+            "facts": []
+          }
+        ],
         "relations": [],
         "project_entries": [],
         "obsoleted_facts": [],
@@ -6251,17 +6352,17 @@
       "text": "euh alors pour le repas de dimanche chez maman faut que je reprenne du fromage à la coupe et une tarte au citron",
       "note_parsed": true,
       "graph_parsed": true,
-      "note_prompt_tokens": 5337,
-      "graph_prompt_tokens": 4948,
+      "note_prompt_tokens": null,
+      "graph_prompt_tokens": null,
       "note_error": null,
       "graph_error": null,
       "note_stop": "stop",
       "graph_stop": "stop",
-      "latency_s": 0.0,
-      "prompt_tokens": 5337,
-      "input_tokens": 10285,
+      "latency_s": 73.1,
+      "prompt_tokens": 0,
+      "input_tokens": 0,
       "uncached_tokens": 0,
-      "output_tokens": 512,
+      "output_tokens": 0,
       "confidence": 1.0,
       "gaps": [],
       "axes": [
@@ -6272,52 +6373,44 @@
       ]
     }
   },
-  "ecarts": 24,
+  "ecarts": 20,
   "par_frontiere": {
+    "X-CONF": [
+      "g-ord-en-010",
+      "ord-en-06",
+      "x-birthday-bare"
+    ],
     "P-PERS": [
-      "g-ord-suivi-colis-fr",
-      "o-en-4",
       "ord-8-serie-discussion-fr",
-      "ord-en-002-b3",
       "ord-en-003-b3",
       "x-pet-incidental"
     ],
     "X-ONE": [
-      "a3",
-      "g-ord-03",
       "g-ord-en-007",
       "g-ord-souvenir-barbecue-fr",
       "o-en-1",
       "o-en-4",
+      "o-en-6",
       "o-fr-sante-rdv",
       "ord-8-serie-discussion-fr",
       "ord-en-08"
     ],
+    "routage": [
+      "g-ord-en-002",
+      "g-ord-en-010",
+      "o-en-1",
+      "ord-en-002-b3",
+      "ord-en-007",
+      "ord-en-009-2"
+    ],
     "R2d": [
-      "ez-wedding-anniversary-fr",
       "g-ord-08-fr",
       "g-ord-en-002",
-      "g-ord-tache-administratif-fr",
-      "o-en-1"
+      "o-en-1",
+      "o-fr-lien-recette-partage"
     ],
     "autre": [
-      "g-atomicity-mixed"
-    ],
-    "routage": [
-      "f2",
-      "g-ord-08-fr",
-      "g-ord-en-002",
-      "g-ord-suivi-colis-fr",
-      "o-en-1",
-      "ord-1-boulangerie-bruit",
-      "ord-en-009-2",
-      "ord-serie-recommandation"
-    ],
-    "X-CONF": [
-      "g-ord-en-010",
-      "ord-en-06"
+      "o-podcast-histoire-fr"
     ]
-  },
-  "prompt_tokens_max": 5346,
-  "rescored": "2026-09-26"
+  }
 }

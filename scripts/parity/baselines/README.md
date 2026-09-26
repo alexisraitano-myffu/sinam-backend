@@ -89,3 +89,20 @@ provider `mlx:` porte l'empreinte du prompt et rien d'autre : l'adaptateur se
 choisit au lancement du serveur, et deux entraînements différents rendent des
 empreintes identiques. Noter le lancement à côté, sinon deux mesures deviennent
 indiscernables.
+
+**Le modèle local, entraîné puis porté sur le Mac.** Trois baselines, même
+86 cas étiquetés `kind`, notées par `score.gaps` (jamais par le champ `kind`,
+qui ne porte que la mémoire de tête) :
+
+| baseline | ce que c'est | routage | conformes |
+|---|---|---|---|
+| `nu-nf4` | Qwen 3.5 4B quantifié NF4, sans entraînement, sur GPU | 75/86 | 56/93 |
+| `lora-60-nf4` | le même avec l'adaptateur du point 60, sur GPU | 79/86 | 69/93 |
+| `lora-60-mlx` | l'adaptateur porté sur MLX 4 bits, sur un Mac M1 8 Go | **80/86** | 73/93 |
+
+`lora-60-mlx` mesure le moteur qui est livré : mêmes poids, même adaptateur,
+mêmes réglages (réflexion coupée, température 0), produite par
+`scripts/entrainement/pod/mesurer_mlx.py` puis rejouée par le provider `rejeu`.
+Le passage du GPU au Mac ne coûte rien, l'écart d'un cas est sous le plancher
+de bruit. Le serveur livré (`moteur_entry.py`) rend ces réponses au caractère
+près, vérifié le 26/09/2026 sur six questions.

@@ -29,6 +29,10 @@ MANIFESTE_URL = os.environ.get(
     "SYNAPSE_MOTEUR_MANIFESTE",
     "https://pub-91e19c4a15ec4d9ab1a26673a2b7c0ce.r2.dev/moteur-local/manifeste.json",
 )
+# Cloudflare répond 403 à l'agent par défaut d'urllib (« Python-urllib/x.y »)
+# devant le seau public : sans agent à nous, ni le manifeste ni les archives ne
+# passent. Constaté le 27/09/2026 en vérifiant la première publication.
+AGENT = {"User-Agent": "sinam-moteur/1"}
 # Les trois morceaux, chacun dans son dossier, dans cet ordre de téléchargement.
 MORCEAUX = ("moteur", "modele", "adaptateur")
 # En dessous, le système swappe pendant le cycle au point de le rendre inutilisable.
@@ -106,7 +110,7 @@ def _telecharger(url: str, cible: Path, sha256: str, deja: int, total: int) -> N
     évite de tout recommencer."""
     part = cible.with_name(cible.name + ".part")
     recu = part.stat().st_size if part.exists() else 0
-    req = urllib.request.Request(url, headers={"Range": f"bytes={recu}-"} if recu else {})
+    req = urllib.request.Request(url, headers={**AGENT, **({"Range": f"bytes={recu}-"} if recu else {})})
     with urllib.request.urlopen(req, timeout=60) as rep:
         if recu and rep.status != 206:        # le serveur ignore la reprise
             recu = 0
@@ -128,7 +132,7 @@ def _telecharger(url: str, cible: Path, sha256: str, deja: int, total: int) -> N
 def _installer() -> None:
     racine = dossier()
     racine.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(MANIFESTE_URL, timeout=30) as rep:
+    with urllib.request.urlopen(urllib.request.Request(MANIFESTE_URL, headers=AGENT), timeout=30) as rep:
         manif = json.load(rep)
     fichiers = manif["fichiers"]
     total = sum(f["taille"] for f in fichiers)

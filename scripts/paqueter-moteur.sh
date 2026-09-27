@@ -27,6 +27,20 @@ if [ ! -f "$SNAP/model.safetensors" ]; then
     .venv/bin/python -c "from huggingface_hub import snapshot_download as d; d('$MODELE_REPO', revision='$MODELE_REVISION')"
 fi
 [ -f "$SNAP/model.safetensors" ] || { echo "✘ poids absents du cache : $SNAP" >&2; exit 1; }
+if [ ! -f "$ADAPTATEUR/adapters.safetensors" ]; then
+    # L'adaptateur est gitignoré : il n'existe que sur la machine qui l'a
+    # entraîné. On reprend donc celui du moteur déjà publié, vérifié contre
+    # l'empreinte du manifeste en ligne, pour pouvoir paqueter depuis n'importe
+    # quel Mac. Un nouvel adaptateur, lui, se copie à la main la première fois.
+    echo "▸ adaptateur absent, reprise de celui du moteur publié"
+    MANIFESTE_EN_LIGNE="${BASE_URL%/*}/manifeste.json"
+    read -r URL_ADA SHA_ADA < <(curl -fsSL "$MANIFESTE_EN_LIGNE" | .venv/bin/python -c \
+        "import json,sys; f=[f for f in json.load(sys.stdin)['fichiers'] if f['role']=='adaptateur'][0]; print(f['url'], f['sha256'])")
+    TMP_ADA="$(mktemp)"
+    curl -fL --retry 3 -o "$TMP_ADA" "$URL_ADA"
+    echo "$SHA_ADA  $TMP_ADA" | shasum -a 256 -c - >/dev/null || { echo "✘ empreinte de l'adaptateur téléchargé fausse" >&2; exit 1; }
+    mkdir -p "$ADAPTATEUR" && tar -xf "$TMP_ADA" -C "$ADAPTATEUR" && rm -f "$TMP_ADA"
+fi
 [ -f "$ADAPTATEUR/adapters.safetensors" ] || { echo "✘ adaptateur absent : $ADAPTATEUR" >&2; exit 1; }
 
 SORTIE="dist/moteur-local/$VERSION"

@@ -384,7 +384,7 @@ Familles principales :
 - Une clé normale (`sk-ant-…`) → appel direct.
 - Un **fuel token** de bêta (`syn-fuel-…`) → client pointé sur le **proxy fuel** (Cloudflare Worker, repo séparé `synapse-fuel-proxy/`, déployé à `synapse-fuel-proxy.alexis-raitano.workers.dev`) avec le token en header `x-synapse-token` ; la vraie clé ne vit que sur le Worker. URL bakée (`_DEFAULT_FUEL_BASE_URL`), surchargée par `SYNAPSE_FUEL_BASE_URL` (vide = désactive). Consulté seulement pour les tokens `syn-fuel-`, donc une clé normale est inchangée. Jetable par design : arrêter d'émettre des fuel tokens rend le seam inerte.
 
-> Tout le cycle tourne sur **Haiku** (`CLAUDE_MODEL = "claude-haiku-4-5-20251001"`, `config.py`) : même modèle sur prod et chez chaque testeur (le proxy fuel n'autorise que Haiku, il n'y a pas de « plus gros modèle sur prod »).
+> Tout le cycle tourne sur **Haiku 5.5** (`CLAUDE_MODEL = "claude-haiku-5-5"`, `config.py`) : même modèle sur prod et chez chaque testeur (le proxy fuel n'autorise que Haiku, il n'y a pas de « plus gros modèle sur prod »). Haiku 5.5 réfléchit avant de répondre : il refuse toute température et sa réflexion se paie sur `max_tokens`, donc le cœur (`llm::adapt_params`) retire l'échantillonnage et relève le plafond à 16 000 pour les modèles de cette famille ; les appels faits depuis Python passent par `anthropic_client.adapt_params` pour suivre la même règle.
 
 ### Le seam de provider, dans le core
 

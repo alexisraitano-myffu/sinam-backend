@@ -202,7 +202,7 @@ def _call_rejeu(model: str, system_blocks: list[str], user: str, max_tokens: int
 
 def _call_anthropic(model: str, system_blocks: list[str], user: str,
                     max_tokens: int, temperature: float = 0.0) -> Reply:
-    from anthropic_client import get_client
+    from anthropic_client import adapt_params, get_client, response_text
 
     # Le premier bloc porte le cache : c'est ce que fait le core (le classifieur
     # est stable, les blocs vocab/projets bougent). Reproduire la vraie forme,
@@ -220,11 +220,15 @@ def _call_anthropic(model: str, system_blocks: list[str], user: str,
     # NB : le core, LUI, ne fixe pas la température — cette valeur mesure le
     # prompt, pas la variance de production. Passer --temperature 1.0 pour ça.
     t0 = time.time()
-    msg = get_client().messages.create(
-        model=model, max_tokens=max_tokens, system=blocks, temperature=temperature,
-        messages=[{"role": "user", "content": user}],
-    )
-    text = msg.content[0].text if msg.content else ""
+    # Un modèle qui réfléchit (Haiku 5.5…) refuse toute température : la règle
+    # du cœur la retire et relève max_tokens, comme pour un vrai cycle. La mesure
+    # y est donc à la variance de production, il n'y a pas d'autre réglage.
+    msg = get_client().messages.create(**adapt_params({
+        "model": model, "max_tokens": max_tokens, "system": blocks,
+        "temperature": temperature,
+        "messages": [{"role": "user", "content": user}],
+    }))
+    text = response_text(msg)
     # ⚠️ `input_tokens` EXCLUT ce qui a été servi par le cache de prompt : quand le
     # cache mord, le prompt bascule dans `cache_read_input_tokens` et
     # `input_tokens` retombe à ~200. Compter la seule valeur brute ferait croire

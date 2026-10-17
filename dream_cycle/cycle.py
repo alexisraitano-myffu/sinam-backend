@@ -33,6 +33,7 @@ load_dotenv()
 import anthropic
 
 import llm_target
+from anthropic_client import response_text
 from config import CLAUDE_MODEL
 from db import get_connection, cursor_to_dicts, init_db
 from core_store import get_brain
@@ -231,7 +232,7 @@ def _batch_classify(
         try:
             msg = r.message
             halves[entry["id"]][half] = _parse_classify_text(
-                msg.content[0].text, len(entry["content"]), msg.stop_reason)
+                response_text(msg), len(entry["content"]), msg.stop_reason)
         except Exception as exc:  # noqa: BLE001 — content error for this entry
             if verbose:
                 print(f"    [batch] {res.custom_id} parse error: {exc}")

@@ -115,7 +115,10 @@ def test_classify_params_shape_with_working_memory(isolated_db):
     for half in ("note", "graph"):
         params = _classify_params({"id": 1, "content": "Coucou"}, conn=None,
                                   day_context="CTX", half=half)
-        assert params["model"] and params["max_tokens"] == 4096
+        # Le modèle par défaut réfléchit : pas de température (il la refuse) et
+        # un plafond qui laisse la place à la réflexion.
+        assert params["model"] and params["max_tokens"] >= 4096
+        assert "temperature" not in params
         assert params["messages"][0]["content"] == "Coucou"
         sysblocks = params["system"]
         # stable rules + working-memory block, both cached; user content carried separately.

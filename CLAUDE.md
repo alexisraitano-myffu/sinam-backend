@@ -425,7 +425,7 @@ BASE_DIR = Path(os.getenv("SYNAPSE_HOME", Path.home() / ".synapse"))
 DB_PATH = BASE_DIR / "synapse.db"
 EMBEDDING_DIM = 384
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # local fastembed
-CLAUDE_MODEL = "claude-haiku-4-5-20251001"  # Dream Cycle reasoning only
+CLAUDE_MODEL = "claude-haiku-5-5"  # Dream Cycle reasoning only
 ```
 
 **Tunable env vars** (consumed by the cycle): `SYNAPSE_AUTO_CYCLE`, `SYNAPSE_CONSOLIDATION_HOURS` (`"0,12"` = midnight+noon, twice-daily + startup/wake catch-up), `SYNAPSE_CONSOLIDATION_MAX_QUEUED` (30), `SYNAPSE_REFINEMENT_THRESHOLD`, `SYNAPSE_MERGE_EMBEDDING_THRESHOLD` (0.85), `SYNAPSE_DECAY_TAU_DAYS` (30), `SYNAPSE_DECAY_TAU_EPISODE_DAYS` (τ/3 = 10: a lived episode fades faster than a note). Single-valued predicate families: `SINGLE_VALUED_FAMILIES` in the core's `routing.rs` (left `facts_store` at T5). (`SYNAPSE_CYCLE_DEBOUNCE_SECONDS` is legacy/unused.)

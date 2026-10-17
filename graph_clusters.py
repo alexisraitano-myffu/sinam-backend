@@ -75,11 +75,12 @@ def _generate_labels(client, model: str, to_label: dict) -> dict:
         + json.dumps(payload, ensure_ascii=False)
     )
     try:
-        resp = client.messages.create(
-            model=model, max_tokens=512,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = resp.content[0].text.strip()
+        from anthropic_client import adapt_params, response_text
+        resp = client.messages.create(**adapt_params({
+            "model": model, "max_tokens": 512,
+            "messages": [{"role": "user", "content": prompt}],
+        }))
+        raw = response_text(resp)
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
         data = json.loads(raw)

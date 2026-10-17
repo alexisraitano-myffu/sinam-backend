@@ -1,9 +1,16 @@
 """Le moteur local : l'installer à la demande, le lancer le temps d'un cycle.
 
 Trois morceaux, décrits par un manifeste publié à côté des installeurs :
-le moteur (le serveur mlx_lm empaqueté, `moteur_entry.py`), les poids du modèle
-et l'adaptateur entraîné. Rien n'est livré avec l'app : seul celui qui choisit
-le tri local télécharge ~3 Go.
+le moteur, les poids du modèle et l'adaptateur entraîné. Rien n'est livré avec
+l'app : seul celui qui choisit le tri local télécharge ~3 Go.
+
+Deux moteurs, un par plateforme, chacun avec son manifeste, et le même modèle
+entraîné derrière :
+  - Mac à puce Apple : le serveur mlx_lm empaqueté (`moteur_entry.py`), poids
+    MLX 4 bits ;
+  - Windows x64 : `llama-server` de llama.cpp, poids GGUF Q4_K_M et
+    l'adaptateur converti par `scripts/entrainement/pod/vers_gguf_adaptateur.py`.
+Les deux sont mesurés sur le même harnais (`scripts/parity/baselines/`).
 
 Le moteur ne tourne PAS en permanence. Le modèle occupe ~3 Go de mémoire, sur des
 machines qui peuvent n'en avoir que 8 : on le lance au début d'un cycle et on
@@ -25,10 +32,13 @@ from pathlib import Path
 
 from config import BASE_DIR
 
-MANIFESTE_URL = os.environ.get(
-    "SYNAPSE_MOTEUR_MANIFESTE",
-    "https://pub-91e19c4a15ec4d9ab1a26673a2b7c0ce.r2.dev/moteur-local/manifeste.json",
-)
+SEAU = "https://pub-91e19c4a15ec4d9ab1a26673a2b7c0ce.r2.dev/moteur-local"
+# Forcé par l'environnement ou les tests ; sinon celui de la plateforme.
+MANIFESTE_URL = os.environ.get("SYNAPSE_MOTEUR_MANIFESTE")
+MANIFESTES = {
+    "macos-arm64": "manifeste.json",         # le premier publié, nom gardé
+    "windows-x64": "manifeste-windows-x64.json",
+}
 # Cloudflare répond 403 à l'agent par défaut d'urllib (« Python-urllib/x.y »)
 # devant le seau public : sans agent à nous, ni le manifeste ni les archives ne
 # passent. Constaté le 27/09/2026 en vérifiant la première publication.
@@ -51,7 +61,30 @@ def _installe_json() -> Path:
 
 # ── Ce que la machine sait faire ─────────────────────────────────────────────
 
+def plateforme() -> str | None:
+    """La clé de `MANIFESTES` qui sert cette machine, ou None."""
+    systeme, machine = platform.system(), platform.machine().lower()
+    if systeme == "Darwin" and machine == "arm64":
+        return "macos-arm64"
+    if systeme == "Windows" and machine in ("amd64", "x86_64"):
+        return "windows-x64"
+    return None
+
+
 def _memoire_totale() -> int | None:
+    if platform.system() == "Windows":
+        import ctypes
+
+        class Etat(ctypes.Structure):
+            _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                        ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                        ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                        ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+        e = Etat(dwLength=ctypes.sizeof(Etat))
+        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(e)):
+            return int(e.ullTotalPhys)
+        return None
     try:
         return int(subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True,
                                   text=True, timeout=5).stdout.strip())
@@ -61,9 +94,9 @@ def _memoire_totale() -> int | None:
 
 def compatibilite() -> str | None:
     """None si la machine peut faire tourner le moteur, sinon la raison, dite
-    pour l'utilisateur. MLX n'existe que sur les puces Apple."""
-    if platform.system() != "Darwin" or platform.machine() != "arm64":
-        return "Le tri local demande pour l'instant un Mac à puce Apple."
+    pour l'utilisateur."""
+    if plateforme() is None:
+        return "Le tri local demande pour l'instant un Mac à puce Apple ou un PC Windows 64 bits."
     mem = _memoire_totale()
     if mem is not None and mem < MEMOIRE_MIN:
         return "Le tri local demande au moins 8 Go de mémoire."
@@ -132,7 +165,8 @@ def _telecharger(url: str, cible: Path, sha256: str, deja: int, total: int) -> N
 def _installer() -> None:
     racine = dossier()
     racine.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(urllib.request.Request(MANIFESTE_URL, headers=AGENT), timeout=30) as rep:
+    url = MANIFESTE_URL or f"{SEAU}/{MANIFESTES[plateforme()]}"
+    with urllib.request.urlopen(urllib.request.Request(url, headers=AGENT), timeout=30) as rep:
         manif = json.load(rep)
     fichiers = manif["fichiers"]
     total = sum(f["taille"] for f in fichiers)
@@ -153,8 +187,7 @@ def _installer() -> None:
         shutil.rmtree(racine / f["role"], ignore_errors=True)
         tmp.replace(racine / f["role"])
         archive.unlink()
-    binaire = racine / "moteur" / "sinam-moteur" / "sinam-moteur"
-    binaire.chmod(0o755)
+    _executable(racine).chmod(0o755)
     _installe_json().write_text(json.dumps({"version": manif["version"], "taille": total}))
 
 
@@ -235,20 +268,70 @@ def session():
                 _session_proc = None
 
 
+# Les réglages de `llama-server` qui changent les réponses, FIGÉS comme ceux de
+# `moteur_entry.py` côté Mac et pour la même raison : ce sont ceux de la mesure
+# (`scripts/entrainement/pod/mesurer_llamacpp.py`, baseline `lora-60-llamacpp`).
+# Le gabarit de conversation est celui de Qwen, livré avec le moteur : celui
+# qu'embarque le GGUF d'unsloth n'est pas garanti identique à l'entraînement.
+REGLAGES_LLAMACPP = [
+    "--host", "127.0.0.1",
+    "--alias", "default_model",
+    "--jinja", "--chat-template-kwargs", json.dumps({"enable_thinking": False}),
+    "--temp", "0",
+    # Un seul appelant, le cycle : une seule conversation, assez longue pour le
+    # plus gros prompt du harnais (~5 300 jetons) plus les 4 096 de réponse.
+    "-c", "12288", "-np", "1",
+    # Le cache de prompts en mémoire vive vaut 8 Go par défaut : la panne
+    # mémoire du Mac 8 Go (voir moteur_entry.py), en pire. 512 Mo gardent les
+    # deux prompts système, les seuls qui valent d'être gardés.
+    "--cache-ram", "512",
+]
+
+
+def _executable(racine: Path) -> Path:
+    nom = "llama-server.exe" if plateforme() == "windows-x64" else "sinam-moteur"
+    return racine / "moteur" / "sinam-moteur" / nom
+
+
+def _commande(racine: Path, port: str, gpu: bool = True) -> list[str]:
+    if plateforme() != "windows-x64":
+        return [str(_executable(racine)),
+                "--model", str(racine / "modele"),
+                "--adapter-path", str(racine / "adaptateur"),
+                "--port", port]
+    cmd = [str(_executable(racine)),
+           "-m", str(racine / "modele" / "modele.gguf"),
+           "--lora", str(racine / "adaptateur" / "adaptateur.gguf"),
+           "--chat-template-file", str(racine / "moteur" / "sinam-moteur" / "qwen35.jinja"),
+           "--port", port, *REGLAGES_LLAMACPP]
+    # Par défaut llama-server place sur le GPU ce qui y tient (`--fit`). Sans
+    # GPU, c'est le processeur ; avec un pilote qui casse au chargement, on
+    # recommence sans (`gpu=False`).
+    return cmd if gpu else [*cmd, "--device", "none"]
+
+
 def _lancer(base: str) -> subprocess.Popen:
     if not est_installe():
         raise ConnectionError("tri local choisi mais moteur local absent : "
                               "l'installer depuis Réglages → Tri")
-    racine = dossier()
     port = base.rsplit(":", 1)[1]
+    try:
+        return _demarrer(_commande(dossier(), port), base)
+    except ConnectionError:
+        if plateforme() != "windows-x64":
+            raise
+    # Un pilote graphique de PC de bureau peut faire tomber le moteur au
+    # chargement : le processeur, plus lent, trie quand même.
+    return _demarrer(_commande(dossier(), port, gpu=False), base)
+
+
+def _demarrer(cmd: list[str], base: str) -> subprocess.Popen:
     journal = open(Path(os.getenv("SYNAPSE_HOME", BASE_DIR)) / "moteur-local.log", "ab")
-    proc = subprocess.Popen(
-        [str(racine / "moteur" / "sinam-moteur" / "sinam-moteur"),
-         "--model", str(racine / "modele"),
-         "--adapter-path", str(racine / "adaptateur"),
-         "--port", port],
-        stdout=journal, stderr=subprocess.STDOUT,
-    )
+    # Sur Windows le backend tourne sans console : sans ce drapeau, chaque
+    # cycle ouvrirait une fenêtre noire.
+    drapeaux = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    proc = subprocess.Popen(cmd, stdout=journal, stderr=subprocess.STDOUT,
+                            creationflags=drapeaux)
     fin = time.monotonic() + DEMARRAGE_MAX_S
     while time.monotonic() < fin:
         if proc.poll() is not None:

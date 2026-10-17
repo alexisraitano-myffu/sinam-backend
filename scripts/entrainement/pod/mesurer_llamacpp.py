@@ -7,7 +7,7 @@ réglages qu'on livre, et non par une bibliothèque appelée à côté. Ce qu'on
 mesure est ce que reçoit la personne qui installe.
 
     llama-server -m <modele.gguf> --lora <adaptateur.gguf> --port 8767 \
-        <les REGLAGES_FIGES de moteur_llamacpp.py>
+        <moteur_local.REGLAGES_LLAMACPP>
     python mesurer_llamacpp.py <nom> [http://127.0.0.1:8767]
 
 Reprend là où il s'est arrêté, comme la mesure MLX.

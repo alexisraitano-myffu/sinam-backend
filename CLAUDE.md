@@ -480,7 +480,18 @@ produced the measured score. `scripts/paqueter-moteur.sh <version>` builds the t
 the manifest from the pinned weights revision (downloaded if missing), installing the engine's exact
 dependency versions from `requirements-moteur.txt` first. Upload order matters: the three archives,
 then the manifest; `wrangler r2 object put` caps at 315 MB, so the weights go through R2's S3 API.
-Apple Silicon only (MLX); 8 GB minimum.
+Mac with Apple silicon (MLX) or Windows x64; 8 GB minimum.
+
+**Windows engine.** Same trained model, other runtime: llama.cpp's `llama-server` (pinned build,
+Vulkan with CPU fallback), unsloth's Q4_K_M GGUF at a pinned revision, and the adapter converted
+MLX → peft → GGUF by `scripts/entrainement/pod/vers_gguf_adaptateur.py`. Measured as baseline
+`lora-60-llamacpp` (79/86 routing, within noise of MLX). There is no entry point of ours to freeze
+its settings, so they live in `moteur_local.REGLAGES_LLAMACPP` and travel on the command line,
+with Qwen's own chat template shipped next to the binary. `--cache-ram` is capped: its 8 GB default
+is the Mac's 8 GB memory crash again. If the engine dies while loading on the GPU, `_lancer`
+retries once with `--device none`. Packaged by `scripts/paqueter-moteur-windows.sh` (nothing is
+compiled, runs from a Mac) under its own manifest `moteur-local/manifeste-windows-x64.json`;
+`plateforme()` picks the manifest, the Mac's is untouched.
 
 **Anthropic client (`anthropic_client.py`).** *Single* place that builds the Anthropic client: `cycle.py`, `digest.py`, `api/app.py` all call `get_client()`/`get_client_or_none()`. A normal key (`sk-ant-…`) → direct. A beta **fuel token** (`syn-fuel-…`, the closed-beta proxy that lends testers my credits) → client pointed at the fuel proxy with the token in an `x-synapse-token` header and a placeholder api_key; the real key lives only on the Cloudflare Worker (separate repo `synapse-fuel-proxy/`, **deployed** at `synapse-fuel-proxy.alexis-raitano.workers.dev`). The proxy URL is baked in (`_DEFAULT_FUEL_BASE_URL`), overridable via `SYNAPSE_FUEL_BASE_URL` (set it empty to disable the fuel path). Only consulted for `syn-fuel-` tokens, so a normal key (Mac mini) is unaffected. Disposable by design: stop issuing fuel tokens and the seam is inert.
 

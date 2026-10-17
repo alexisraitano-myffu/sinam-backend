@@ -33,6 +33,7 @@ load_dotenv()
 import anthropic
 
 import llm_target
+from anthropic_client import response_text
 from config import CLAUDE_MODEL
 from db import get_connection, cursor_to_dicts, init_db
 from core_store import get_brain
@@ -231,7 +232,7 @@ def _batch_classify(
         try:
             msg = r.message
             halves[entry["id"]][half] = _parse_classify_text(
-                msg.content[0].text, len(entry["content"]), msg.stop_reason)
+                response_text(msg), len(entry["content"]), msg.stop_reason)
         except Exception as exc:  # noqa: BLE001 — content error for this entry
             if verbose:
                 print(f"    [batch] {res.custom_id} parse error: {exc}")
@@ -402,8 +403,8 @@ def _process_entry(entry, client, conn, now, dry_run, verbose, day_context=None,
 
     # la synthèse vivante des projets touchés (un appel Haiku chacun)
     # reste côté hôte — le core a persisté les entrées et renvoie la work-list.
-    # Pas de client en local, mais la synthèse passe par le modèle local.
-    if client is not None or llm_target.mode() == llm_target.MODE_LOCAL:
+    # Pas de client hors cloud, mais la synthèse passe par le modèle choisi.
+    if client is not None or not llm_target.uses_anthropic():
         for s in report["project_syntheses"]:
             synthesize_project(
                 s["project_id"], s["project_name"],
@@ -433,11 +434,12 @@ def _run_dream_cycle(dry_run: bool, verbose: bool, use_batch: bool) -> None:
         print("  ⚠  DRY RUN — no writes to database")
     print("═" * 60)
 
-    # En local il n'y a pas de client Anthropic (le core parle au modèle local)
-    # et donc pas de Batch API, qui n'existe que chez Anthropic.
-    local = llm_target.mode() == llm_target.MODE_LOCAL
-    client = None if local else _get_client()
-    if local:
+    # En local ou avec un serveur personnel il n'y a pas de client Anthropic
+    # (le core parle au modèle choisi) et donc pas de Batch API, qui n'existe
+    # que chez Anthropic.
+    anthropic = llm_target.uses_anthropic()
+    client = _get_client() if anthropic else None
+    if not anthropic:
         use_batch = False
     init_db()
 

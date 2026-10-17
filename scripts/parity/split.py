@@ -214,6 +214,8 @@ def classify_split(model: str, text: str, schema: bool, temperature: float) -> t
 # finit par se relancer sans qu'on sache ce qu'elle coûte : c'est ce qui est
 # arrivé le 2026-08-21, 22 baselines Haiku plus tard.
 _TARIFS = {"claude-haiku-4-5-20251001": (1.00, 0.10, 5.00),
+           # Relevé le 2026-10-17, tarif des prompts sous 100 000 tokens.
+           "claude-haiku-5-5": (0.10, 0.01, 0.50),
            # Gemini, relevé le 2026-08-29 sur ai.google.dev/gemini-api/docs/pricing.
            # Les deux Flash sont au tarif promotionnel valable jusqu'au 31/12/2026 :
            # il DOUBLE le 01/01/2027, donc un chiffrage recopié en janvier sera

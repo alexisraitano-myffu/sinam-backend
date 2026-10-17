@@ -49,6 +49,10 @@ def get_client() -> anthropic.Anthropic:
         raise EnvironmentError(
             "mode local : aucun appel ne part vers Anthropic (Réglages → Tri)."
         )
+    if get_llm_mode() == "endpoint":
+        raise EnvironmentError(
+            "serveur personnel : aucun appel ne part vers Anthropic (Réglages → Tri)."
+        )
     key = get_anthropic_key()
     if not key:
         raise EnvironmentError(
@@ -75,3 +79,22 @@ def get_client_or_none() -> "anthropic.Anthropic | None":
         return get_client()
     except EnvironmentError:
         return None
+
+
+def adapt_params(params: dict) -> dict:
+    """Les kwargs d'un `messages.create` fait depuis Python, accordés au modèle
+    par la même règle que les appels du cœur : un modèle qui réfléchit refuse
+    toute température et a besoin de place pour réfléchir, les autres sont
+    fixés à `temperature: 0`."""
+    import json
+
+    import sinam_core
+    return json.loads(sinam_core.adapt_anthropic_params(params["model"], json.dumps(params)))
+
+
+def response_text(msg) -> str:
+    """Le texte d'une réponse, réflexion exclue : un modèle qui réfléchit ouvre
+    sa réponse par des blocs `thinking`, donc `content[0]` n'est plus la réponse."""
+    return "".join(
+        getattr(b, "text", "") for b in msg.content if getattr(b, "type", "text") == "text"
+    ).strip()

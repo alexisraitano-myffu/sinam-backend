@@ -9,6 +9,13 @@ s'interrompt et les captures restent en file, comme sans réseau.
 Le modèle local est un serveur compatible OpenAI sur la boucle locale (le
 moteur que l'app installe à la demande). Le core sait déjà lui parler par son
 fournisseur `openai` : le choix se fait ici, pas dans le core.
+
+Le troisième mode, « endpoint », est le serveur que l'utilisateur apporte
+(freellmapi, Ollama, OpenRouter…). Même fournisseur `openai` que le local,
+mais ce n'est PAS le local : rien à démarrer, et l'appel sort de la machine
+vers l'adresse que l'utilisateur a choisie. Il n'y a pas non plus de repli
+vers Anthropic : quelqu'un qui a branché son serveur ne paie pas Anthropic
+dans son dos parce que son serveur dormait.
 """
 import os
 from dataclasses import dataclass
@@ -18,6 +25,7 @@ from config import CLAUDE_MODEL
 
 MODE_CLOUD = "cloud"
 MODE_LOCAL = "local"
+MODE_ENDPOINT = "endpoint"
 
 # Le nom qui désigne, pour le serveur mlx_lm, le modèle qu'il a chargé au
 # démarrage. Tout autre nom est pris pour un dépôt Hugging Face à télécharger
@@ -39,10 +47,9 @@ class LlmTarget:
     api_key: str
     base_url: str | None
     fuel_token: str | None
-
-    @property
-    def is_local(self) -> bool:
-        return self.provider == "openai"
+    # Le moteur local de cette machine, qu'il faut démarrer pour l'appel. Un
+    # serveur apporté par l'utilisateur parle le même dialecte mais n'en est pas un.
+    is_local: bool = False
 
     def core_kwargs(self) -> dict:
         """Les arguments nommés communs aux appels LLM du core."""
@@ -54,12 +61,41 @@ def mode() -> str:
     return config_store.get_llm_mode()
 
 
+def uses_anthropic() -> bool:
+    """Faux en local ET avec un serveur personnel : aucun client Anthropic,
+    donc pas de Batch API, et les fonctions qui n'existent que chez Anthropic
+    s'éteignent au lieu de fuir."""
+    return mode() == MODE_CLOUD
+
+
+def ready() -> bool:
+    """Le tri peut-il tourner cette nuit ? Ce que l'app demande pour savoir si
+    elle doit réclamer quelque chose à l'utilisateur. Une clé Anthropic ne
+    compte qu'en cloud : en local ou avec un serveur personnel, la réclamer
+    serait le mur qui a bloqué un testeur sur freellmapi."""
+    m = mode()
+    if m == MODE_LOCAL:
+        import moteur_local
+        return moteur_local.est_installe()
+    if m == MODE_ENDPOINT:
+        return config_store.get_llm_endpoint() is not None
+    return config_store.has_anthropic_key()
+
+
 def resolve() -> LlmTarget:
     """La cible du prochain appel. Lève EnvironmentError en cloud sans clé,
     même message qu'avant ce module. En local aucune clé n'est lue : elle
     peut exister (l'utilisateur est passé du cloud au local) sans jamais servir."""
     if mode() == MODE_LOCAL:
-        return LlmTarget("openai", LOCAL_MODEL, "", local_base_url(), None)
+        return LlmTarget("openai", LOCAL_MODEL, "", local_base_url(), None, is_local=True)
+    if mode() == MODE_ENDPOINT:
+        ep = config_store.get_llm_endpoint()
+        if ep is None:
+            raise EnvironmentError(
+                "serveur personnel incomplet : il manque l'adresse ou le nom du "
+                "modèle (Réglages → Qui fait le tri)."
+            )
+        return LlmTarget("openai", ep["model"], ep["api_key"], ep["base_url"], None)
 
     from anthropic_client import _fuel_base_url, is_fuel_token
 

@@ -59,9 +59,9 @@ def _config_args(client) -> dict:
     """LLM kwargs for the core resource calls — `client is None` (offline,
     tests) or a missing key mean no LLM: the summary falls back to a snippet."""
     import llm_target
-    # En local il n'y a pas de client Anthropic, et c'est normal : le résumé
-    # passe quand même par le modèle local.
-    if client is None and llm_target.mode() != llm_target.MODE_LOCAL:
+    # Hors cloud il n'y a pas de client Anthropic, et c'est normal : le résumé
+    # passe quand même par le modèle choisi.
+    if client is None and llm_target.uses_anthropic():
         return {}
     from dream_cycle.cycle import PROMPTS_DIR, _TODAY, _llm_args
     try:

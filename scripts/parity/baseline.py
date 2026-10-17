@@ -115,22 +115,30 @@ def cmd_run(args) -> int:
     par_frontiere: dict[str, list[str]] = {}
     joues = 0
     demi = 0
-    for set_name in sets:
-        for case in SETS[set_name]:
-            if vises is not None and case["id"] not in vises:
-                continue
+    a_jouer = [(set_name, case) for set_name in sets for case in SETS[set_name]
+               if vises is None or case["id"] in vises]
+
+    def classer(item):
+        _, case = item
+        if args.appel_unique:
+            reply = providers.call(args.model, system, case["text"],
+                                   context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
+                                   args.temperature)
+            parsed = context.parse_classify(reply.text, reply.stop_reason)
+            return parsed, {"latency_s": reply.latency_s, "prompt_tokens": reply.prompt_tokens}
+        return split.classify_split(args.model, case["text"], bool(schema), args.temperature)
+
+    # Les appels partent en parallèle, mais les résultats se lisent dans l'ordre
+    # du corpus : la sortie et le fichier sont les mêmes qu'en séquentiel. À un
+    # appel à la fois, 495 cas d'un modèle qui réfléchit prenaient plus d'une
+    # heure, et une mesure qu'on ne peut pas interrompre doit être courte.
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=max(1, args.parallele)) as pool:
+        resultats = pool.map(classer, a_jouer)
+        for (set_name, case), (parsed, diag) in zip(a_jouer, resultats):
             joues += 1
-            if args.appel_unique:
-                reply = providers.call(args.model, system, case["text"],
-                                       context.CLASSIFY_MAX_TOKENS, args.num_ctx, schema,
-                                       args.temperature)
-                parsed = context.parse_classify(reply.text, reply.stop_reason)
-                diag = {"latency_s": reply.latency_s, "prompt_tokens": reply.prompt_tokens}
-            else:
-                parsed, diag = split.classify_split(args.model, case["text"],
-                                                    bool(schema), args.temperature)
-                if not (diag["note_parsed"] and diag["graph_parsed"]):
-                    demi += 1
+            if not args.appel_unique and not (diag["note_parsed"] and diag["graph_parsed"]):
+                demi += 1
             rec = path_of(parsed)
             gaps = score.gaps(case, parsed)
             # `parsed` en dernier, et à dessein : `path_of` y met un booléen
@@ -296,6 +304,9 @@ def main() -> int:
     r.add_argument("--schema", action="store_true")
     r.add_argument("--num-ctx", type=int, default=providers.DEFAULT_NUM_CTX)
     r.add_argument("--temperature", type=float, default=0.0)
+    r.add_argument("--parallele", type=int, default=1,
+                   help="nombre de cas joués en même temps (défaut : un à la fois). "
+                        "Pour un modèle distant ; un modèle local n'y gagne rien.")
     r.add_argument("--tout", action="store_true",
                    help="afficher les cas conformes aussi (défaut : seulement les écarts)")
     r.set_defaults(func=cmd_run)

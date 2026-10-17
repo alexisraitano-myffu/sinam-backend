@@ -46,7 +46,9 @@ AGENT = {"User-Agent": "sinam-moteur/1"}
 # Les trois morceaux, chacun dans son dossier, dans cet ordre de téléchargement.
 MORCEAUX = ("moteur", "modele", "adaptateur")
 # En dessous, le système swappe pendant le cycle au point de le rendre inutilisable.
-MEMOIRE_MIN = 8 * 1024 ** 3
+# Abaissable pour la CI seulement : le runner Windows d'un dépôt privé n'a que
+# 7 Go, et c'est le moteur qu'on veut y voir tourner, pas ce seuil.
+MEMOIRE_MIN = int(os.environ.get("SYNAPSE_MOTEUR_MEMOIRE_MIN", 8 * 1024 ** 3))
 DEMARRAGE_MAX_S = 180
 
 
@@ -75,15 +77,12 @@ def _memoire_totale() -> int | None:
     if platform.system() == "Windows":
         import ctypes
 
-        class Etat(ctypes.Structure):
-            _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
-                        ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
-                        ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
-                        ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
-                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
-        e = Etat(dwLength=ctypes.sizeof(Etat))
-        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(e)):
-            return int(e.ullTotalPhys)
+        # La mémoire INSTALLÉE, celle de la fiche du PC. La mémoire utilisable
+        # (GlobalMemoryStatusEx) en retire la part réservée au matériel : un PC
+        # « 8 Go » à carte graphique intégrée y lit ~7,7 Go et serait refusé.
+        ko = ctypes.c_ulonglong(0)
+        if ctypes.windll.kernel32.GetPhysicallyInstalledSystemMemory(ctypes.byref(ko)):
+            return int(ko.value) * 1024
         return None
     try:
         return int(subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True,

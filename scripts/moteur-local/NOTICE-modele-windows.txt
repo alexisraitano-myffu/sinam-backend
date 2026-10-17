@@ -1,0 +1,14 @@
+Poids du modèle local de sinam, version Windows
+
+Qwen3.5-4B, (c) Alibaba Cloud / équipe Qwen, sous licence Apache 2.0 (voir
+LICENSE-Qwen3.5.txt). Source : https://huggingface.co/Qwen/Qwen3.5-4B
+
+Version quantifiée Q4_K_M au format GGUF par unsloth :
+https://huggingface.co/unsloth/Qwen3.5-4B-GGUF
+redistribuée sans modification.
+
+Le gabarit de conversation livré avec le moteur (qwen35.jinja) est celui du
+tokenizer de Qwen/Qwen3.5-4B, sous la même licence.
+
+L'adaptateur LoRA livré à côté, entraîné pour sinam puis converti au format
+GGUF, est distribué sous la licence Apache 2.0 du dépôt sinam-backend.

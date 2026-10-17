@@ -155,3 +155,38 @@ def test_session_without_engine_is_a_connection_error(depot, monkeypatch):
     with pytest.raises(ConnectionError):
         with moteur_local.session():
             pass
+
+
+def test_windows_command_carries_the_measured_settings(tmp_path, monkeypatch):
+    """Le moteur Windows n'a pas de point d'entrée à nous pour figer ses
+    réglages : ils voyagent dans la ligne de commande, qui doit donc porter
+    ceux de la mesure, l'adaptateur compris (sans lui, le modèle nu répond)."""
+    import moteur_local
+    monkeypatch.setattr(moteur_local, "plateforme", lambda: "windows-x64")
+    cmd = moteur_local._commande(tmp_path, "8766")
+    assert cmd[0].endswith("llama-server.exe")
+    assert cmd[cmd.index("--lora") + 1].endswith("adaptateur.gguf")
+    assert json.loads(cmd[cmd.index("--chat-template-kwargs") + 1]) == {"enable_thinking": False}
+    assert cmd[cmd.index("--temp") + 1] == "0"
+    assert cmd[cmd.index("--alias") + 1] == "default_model"
+    assert "--device" not in cmd
+    assert moteur_local._commande(tmp_path, "8766", gpu=False)[-2:] == ["--device", "none"]
+
+
+def test_windows_falls_back_to_cpu_when_the_gpu_kills_the_engine(depot, monkeypatch, tmp_path):
+    """Un pilote graphique qui fait tomber le moteur au chargement ne doit pas
+    priver la personne du tri : on relance sur le processeur."""
+    import moteur_local
+    depot()
+    moteur_local.installer_en_fond()
+    _attendre_fin(moteur_local)
+    capricieux = tmp_path / "capricieux"
+    capricieux.write_text(FAUX_MOTEUR.replace(
+        "port = int(", 'sys.exit(3) if "--device" not in sys.argv else None\nport = int('))
+    capricieux.chmod(0o755)
+    monkeypatch.setattr(moteur_local, "plateforme", lambda: "windows-x64")
+    monkeypatch.setattr(moteur_local, "_executable", lambda racine: capricieux)
+    port = _port_libre()
+    monkeypatch.setenv("SYNAPSE_LOCAL_LLM_PORT", str(port))
+    with moteur_local.session():
+        assert moteur_local._pret(f"http://127.0.0.1:{port}")

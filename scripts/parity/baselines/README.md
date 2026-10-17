@@ -90,7 +90,7 @@ choisit au lancement du serveur, et deux entraînements différents rendent des
 empreintes identiques. Noter le lancement à côté, sinon deux mesures deviennent
 indiscernables.
 
-**Le modèle local, entraîné puis porté sur le Mac.** Trois baselines, même
+**Le modèle local, entraîné puis porté sur le Mac, puis sur Windows.** Quatre baselines, même
 86 cas étiquetés `kind`, notées par `score.gaps` (jamais par le champ `kind`,
 qui ne porte que la mémoire de tête) :
 
@@ -99,6 +99,7 @@ qui ne porte que la mémoire de tête) :
 | `nu-nf4` | Qwen 3.5 4B quantifié NF4, sans entraînement, sur GPU | 75/86 | 56/93 |
 | `lora-60-nf4` | le même avec l'adaptateur du point 60, sur GPU | 79/86 | 69/93 |
 | `lora-60-mlx` | l'adaptateur porté sur MLX 4 bits, sur un Mac M1 8 Go | **80/86** | 73/93 |
+| `lora-60-llamacpp` | l'adaptateur porté en GGUF, base Q4_K_M, servi par `llama-server` | 79/86 | 69/93 |
 
 `lora-60-mlx` mesure le moteur qui est livré : mêmes poids, même adaptateur,
 mêmes réglages (réflexion coupée, température 0), produite par
@@ -106,3 +107,10 @@ mêmes réglages (réflexion coupée, température 0), produite par
 Le passage du GPU au Mac ne coûte rien, l'écart d'un cas est sous le plancher
 de bruit. Le serveur livré (`moteur_entry.py`) rend ces réponses au caractère
 près, vérifié le 26/09/2026 sur six questions.
+
+`lora-60-llamacpp` mesure le moteur Windows : le même adaptateur converti par
+`vers_gguf_adaptateur.py`, posé sur le Q4_K_M d'unsloth, joué par le binaire
+`llama-server` qu'on livre (`mesurer_llamacpp.py`, ici sa version CUDA sur un
+pod, 17/10/2026). Il rejoint exactement le NF4 sur GPU ; l'écart d'un cas avec
+MLX est sous le plancher de bruit, et les cas qui diffèrent ne sont pas les
+mêmes dans les deux sens. Réponses dans `scripts/entrainement/pod/reponses/`.

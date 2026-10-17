@@ -49,6 +49,10 @@ def get_client() -> anthropic.Anthropic:
         raise EnvironmentError(
             "mode local : aucun appel ne part vers Anthropic (Réglages → Tri)."
         )
+    if get_llm_mode() == "endpoint":
+        raise EnvironmentError(
+            "serveur personnel : aucun appel ne part vers Anthropic (Réglages → Tri)."
+        )
     key = get_anthropic_key()
     if not key:
         raise EnvironmentError(

@@ -52,19 +52,53 @@ def has_anthropic_key() -> bool:
     return bool(get_anthropic_key())
 
 
+LLM_MODES = ("cloud", "local", "endpoint")
+
+
 def get_llm_mode() -> str:
-    """"cloud" (Anthropic, la clé ci-dessus) ou "local" (le moteur installé sur
-    cette machine). Absent → cloud : une installation d'avant le mode local
-    garde son comportement. Toute autre valeur lue aussi, pour qu'un fichier
-    abîmé ne fasse jamais croire qu'on est en local."""
-    return "local" if _load().get("llm_mode") == "local" else "cloud"
+    """"cloud" (Anthropic, la clé ci-dessus), "local" (le moteur installé sur
+    cette machine) ou "endpoint" (un serveur compatible OpenAI que
+    l'utilisateur apporte : freellmapi, Ollama, OpenRouter…). Absent → cloud :
+    une installation d'avant ces modes garde son comportement. Toute autre
+    valeur lue aussi, pour qu'un fichier abîmé ne fasse jamais croire qu'on est
+    en local."""
+    mode = _load().get("llm_mode")
+    return mode if mode in LLM_MODES else "cloud"
 
 
 def set_llm_mode(mode: str) -> None:
-    if mode not in ("cloud", "local"):
+    if mode not in LLM_MODES:
         raise ValueError(f"mode inconnu : {mode!r}")
     data = _load()
     data["llm_mode"] = mode
+    _save(data)
+
+
+def get_llm_endpoint() -> dict | None:
+    """Le serveur de l'utilisateur : {"base_url", "model", "api_key"}, ou None
+    tant que l'adresse ou le modèle manque. La clé peut être vide (un Ollama
+    local n'en demande pas)."""
+    ep = _load().get("llm_endpoint")
+    if not isinstance(ep, dict):
+        return None
+    base_url = str(ep.get("base_url") or "").strip()
+    model = str(ep.get("model") or "").strip()
+    if not base_url or not model:
+        return None
+    return {"base_url": base_url, "model": model,
+            "api_key": str(ep.get("api_key") or "").strip()}
+
+
+def set_llm_endpoint(base_url: str, model: str, api_key: str | None) -> None:
+    """`api_key=None` garde la clé déjà enregistrée : l'app ne la relit
+    jamais, elle ne peut donc pas la renvoyer pour changer seulement le modèle."""
+    data = _load()
+    previous = data.get("llm_endpoint") if isinstance(data.get("llm_endpoint"), dict) else {}
+    data["llm_endpoint"] = {
+        "base_url": base_url.strip(),
+        "model": model.strip(),
+        "api_key": (previous.get("api_key", "") if api_key is None else api_key.strip()),
+    }
     _save(data)
 
 

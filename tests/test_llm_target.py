@@ -140,3 +140,101 @@ def test_local_call_reaches_the_local_server(config_home, isolated_db, monkeypat
         assert body["messages"][0]["role"] == "system"
     finally:
         srv.shutdown()
+
+
+# ── Le serveur que l'utilisateur apporte (freellmapi, Ollama, OpenRouter…) ──
+
+def test_endpoint_mode_needs_no_anthropic_key(config_home):
+    """Le mur du testeur sur freellmapi : son serveur suffit, sans clé Anthropic."""
+    import llm_target
+    config_home.set_llm_endpoint("http://192.168.1.20:3001/v1", "auto", "freellmapi-abc")
+    config_home.set_llm_mode("endpoint")
+    t = llm_target.resolve()
+    assert (t.provider, t.model, t.api_key, t.base_url) == (
+        "openai", "auto", "freellmapi-abc", "http://192.168.1.20:3001/v1")
+    assert not t.is_local, "un serveur apporté ne démarre pas le moteur local"
+    assert llm_target.ready()
+    assert not llm_target.uses_anthropic()
+
+
+def test_endpoint_mode_without_endpoint_raises_and_is_not_ready(config_home):
+    import llm_target
+    config_home.set_llm_mode("endpoint")
+    assert not llm_target.ready()
+    with pytest.raises(EnvironmentError):
+        llm_target.resolve()
+
+
+def test_a_key_counts_only_in_cloud(config_home):
+    import llm_target
+    assert not llm_target.ready()
+    config_home.set_anthropic_key("sk-ant-pas-une-vraie")
+    assert llm_target.ready()
+
+
+def test_endpoint_update_without_key_keeps_the_stored_key(config_home):
+    """L'app ne relit jamais la clé : changer de modèle ne doit pas l'effacer."""
+    config_home.set_llm_endpoint("http://h/v1", "a", "secret")
+    config_home.set_llm_endpoint("http://h/v1", "b", None)
+    assert config_home.get_llm_endpoint()["api_key"] == "secret"
+    config_home.set_llm_endpoint("http://h/v1", "b", "")
+    assert config_home.get_llm_endpoint()["api_key"] == ""
+
+
+def test_anthropic_client_refuses_with_an_endpoint(config_home):
+    """Pas de repli : la Batch API et les noms de zones s'éteignent."""
+    import anthropic_client
+    config_home.set_anthropic_key("sk-ant-pas-une-vraie")
+    config_home.set_llm_endpoint("http://h/v1", "m", "")
+    config_home.set_llm_mode("endpoint")
+    with pytest.raises(EnvironmentError):
+        anthropic_client.get_client()
+
+
+def test_endpoint_call_reaches_the_users_server_once_v1(config_home, isolated_db):
+    """Un vrai appel du core avec l'adresse telle que freellmapi la donne
+    (« …/v1 ») : il arrive sur /v1/chat/completions, pas /v1/v1, avec la clé
+    de l'utilisateur, et sans démarrer le moteur local."""
+    _Recorder.seen = []
+    srv = HTTPServer(("127.0.0.1", 0), _Recorder)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        config_home.set_llm_endpoint(f"http://127.0.0.1:{srv.server_port}/v1", "auto", "")
+        config_home.set_llm_mode("endpoint")
+
+        from dream_cycle import digest
+        conn = digest.get_connection()
+        try:
+            week = digest.gather_week(conn)
+        finally:
+            conn.close()
+        digest.summarize_digest(week)
+
+        path, body = _Recorder.seen[0]
+        assert path == "/v1/chat/completions"
+        assert body["model"] == "auto"
+    finally:
+        srv.shutdown()
+
+
+def test_probe_through_the_api(config_home, isolated_db, monkeypatch):
+    """Le bouton « Tester » : un serveur qui répond passe ; une adresse morte
+    rend ok=false avec une raison, jamais une erreur 500."""
+    from fastapi.testclient import TestClient
+    monkeypatch.delenv("SYNAPSE_API_TOKEN", raising=False)
+    monkeypatch.setenv("SYNAPSE_DEV_NO_AUTH", "1")
+    from api.app import app
+    _Recorder.seen = []
+    srv = HTTPServer(("127.0.0.1", 0), _Recorder)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        client = TestClient(app)
+        headers = {}
+        ok = client.post("/config/llm-endpoint/test", headers=headers, json={
+            "base_url": f"http://127.0.0.1:{srv.server_port}/v1", "model": "auto", "api_key": ""})
+        assert ok.json() == {"ok": True}
+    finally:
+        srv.shutdown()
+    dead = client.post("/config/llm-endpoint/test", headers=headers, json={
+        "base_url": "http://127.0.0.1:1/v1", "model": "auto", "api_key": ""})
+    assert dead.status_code == 200 and dead.json()["ok"] is False

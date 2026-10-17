@@ -572,6 +572,13 @@ class LlmModeIn(BaseModel):
     mode: str
 
 
+class LlmEndpointIn(BaseModel):
+    base_url: str
+    model: str
+    # None garde la clé déjà enregistrée (l'app ne la relit jamais) ; "" l'efface.
+    api_key: str | None = None
+
+
 class OwnerIn(BaseModel):
     entity_id: str | None = None  # the entity that IS the user (« moi »); null clears it
 
@@ -702,9 +709,17 @@ def health():
 def get_config():
     """Status only — never echoes the key back. Used by the wizard to know
     whether to prompt for one."""
+    import llm_target
+    ep = config_store.get_llm_endpoint()
     return {"anthropic_key_set": config_store.has_anthropic_key(),
             "fetch_resources": config_store.get_fetch_resources(),
-            "llm_mode": config_store.get_llm_mode()}
+            "llm_mode": config_store.get_llm_mode(),
+            # Ce que l'app doit regarder pour savoir s'il manque quelque chose :
+            # une clé Anthropic ne compte qu'en cloud.
+            "llm_ready": llm_target.ready(),
+            "llm_endpoint": None if ep is None else {
+                "base_url": ep["base_url"], "model": ep["model"],
+                "key_set": bool(ep["api_key"])}}
 
 
 @app.put("/config/llm-mode", dependencies=[Depends(require_auth)])
@@ -717,11 +732,45 @@ def put_llm_mode(body: LlmModeIn):
         # Accepter ici, c'est un cycle qui échoue cette nuit sans que personne
         # ne soit devant : on refuse tant que le moteur n'est pas là.
         raise HTTPException(status_code=409, detail="moteur local non installé")
+    if body.mode == "endpoint" and config_store.get_llm_endpoint() is None:
+        raise HTTPException(status_code=409, detail="serveur personnel non configuré")
     try:
         config_store.set_llm_mode(body.mode)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"status": "ok", "llm_mode": config_store.get_llm_mode()}
+
+
+@app.put("/config/llm-endpoint", dependencies=[Depends(require_auth)])
+def put_llm_endpoint(body: LlmEndpointIn):
+    """Enregistre le serveur de l'utilisateur et le choisit pour le tri. Ne le
+    teste pas : un serveur éteint ce soir peut être allumé cette nuit, et c'est
+    l'app qui fait passer le test avant d'arriver ici."""
+    if not body.base_url.strip() or not body.model.strip():
+        raise HTTPException(status_code=400, detail="adresse et nom du modèle requis")
+    config_store.set_llm_endpoint(body.base_url, body.model, body.api_key)
+    config_store.set_llm_mode("endpoint")
+    return {"status": "ok", "llm_mode": config_store.get_llm_mode()}
+
+
+@app.post("/config/llm-endpoint/test", dependencies=[Depends(require_auth)])
+def test_llm_endpoint(body: LlmEndpointIn):
+    """Un vrai appel minimal, par le même chemin que le cycle, sans rien
+    enregistrer. `api_key=None` teste avec la clé déjà enregistrée. Répond
+    toujours 200 : `ok` faux porte la raison, pour que l'écran la montre."""
+    import sinam_core
+    key = body.api_key
+    if key is None:
+        ep = config_store.get_llm_endpoint()
+        key = ep["api_key"] if ep else ""
+    try:
+        sinam_core.probe_llm(body.model.strip(), key.strip(),
+                             base_url=body.base_url.strip(), provider="openai")
+    except PermissionError as e:
+        return {"ok": False, "reason": "key", "detail": str(e)[:500]}
+    except (ConnectionError, RuntimeError, ValueError) as e:
+        return {"ok": False, "reason": "unreachable", "detail": str(e)[:500]}
+    return {"ok": True}
 
 
 @app.get("/moteur-local", dependencies=[Depends(require_auth)])

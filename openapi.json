@@ -121,6 +121,116 @@
         }
       }
     },
+    "/config/llm-endpoint": {
+      "put": {
+        "summary": "Put Llm Endpoint",
+        "description": "Enregistre le serveur de l'utilisateur et le choisit pour le tri. Ne le\nteste pas : un serveur éteint ce soir peut être allumé cette nuit, et c'est\nl'app qui fait passer le test avant d'arriver ici.",
+        "operationId": "put_llm_endpoint_config_llm_endpoint_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmEndpointIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config/llm-endpoint/test": {
+      "post": {
+        "summary": "Test Llm Endpoint",
+        "description": "Un vrai appel minimal, par le même chemin que le cycle, sans rien\nenregistrer. `api_key=None` teste avec la clé déjà enregistrée. Répond\ntoujours 200 : `ok` faux porte la raison, pour que l'écran la montre.",
+        "operationId": "test_llm_endpoint_config_llm_endpoint_test_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmEndpointIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/moteur-local": {
       "get": {
         "summary": "Get Moteur Local",
@@ -5704,6 +5814,35 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LlmEndpointIn": {
+        "properties": {
+          "base_url": {
+            "type": "string",
+            "title": "Base Url"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_url",
+          "model"
+        ],
+        "title": "LlmEndpointIn"
       },
       "LlmModeIn": {
         "properties": {

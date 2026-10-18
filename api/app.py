@@ -110,6 +110,11 @@ def _most_recent_scheduled_epoch(hours: set[int]) -> float | None:
 
 
 def _consolidation_hours() -> set[int]:
+    # La fréquence choisie dans l'app gagne : c'est l'intention la plus récente.
+    # Sans elle, la variable d'environnement, puis le défaut historique.
+    frequency = config_store.get_cycle_frequency()
+    if frequency in config_store.CYCLE_FREQUENCY_HOURS:
+        return set(config_store.CYCLE_FREQUENCY_HOURS[frequency])
     # Default = midnight + noon. Two passes/day so a laptop tester that's awake
     # at some point around either gets their captures consolidated; the startup/
     # wake catch-up below covers the hour they were actually asleep.
@@ -133,6 +138,10 @@ def _should_consolidate(queued: int, stale: int) -> str:
     # user's fact edit wait until the nightly pass.
     if queued == 0:
         return "stale" if stale > 0 else ""
+    # Instantané : la capture est tissée au tour suivant de la boucle (≤ 30 s),
+    # comme sur le téléphone. Synchrone : attendre un batch annulerait le choix.
+    if config_store.get_cycle_frequency() == "instant":
+        return "instant"
     # Size safety-valve: a heavy capture day consolidates without waiting for the hour.
     if queued >= _consolidation_max_queued():
         return "valve"
@@ -568,6 +577,10 @@ class FetchResourcesIn(BaseModel):
     enabled: bool
 
 
+class CycleFrequencyIn(BaseModel):
+    frequency: str  # instant | hourly | every_6h | twice_daily | nightly
+
+
 class LlmModeIn(BaseModel):
     mode: str
 
@@ -713,6 +726,9 @@ def get_config():
     ep = config_store.get_llm_endpoint()
     return {"anthropic_key_set": config_store.has_anthropic_key(),
             "fetch_resources": config_store.get_fetch_resources(),
+            # None = jamais choisie : la politique de l'environnement s'applique
+            # (deux passes par jour par défaut).
+            "cycle_frequency": config_store.get_cycle_frequency(),
             "llm_mode": config_store.get_llm_mode(),
             # Ce que l'app doit regarder pour savoir s'il manque quelque chose :
             # une clé Anthropic ne compte qu'en cloud.
@@ -828,6 +844,21 @@ def put_fetch_resources(body: FetchResourcesIn):
     """
     config_store.set_fetch_resources(body.enabled)
     return {"status": "ok", "fetch_resources": body.enabled}
+
+
+@app.put("/config/cycle-frequency", dependencies=[Depends(require_auth)])
+def put_cycle_frequency(body: CycleFrequencyIn):
+    """Quand ce backend tisse : "instant" (chaque capture, dans les 30 s) ou par
+    passes planifiées ("hourly", "every_6h", "twice_daily", "nightly").
+
+    Une passe manquée pendant la veille est rattrapée au réveil, quel que soit le
+    cran. Ne joue que si SYNAPSE_AUTO_CYCLE est allumé (les installeurs le font).
+    """
+    try:
+        config_store.set_cycle_frequency(body.frequency)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "ok", "cycle_frequency": body.frequency}
 
 
 @app.get("/resources", dependencies=[Depends(require_auth)])

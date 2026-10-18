@@ -76,6 +76,14 @@ def test_build_day_context_none_for_lone_capture(isolated_db):
 
 # ── batched consolidation policy ─────────────────────────────────────────────
 
+@pytest.fixture(autouse=True)
+def _config_isole(monkeypatch, tmp_path):
+    """La politique lit la fréquence choisie dans config.json : jamais celui de
+    la machine qui lance les tests, sinon un réglage réel les ferait mentir."""
+    import config_store
+    monkeypatch.setattr(config_store, "CONFIG_PATH", tmp_path / "config.json")
+
+
 def test_should_consolidate_stale_only():
     assert appmod._should_consolidate(queued=0, stale=2) == "stale"   # cheap resummary run
     assert appmod._should_consolidate(queued=0, stale=0) == ""
@@ -104,6 +112,32 @@ def test_should_consolidate_scheduled_fires_once(monkeypatch, tmp_path):
     # The scheduler marks the run done → the same slot no longer refires.
     appmod._mark_consolidated()
     assert appmod._should_consolidate(queued=1, stale=0) == ""
+
+
+def test_frequence_instantanee_tisse_sans_attendre(monkeypatch, tmp_path):
+    import config_store
+    monkeypatch.setattr(appmod, "_CONSOLIDATION_MARKER", tmp_path / "last_consolidation")
+    appmod._mark_consolidated()                       # rien n'est dû côté planning
+    config_store.set_cycle_frequency("instant")
+    assert appmod._should_consolidate(queued=1, stale=0) == "instant"   # synchrone
+    assert appmod._should_consolidate(queued=0, stale=0) == ""          # rien à tisser
+
+
+def test_frequence_choisie_gagne_sur_l_environnement(monkeypatch):
+    import config_store
+    monkeypatch.setenv("SYNAPSE_CONSOLIDATION_HOURS", "3")
+    assert appmod._consolidation_hours() == {3}       # pas de choix : l'environnement
+    config_store.set_cycle_frequency("every_6h")
+    assert appmod._consolidation_hours() == {0, 6, 12, 18}
+    config_store.set_cycle_frequency("hourly")
+    assert appmod._consolidation_hours() == set(range(24))
+
+
+def test_frequence_inconnue_refusee():
+    import config_store
+    with pytest.raises(ValueError):
+        config_store.set_cycle_frequency("toutes_les_minutes")
+    assert config_store.get_cycle_frequency() is None
 
 
 # ── Batch API classify (offline, mocked client) ──────────────────────────────

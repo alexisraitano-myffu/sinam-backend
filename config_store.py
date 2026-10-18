@@ -165,3 +165,34 @@ def apply_fetch_resources_at_startup() -> None:
     """
     if _FETCH_ENV not in os.environ:
         os.environ[_FETCH_ENV] = "1" if get_fetch_resources() else "0"
+
+
+# ── Fréquence du tissage ──────────────────────────────────────────────────────
+# Quand ce backend tisse les captures en attente. "instant" : dès qu'une capture
+# arrive, comme le téléphone. Les autres crans regroupent les captures en passes
+# planifiées, qui partent par l'API Batch (-50 %) et voient la journée entière
+# (meilleure coréférence). Absent = la politique historique, réglée par
+# SYNAPSE_CONSOLIDATION_HOURS (0h et 12h par défaut).
+CYCLE_FREQUENCIES = ("instant", "hourly", "every_6h", "twice_daily", "nightly")
+
+# Les heures de passe de chaque cran récurrent. Minuit reste dans tous : c'est
+# l'heure à laquelle un utilisateur a fini sa journée de captures.
+CYCLE_FREQUENCY_HOURS = {
+    "hourly": set(range(24)),
+    "every_6h": {0, 6, 12, 18},
+    "twice_daily": {0, 12},
+    "nightly": {0},
+}
+
+
+def get_cycle_frequency() -> str | None:
+    value = _load().get("cycle_frequency")
+    return value if value in CYCLE_FREQUENCIES else None
+
+
+def set_cycle_frequency(value: str) -> None:
+    if value not in CYCLE_FREQUENCIES:
+        raise ValueError(f"fréquence inconnue : {value!r} (attendu : {', '.join(CYCLE_FREQUENCIES)})")
+    data = _load()
+    data["cycle_frequency"] = value
+    _save(data)

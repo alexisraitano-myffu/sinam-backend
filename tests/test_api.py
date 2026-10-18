@@ -1359,3 +1359,16 @@ def test_fetch_setting_round_trips_and_reaches_the_core(client, monkeypatch):
     assert os.environ["SYNAPSE_FETCH_RESOURCES"] == "0"
     client.put("/config/fetch-resources", json={"enabled": True})
     assert os.environ["SYNAPSE_FETCH_RESOURCES"] == "1"
+
+
+def test_cycle_frequency_round_trips(client, monkeypatch, tmp_path):
+    """La fréquence du tissage se règle depuis l'app ; absente, `None` dit à
+    l'app que la politique par défaut s'applique."""
+    import config_store
+    monkeypatch.setattr(config_store, "CONFIG_PATH", tmp_path / "config.json")
+    assert client.get("/config").json()["cycle_frequency"] is None
+    r = client.put("/config/cycle-frequency", json={"frequency": "instant"})
+    assert r.status_code == 200
+    assert client.get("/config").json()["cycle_frequency"] == "instant"
+    assert client.put("/config/cycle-frequency", json={"frequency": "weekly"}).status_code == 400
+    assert client.get("/config").json()["cycle_frequency"] == "instant"

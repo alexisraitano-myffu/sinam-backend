@@ -474,6 +474,61 @@
         }
       }
     },
+    "/config/cycle-frequency": {
+      "put": {
+        "summary": "Put Cycle Frequency",
+        "description": "Quand ce backend tisse : \"instant\" (chaque capture, dans les 30 s) ou par\npasses planifiées (\"hourly\", \"every_6h\", \"twice_daily\", \"nightly\").\n\nUne passe manquée pendant la veille est rattrapée au réveil, quel que soit le\ncran. Ne joue que si SYNAPSE_AUTO_CYCLE est allumé (les installeurs le font).",
+        "operationId": "put_cycle_frequency_config_cycle_frequency_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CycleFrequencyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/resources": {
       "get": {
         "summary": "Resources List",
@@ -5694,6 +5749,19 @@
           "content"
         ],
         "title": "CaptureIn"
+      },
+      "CycleFrequencyIn": {
+        "properties": {
+          "frequency": {
+            "type": "string",
+            "title": "Frequency"
+          }
+        },
+        "type": "object",
+        "required": [
+          "frequency"
+        ],
+        "title": "CycleFrequencyIn"
       },
       "DevicePatchIn": {
         "properties": {
